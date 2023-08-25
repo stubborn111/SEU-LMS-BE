@@ -2,15 +2,15 @@ package edu.seu.lms.backend.seulmsbe.user.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
+import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
-
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,5 +53,13 @@ public class UserController {
             map.put("errorMsg",ex.getMessage());
         }
         return JSON.toJSONString(map);
+    }
+
+    /**
+     * 登录
+     */
+    @PostMapping("/login")
+    public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
+        return userService.userLogin(userLoginRequest, request);
     }
 }
