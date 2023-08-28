@@ -3,7 +3,12 @@ package edu.seu.lms.backend.seulmsbe.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
+import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
+import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.dto.UserDTO;
+import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
 import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
+import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
@@ -13,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+
+import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * <p>
@@ -61,5 +68,59 @@ public class UserController {
     @PostMapping("/login")
     public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         return userService.userLogin(userLoginRequest, request);
+    }
+
+    /**
+     * 登出
+     * @param request
+     * @return
+     */
+    @PostMapping("/logout")
+    public BaseResponse<Integer> userLogout(HttpServletRequest request) {
+        if (request == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        //int result = userService.userLogout(request);
+        return ResultUtils.success(null);
+    }
+
+    /**
+     * 修改用户信息
+     * @param userModifyRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/modify")
+    public BaseResponse<Integer> userModify(@RequestBody UserModifyRequest userModifyRequest, HttpServletRequest request) {
+        return userService.modify(userModifyRequest, request);
+    }
+
+    /**
+     * 获取当前用户信息
+     * @param request
+     * @return
+     */
+    @GetMapping("/currentUser")
+    public BaseResponse<UserDTO> getCurrentUser(HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        //用户为空
+        if(currentUser == null) {
+            throw new BusinessException(ErrorCode.NOT_LOGIN);
+        }
+        String id = currentUser.getId();
+        // todo 校验用户是否合法
+        User user = userService.getById(id);
+        return ResultUtils.success(toUserDTO(user));
+    }
+
+    private UserDTO toUserDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setAccesstmp(user.getCredit());
+        userDTO.setPhone(user.getPhone());
+        userDTO.setId(user.getId());
+        userDTO.setNickName(user.getNickName());
+        userDTO.setImgUrl(user.getImgUrl());
+        userDTO.setAccess(user.getPrivilege() == 1 ? "admin" : "user");
+        return userDTO;
     }
 }
