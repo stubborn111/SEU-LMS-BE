@@ -9,6 +9,6 @@ import lombok.Data;
  */
 @Data
 public class ItemInfoDTO {
-    private ItemDTO itemInfo;
+    private DiscussionDTO itemInfo;
     private UserDTO ownerInfo;
 }

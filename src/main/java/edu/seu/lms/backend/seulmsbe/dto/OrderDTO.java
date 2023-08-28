@@ -12,7 +12,7 @@ import java.util.Map;
 @Data
 public class OrderDTO {
     private String id;
-    private ItemDTO item;
+    private DiscussionDTO item;
     private String buyerId;
     private String sellerId;
     private int state;
