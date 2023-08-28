@@ -23,6 +23,6 @@ public interface IUserService extends IService<User> {
 
     public User userLogin(String userId, String userPassword, HttpServletRequest request);
     public User getSafetyUser(User originUser);
-    public int userLogout(HttpServletRequest request);
+    public void userLogout(HttpServletRequest request);
     public BaseResponse<Integer> modify(UserModifyRequest userModifyRequest, HttpServletRequest request);
 }

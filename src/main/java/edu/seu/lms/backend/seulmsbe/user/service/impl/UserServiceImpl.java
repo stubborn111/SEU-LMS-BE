@@ -93,9 +93,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
      * @return
      */
     @Override
-    public int userLogout(HttpServletRequest request) {
+    public void userLogout(HttpServletRequest request) {
         request.getSession().removeAttribute(USER_LOGIN_STATE);
-        return 1;
     }
 
     @Override
@@ -112,18 +111,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Override
     public BaseResponse<Integer> modify(UserModifyRequest userModifyRequest, HttpServletRequest request) {
-//        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
-//        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
-//        updateWrapper.eq(User::getId, currentUser.getId())
-//                .set(User::getNickName, userModifyRequest.getName())
-//                .set(User::getImgUrl, userModifyRequest.getImgUrl())
-//                .set(User::getPhone, userModifyRequest.getPhone());
-//        update(updateWrapper);
-//        currentUser.setNickName(userModifyRequest.getName());
-//        currentUser.setImgUrl(userModifyRequest.getImgUrl());
-//        currentUser.setPhone(userModifyRequest.getPhone());
-//        //更新cookie
-//        request.getSession().setAttribute(USER_LOGIN_STATE, currentUser);
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(User::getId, currentUser.getId())
+                .set(User::getNickname, userModifyRequest.getName())
+                .set(User::getAvatarUrl, userModifyRequest.getImgUrl())
+                .set(User::getPhone, userModifyRequest.getPhone())
+                .set(User::getEmail,userModifyRequest.getEmail());
+        update(updateWrapper);
+        currentUser.setNickname(userModifyRequest.getName());
+        currentUser.setAvatarUrl(userModifyRequest.getImgUrl());
+        currentUser.setPhone(userModifyRequest.getPhone());
+        currentUser.setEmail(userModifyRequest.getEmail());
+        //更新cookie
+        request.getSession().setAttribute(USER_LOGIN_STATE, currentUser);
         return ResultUtils.success(1);
     }
 
