@@ -100,27 +100,27 @@ public class UserController {
      * @param request
      * @return
      */
-    @GetMapping("/currentUser")
-    public BaseResponse<UserDTO> getCurrentUser(HttpServletRequest request) {
-        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
-        //用户为空
-        if(currentUser == null) {
-            throw new BusinessException(ErrorCode.NOT_LOGIN);
-        }
-        String id = currentUser.getId();
-        // todo 校验用户是否合法
-        User user = userService.getById(id);
-        return ResultUtils.success(toUserDTO(user));
-    }
+//    @GetMapping("/currentUser")
+//    public BaseResponse<UserDTO> getCurrentUser(HttpServletRequest request) {
+//        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+//        //用户为空
+//        if(currentUser == null) {
+//            throw new BusinessException(ErrorCode.NOT_LOGIN);
+//        }
+//        String id = currentUser.getId();
+//        // todo 校验用户是否合法
+//        User user = userService.getById(id);
+//        return ResultUtils.success(toUserDTO(user));
+//    }
 
-    private UserDTO toUserDTO(User user) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setAccesstmp(user.getCredit());
-        userDTO.setPhone(user.getPhone());
-        userDTO.setId(user.getId());
-        userDTO.setNickName(user.getNickName());
-        userDTO.setImgUrl(user.getImgUrl());
-        userDTO.setAccess(user.getPrivilege() == 1 ? "admin" : "user");
-        return userDTO;
-    }
+//    private UserDTO toUserDTO(User user) {
+//        UserDTO userDTO = new UserDTO();
+//        userDTO.setAccesstmp(user.getCredit());
+//        userDTO.setPhone(user.getPhone());
+//        userDTO.setId(user.getId());
+//        userDTO.setNickName(user.getNickName());
+//        userDTO.setImgUrl(user.getImgUrl());
+//        userDTO.setAccess(user.getPrivilege() == 1 ? "admin" : "user");
+//        return userDTO;
+//    }
 }

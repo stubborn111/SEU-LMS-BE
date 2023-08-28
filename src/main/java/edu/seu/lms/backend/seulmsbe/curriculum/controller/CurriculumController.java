@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.curriculum.controller;
 
 
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2023-08-25
  */
 @RestController
-@RequestMapping("/curriculum/curriculum")
+@RequestMapping("/course")
 public class CurriculumController {
 
 }
