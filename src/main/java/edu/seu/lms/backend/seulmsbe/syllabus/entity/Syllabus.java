@@ -34,5 +34,8 @@ public class Syllabus implements Serializable {
 
     private String assiments;
 
+    @TableField("isCheckedIn")
+    private boolean isCheckedIn;
+
 
 }

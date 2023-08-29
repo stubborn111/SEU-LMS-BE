@@ -67,6 +67,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
 
             temp.setHomework(homework);
             temp.setMeterials(material);
+            temp.setCheckedIn(tt.isCheckedIn());
             DTO.add(temp);
         }
         dto.setList(DTO);

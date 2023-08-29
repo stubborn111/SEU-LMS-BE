@@ -9,4 +9,5 @@ public class SyllabusDTO {
     private String title;
     private String[] meterials;
     private String[] homework;
+    private boolean isCheckedIn;
 }
