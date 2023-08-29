@@ -5,6 +5,8 @@ import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.seu.lms.backend.seulmsbe.dto.DiscussionListDTO;
 import edu.seu.lms.backend.seulmsbe.request.DiscussionListRequest;
+import edu.seu.lms.backend.seulmsbe.request.ReplyListRequest;
+import edu.seu.lms.backend.seulmsbe.request.ReplySendRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,4 +20,6 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface IDiscussionService extends IService<Discussion> {
     BaseResponse<?> listall(DiscussionListRequest discussionListRequest, HttpServletRequest request);
+    BaseResponse<DiscussionListDTO> listreply(ReplyListRequest replyListRequest,HttpServletRequest request);
+    BaseResponse<String> replysend(ReplySendRequest replySendRequest, HttpServletRequest request);
 }

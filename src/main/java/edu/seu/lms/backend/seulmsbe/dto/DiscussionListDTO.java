@@ -9,11 +9,7 @@ import java.util.List;
 
 @Data
 public class DiscussionListDTO {
-    private Page<Discussion> page;
+    private List<Discussion> list;
     private int totalNum;
 
-    public DiscussionListDTO(Page<Discussion> discussionPage, long total) {
-        page = discussionPage;
-        totalNum = (int)total;
-    }
 }
