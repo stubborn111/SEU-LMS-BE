@@ -1,4 +1,4 @@
-package edu.seu.lms.backend.seulmsbe.assiment.entity;
+package edu.seu.lms.backend.seulmsbe.assignment.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
@@ -12,12 +12,12 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author szh
- * @since 2023-08-25
+ * @since 2023-08-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class Assiment implements Serializable {
+public class Assignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

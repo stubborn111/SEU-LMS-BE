@@ -4,7 +4,20 @@ Server:
   servlet:
     context-path: /api
 
+
+
+
 spring:
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  web:
+    resources:
+      static-locations: E:\暑期实训\SEU-LMS-BE\data\
+
   application:
     name: SEU-LMS
   aop:
