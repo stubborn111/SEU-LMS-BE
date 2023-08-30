@@ -17,6 +17,7 @@ import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,8 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     @Autowired
     private CurriculumMapper curriculumMapper;
 
-    IUserService userService;
+    @Autowired
+    private IUserService userService;
 
     @Override
     public BaseResponse<CourseSearchDTO> searchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {

@@ -35,8 +35,8 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             "value (#{id},#{name},#{imgUrl},#{teacherID},#{description})")
     int insertCurriculum(Curriculum curriculum);//加入课程
 
-    @Select("select * from curriculum limit #{currentPage},#{pageSize}")
-    List<Curriculum> selectPage(int currentPage,int pageSize);
+//    @Select("select * from curriculum limit #{currentPage},#{pageSize}")
+//    List<Curriculum> selectPage(int currentPage,int pageSize);
 
     @Select("select * from student_curriculumID where studentID=#{studentID}")
     List<Student_Curriculum> selectCurriculumByStudent(String id);

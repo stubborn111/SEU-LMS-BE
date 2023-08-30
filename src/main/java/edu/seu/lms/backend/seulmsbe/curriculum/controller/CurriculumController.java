@@ -15,11 +15,7 @@ import edu.seu.lms.backend.seulmsbe.dto.CurriculumDTO;
 import edu.seu.lms.backend.seulmsbe.request.CourseSearchRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -77,7 +73,8 @@ public class CurriculumController {
     }
 
     @GetMapping("/search")
-    public BaseResponse<CourseSearchDTO> courseSearch(CourseSearchRequest courseSearchRequest, HttpServletRequest request){
+    public BaseResponse<CourseSearchDTO> courseSearch(@RequestBody CourseSearchRequest courseSearchRequest, HttpServletRequest request){
+        System.out.println("flag");
         return iCurriculumService.searchCourse(courseSearchRequest,request);
     }
 }
