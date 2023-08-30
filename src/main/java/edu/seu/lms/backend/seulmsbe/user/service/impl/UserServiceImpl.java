@@ -128,4 +128,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return ResultUtils.success(1);
     }
 
+    @Override
+    public User getuser(String id) {
+        return userMapper.selectById(id);
+    }
+
 }

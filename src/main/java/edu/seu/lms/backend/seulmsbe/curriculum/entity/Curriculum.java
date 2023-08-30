@@ -34,6 +34,6 @@ public class Curriculum implements Serializable {
     private String teacherID;
 
     private String description;
-
+    private String semester;
 
 }

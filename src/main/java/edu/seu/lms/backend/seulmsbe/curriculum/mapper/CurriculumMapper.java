@@ -2,6 +2,8 @@ package edu.seu.lms.backend.seulmsbe.curriculum.mapper;
 
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import edu.seu.lms.backend.seulmsbe.curriculum.entity.Student_Curriculum;
+import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -33,4 +35,12 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             "value (#{id},#{name},#{imgUrl},#{teacherID},#{description})")
     int insertCurriculum(Curriculum curriculum);//加入课程
 
+    @Select("select * from curriculum limit #{currentPage},#{pageSize}")
+    List<Curriculum> selectPage(int currentPage,int pageSize);
+
+    @Select("select * from student_curriculumID where studentID=#{studentID}")
+    List<Student_Curriculum> selectCurriculumByStudent(String id);
+
+    @Select("select * from user where id=#{id}")
+    User selectUserById(String id);
 }
