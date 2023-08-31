@@ -1,16 +1,13 @@
 package edu.seu.lms.backend.seulmsbe.dto;
 
+import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import lombok.Data;
 
 import java.util.List;
 
-/**
- * @description:
- * @author: Yiqi Yu
- * @time: 2023/5/27 18:49
- */
+
 @Data
-public class OrderListDTO {
+public class MessageListDTO {
     private List<MessageDTO> list;
     private int totalNum;
 }

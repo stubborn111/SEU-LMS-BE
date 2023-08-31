@@ -5,11 +5,6 @@ import org.apache.ibatis.annotations.Select;
 
 import java.io.Serializable;
 
-/**
- * @description:
- * @author: Yiqi Yu
- * @time: 2023/5/7 20:04
- */
 @Data
 public class OrderAfterSalesServiceRequest implements Serializable {
 
