@@ -43,6 +43,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     StudentCurriculumMapper studentCurriculumMapper;
 
     @Override
+    //根据模糊搜索返回用户的课程信息
     public BaseResponse<CourseSearchDTO> searchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         //取出数据
@@ -77,6 +78,30 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     }
 
     @Override
+    //返回所有的课程信息
+    public BaseResponse<CourseListallDTO> listallCourse(HttpServletRequest request) {
+        List<Curriculum> curriculumList=curriculumMapper.findAll();
+        List<CourseData2DTO> DTO=new ArrayList<>();
+        CourseListallDTO courseListallDTO=new CourseListallDTO();
+        for(Curriculum tt:curriculumList)
+        {
+            CourseData2DTO temp=new CourseData2DTO();
+            temp.setCourseID(tt.getId());
+            temp.setCourseName(tt.getName());
+            temp.setDescription(tt.getDescription());
+            temp.setImgUrl(tt.getImgUrl());
+            temp.setSemester(tt.getSemester());
+            User teacher=userService.getuser(tt.getTeacherID());
+            temp.setTeacherName(teacher.getNickname());
+            temp.setTeacherAvatar(teacher.getAvatarUrl());
+            DTO.add(temp);
+        }
+        courseListallDTO.setList(DTO);
+        return ResultUtils.success(courseListallDTO);
+    }
+
+    @Override
+    //分页返回用户的课程信息
     public BaseResponse<CourseListDTO> listCourse(CourseListRequest courseListRequest, HttpServletRequest request) {
         //取出数据
         int pagesize = courseListRequest.getPageSize();
