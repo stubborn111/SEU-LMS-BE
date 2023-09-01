@@ -8,6 +8,7 @@ import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
 import edu.seu.lms.backend.seulmsbe.dto.CourseDataDTO;
 import edu.seu.lms.backend.seulmsbe.dto.CourseListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.CourseListallDTO;
 import edu.seu.lms.backend.seulmsbe.dto.CourseSearchDTO;
 import edu.seu.lms.backend.seulmsbe.request.CourseGetIntoRequest;
 import edu.seu.lms.backend.seulmsbe.request.CourseListRequest;
@@ -63,5 +64,10 @@ public class CurriculumController {
     //模糊搜索课程，显示课程的所有信息
     public BaseResponse<CourseSearchDTO> courseSearch(@RequestBody CourseSearchRequest courseSearchRequest, HttpServletRequest request){
         return iCurriculumService.searchCourse(courseSearchRequest,request);
+    }
+    @GetMapping("/listAll")
+    public BaseResponse<CourseListallDTO> courseListall(HttpServletRequest request)
+    {
+        return iCurriculumService.listallCourse(request);
     }
 }
