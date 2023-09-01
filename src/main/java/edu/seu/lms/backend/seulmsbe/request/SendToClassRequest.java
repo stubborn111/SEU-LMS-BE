@@ -1,14 +1,13 @@
 package edu.seu.lms.backend.seulmsbe.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-/**
- * @description:
- * @author: Yiqi Yu
- * @time: 2023/5/26 21:22
- */
+import java.util.Date;
+
+
 @Data
-public class OrderNegoRequest {
+public class SendToClassRequest {
     private String field;
     private String id;
 }

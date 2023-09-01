@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CourseListRequest {
-    private String userid;
+    private String userID;
     private int currentPage;
     private int pageSize;
 }

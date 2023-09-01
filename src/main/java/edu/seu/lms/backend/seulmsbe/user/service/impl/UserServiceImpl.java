@@ -115,12 +115,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, currentUser.getId())
                 .set(User::getNickname, userModifyRequest.getName())
-                .set(User::getAvatarUrl, userModifyRequest.getImgUrl())
+                .set(User::getAvatarUrl, userModifyRequest.getAvatar())
                 .set(User::getPhone, userModifyRequest.getPhone())
                 .set(User::getEmail,userModifyRequest.getEmail());
         update(updateWrapper);
         currentUser.setNickname(userModifyRequest.getName());
-        currentUser.setAvatarUrl(userModifyRequest.getImgUrl());
+        currentUser.setAvatarUrl(userModifyRequest.getAvatar());
         currentUser.setPhone(userModifyRequest.getPhone());
         currentUser.setEmail(userModifyRequest.getEmail());
         //更新cookie

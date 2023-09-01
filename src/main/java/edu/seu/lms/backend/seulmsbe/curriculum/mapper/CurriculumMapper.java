@@ -40,4 +40,22 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
 
     @Select("select * from user where id=#{id}")
     User selectUserById(String id);
+
+    @Select("SELECT * FROM curriculum,student_curriculum "+
+            "WHERE student_curriculum.studentID = #{userID}"+
+            " AND curriculum.name Like CONCAT('%',#{keyword},'%') "+
+            "AND student_curriculum.curriculumID = curriculum.ID "+
+            "LIMIT #{begin},#{size}")
+    List<Curriculum> studentSearch(String keyword,String userID,int begin,int size);
+    @Select("SELECT SUM(" +
+            "CASE "+
+            "WHEN student_curriculum.studentID = #{userID}"+
+            " AND curriculum.name Like CONCAT('%',#{keyword},'%') "+
+            "AND student_curriculum.curriculumID = curriculum.ID THEN "+
+            "1 "+
+            "else "+
+            "NULL "+
+            "end"+
+            ") FROM curriculum,student_curriculum ")
+    int getnum(String keyword,String userID);
 }

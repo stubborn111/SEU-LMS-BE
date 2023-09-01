@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -53,11 +54,12 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.like(Curriculum::getName,keyword);
 
-        Page<Curriculum> Page = curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
-        CourseSearchDTO dto = new CourseSearchDTO();
-        dto.setTotalNum((int)Page.getTotal());
+        List<Curriculum> tmp = curriculumMapper.studentSearch(keyword,currentUser.getId(),pagesize*(curPage-1),pagesize);
 
-        List<Curriculum> tmp = Page.getRecords();
+        CourseSearchDTO dto = new CourseSearchDTO();
+        //dto.setTotalNum((int)Page.getTotal());
+
+        //List<Curriculum> tmp = Page.getRecords();
         List<CourseData2DTO> DTO = new ArrayList<>();
 
         for(Curriculum tt : tmp){
@@ -73,6 +75,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             DTO.add(temp);
         }
         dto.setList(DTO);
+        dto.setTotalNum(curriculumMapper.getnum(keyword,currentUser.getId()));
         return ResultUtils.success(dto);
     }
 
@@ -80,7 +83,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     public BaseResponse<CourseListDTO> listCourse(CourseListRequest courseListRequest, HttpServletRequest request) {
         //取出数据
         int pagesize = courseListRequest.getPageSize();
-        String userid = courseListRequest.getUserid();
+        String userid = courseListRequest.getUserID();
         int curPage = courseListRequest.getCurrentPage();
         //构建查询体
         LambdaUpdateWrapper<StudentCurriculum> queryMapper = new LambdaUpdateWrapper<>();

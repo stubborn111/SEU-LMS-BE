@@ -10,7 +10,7 @@ import java.util.List;
  * @time: 2023/5/27 18:49
  */
 @Data
-public class OrderListDTO {
+public class NullDTO {
     private List<MessageDTO> list;
     private int totalNum;
 }

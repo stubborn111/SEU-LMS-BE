@@ -5,8 +5,6 @@ import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
 import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
-
-import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 
 /**

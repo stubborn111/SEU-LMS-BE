@@ -1,13 +1,16 @@
 package edu.seu.lms.backend.seulmsbe.message.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 
 /**
  * <p>
@@ -24,7 +27,7 @@ public class Message implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("ID")
+    @TableId(value = "ID",type = IdType.INPUT)
     private String id;
 
     @TableField("fromUserID")
@@ -38,6 +41,7 @@ public class Message implements Serializable {
     @TableField("isRead")
     private Integer isRead;
 
-    private LocalDate time;
+    @TableField("time")
+    private LocalDateTime time;
 
 }

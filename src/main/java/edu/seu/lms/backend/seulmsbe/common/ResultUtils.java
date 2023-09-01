@@ -1,10 +1,6 @@
 package edu.seu.lms.backend.seulmsbe.common;
 
-/**
- * @description:
- * @author: Yiqi Yu
- * @time: 2023/4/11 16:39
- */
+
 public class ResultUtils {
     /**
      * 成功

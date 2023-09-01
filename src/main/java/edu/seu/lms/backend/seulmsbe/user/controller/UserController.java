@@ -75,7 +75,7 @@ public class UserController {
      * @param request
      * @return
      */
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public BaseResponse<Integer> userLogout(HttpServletRequest request) {
         if (request == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);

@@ -35,7 +35,7 @@ public class CurriculumController {
     @Autowired
     private CurriculumMapper curriculumMapper;
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     public BaseResponse<CourseListDTO> findPage(@RequestBody CourseListRequest courseListRequest, HttpServletRequest request)
     {
         return iCurriculumService.listCourse(courseListRequest,request);

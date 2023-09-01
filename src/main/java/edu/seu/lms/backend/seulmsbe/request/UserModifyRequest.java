@@ -9,6 +9,6 @@ import lombok.Data;
 public class UserModifyRequest {
     private String phone;
     private String name;
-    private String imgUrl;
+    private String avatar;
     private String email;
 }
