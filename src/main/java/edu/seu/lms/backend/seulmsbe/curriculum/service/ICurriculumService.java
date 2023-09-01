@@ -3,11 +3,8 @@ package edu.seu.lms.backend.seulmsbe.curriculum.service;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListallDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseSearchDTO;
-import edu.seu.lms.backend.seulmsbe.request.CourseListRequest;
-import edu.seu.lms.backend.seulmsbe.request.CourseSearchRequest;
+import edu.seu.lms.backend.seulmsbe.dto.*;
+import edu.seu.lms.backend.seulmsbe.request.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -22,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 public interface ICurriculumService extends IService<Curriculum> {
     public BaseResponse<CourseSearchDTO> searchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request);
 
-    public BaseResponse<CourseListallDTO> listallCourse(HttpServletRequest request);
+    public BaseResponse<CourseData2DTO> listallCourse(CourseListAllRequest courseListAllRequest, HttpServletRequest request);
     public BaseResponse<CourseListDTO> listCourse(CourseListRequest courseListRequest,HttpServletRequest request);
+    public BaseResponse<CourseListforTeacherDTO> listforteacher(CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request);
+    public BaseResponse<CourseaddRequest> addCourse(CourseaddRequest courseaddRequest,HttpServletRequest request);
 }

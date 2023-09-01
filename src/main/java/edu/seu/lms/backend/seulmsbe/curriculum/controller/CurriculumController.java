@@ -6,13 +6,8 @@ import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
-import edu.seu.lms.backend.seulmsbe.dto.CourseDataDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListallDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseSearchDTO;
-import edu.seu.lms.backend.seulmsbe.request.CourseGetIntoRequest;
-import edu.seu.lms.backend.seulmsbe.request.CourseListRequest;
-import edu.seu.lms.backend.seulmsbe.request.CourseSearchRequest;
+import edu.seu.lms.backend.seulmsbe.dto.*;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -46,7 +41,7 @@ public class CurriculumController {
     //通过课程id查找课程的所有信息
     public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
     {
-        String id=courseGetIntoRequest.getId();
+        String id=courseGetIntoRequest.getCourseId();
         Curriculum curriculum=curriculumMapper.getCurriculumById(id);
         String courseId=curriculum.getTeacherID();
         User teacher=curriculumMapper.selectUserById(courseId);
@@ -66,8 +61,27 @@ public class CurriculumController {
         return iCurriculumService.searchCourse(courseSearchRequest,request);
     }
     @GetMapping("/listAll")
-    public BaseResponse<CourseListallDTO> courseListall(HttpServletRequest request)
+    public BaseResponse<CourseData2DTO> courseListall(@RequestBody CourseListAllRequest courseListAllRequest, HttpServletRequest request)
     {
-        return iCurriculumService.listallCourse(request);
+        return iCurriculumService.listallCourse(courseListAllRequest,request);
     }
+
+    @GetMapping("/list-for-teacehr")
+    public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request)
+    {
+        return iCurriculumService.listforteacher(couseListforTeacherRequest,request);
+    }
+
+    @GetMapping("/delete")
+    public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
+    {
+        curriculumMapper.deleteById(courseGetIntoRequest.getCourseId());
+        return ResultUtils.success(null);
+    }
+    @GetMapping("/addCourse")
+    public BaseResponse<CourseaddRequest> addCouse(@RequestBody CourseaddRequest courseaddRequest,HttpServletRequest request)
+    {
+        return iCurriculumService.addCourse(courseaddRequest,request);
+    }
+
 }

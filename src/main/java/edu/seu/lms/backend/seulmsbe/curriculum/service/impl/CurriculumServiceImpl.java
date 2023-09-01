@@ -11,9 +11,9 @@ import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.seu.lms.backend.seulmsbe.dto.*;
-import edu.seu.lms.backend.seulmsbe.request.CourseListRequest;
-import edu.seu.lms.backend.seulmsbe.request.CourseSearchRequest;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
+import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,9 +42,8 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     private IUserService userService;
     @Autowired
     StudentCurriculumMapper studentCurriculumMapper;
-
-    @Override
-    //根据模糊搜索返回用户的课程信息
+    @Autowired
+    UserMapper userMapper;
     public BaseResponse<CourseSearchDTO> searchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         //取出数据
@@ -81,27 +80,33 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     }
 
     @Override
-    //返回所有的课程信息
-    public BaseResponse<CourseListallDTO> listallCourse(HttpServletRequest request) {
-        List<Curriculum> curriculumList=curriculumMapper.findAll();
-        List<CourseData2DTO> DTO=new ArrayList<>();
-        CourseListallDTO courseListallDTO=new CourseListallDTO();
-        for(Curriculum tt:curriculumList)
-        {
-            CourseData2DTO temp=new CourseData2DTO();
-            temp.setCourseID(tt.getId());
-            temp.setCourseName(tt.getName());
-            temp.setDescription(tt.getDescription());
-            temp.setImgUrl(tt.getImgUrl());
-            temp.setSemester(tt.getSemester());
-            User teacher=userService.getuser(tt.getTeacherID());
-            temp.setTeacherName(teacher.getNickname());
-            temp.setTeacherAvatar(teacher.getAvatarUrl());
-            DTO.add(temp);
-        }
-        courseListallDTO.setList(DTO);
-        return ResultUtils.success(courseListallDTO);
+    public BaseResponse<CourseData2DTO> listallCourse(CourseListAllRequest courseListAllRequest, HttpServletRequest request) {
+        return null;
     }
+
+
+//    @Override
+//    //返回所有的课程信息
+//    public BaseResponse<CourseListallDTO> listallCourse(HttpServletRequest request) {
+//        List<Curriculum> curriculumList=curriculumMapper.findAll();
+//        List<CourseData2DTO> DTO=new ArrayList<>();
+//        CourseListallDTO courseListallDTO=new CourseListallDTO();
+//        for(Curriculum tt:curriculumList)
+//        {
+//            CourseData2DTO temp=new CourseData2DTO();
+//            temp.setCourseID(tt.getId());
+//            temp.setCourseName(tt.getName());
+//            temp.setDescription(tt.getDescription());
+//            temp.setImgUrl(tt.getImgUrl());
+//            temp.setSemester(tt.getSemester());
+//            User teacher=userService.getuser(tt.getTeacherID());
+//            temp.setTeacherName(teacher.getNickname());
+//            temp.setTeacherAvatar(teacher.getAvatarUrl());
+//            DTO.add(temp);
+//        }
+//        courseListallDTO.setList(DTO);
+//        return ResultUtils.success(courseListallDTO);
+//    }
 
     @Override
     //分页返回用户的课程信息
@@ -139,4 +144,41 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         dto.setList(DTO);
         return ResultUtils.success(dto);
     }
+
+    @Override
+    //通过教师的id找到他所有的课程，返回课程id和name
+    public BaseResponse<CourseListforTeacherDTO> listforteacher(CouseListforTeacherRequest couseListforTeacherRequest, HttpServletRequest request) {
+        String teacherId=couseListforTeacherRequest.getTeacherId();
+        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(Curriculum::getTeacherID,teacherId);
+        List<Curriculum> curriculumList=curriculumMapper.selectList(queryMapper);
+        List<CourseData3DTO> courseData3DTOList=new ArrayList<>();
+        CourseListforTeacherDTO courseListforTeacherDTO=new CourseListforTeacherDTO();
+        for(Curriculum curriculum:curriculumList)
+        {
+            CourseData3DTO courseData3DTO=new CourseData3DTO();
+            courseData3DTO.setCourseId(curriculum.getId());
+            courseData3DTO.setCourseName(curriculum.getName());
+            courseData3DTOList.add(courseData3DTO);
+        }
+        courseListforTeacherDTO.setTabList(courseData3DTOList);
+        return ResultUtils.success(courseListforTeacherDTO);
+    }
+
+    @Override
+    public BaseResponse<CourseaddRequest> addCourse(CourseaddRequest courseaddRequest, HttpServletRequest request) {
+        Curriculum curriculum=new Curriculum();
+        curriculum.setId(UUID.randomUUID().toString().substring(0,7));
+        curriculum.setName(courseaddRequest.getCourseName());
+        curriculum.setSemester(courseaddRequest.getSemester());
+        curriculum.setImgUrl(courseaddRequest.getImgUrl());
+        String teacherName=courseaddRequest.getTeacherName();
+        LambdaUpdateWrapper<User> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(User::getNickname,teacherName);
+        User teacher=userMapper.selectOne(queryMapper);
+        curriculum.setTeacherID(teacher.getId());
+        curriculumMapper.insertCurriculum(curriculum);
+        return ResultUtils.success(null);
+    }
+
 }

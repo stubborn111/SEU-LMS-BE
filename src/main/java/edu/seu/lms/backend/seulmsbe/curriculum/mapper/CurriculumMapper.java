@@ -27,12 +27,10 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
     @Select("select * from curriculum where id=#{id}")
     Curriculum getCurriculumById(String id);//通过课程id获得课程
 
-    @Delete("delete from curriculum where id=#{id}")
-    int deleteCurriculumById(String id);//通过课程id删除课程
 
-    @Insert("insert into curriculum(id,name,imgUrl,teacherID,description)" +
-            "value (#{id},#{name},#{imgUrl},#{teacherID},#{description})")
-    int insertCurriculum(Curriculum curriculum);//加入课程
+    @Insert("insert into curriculum(id,name,imgUrl,teacherID,description,semester)" +
+            "value (#{id},#{name},#{imgUrl},#{teacherID},#{description},#{semester})")
+    void insertCurriculum(Curriculum curriculum);//加入课程
 
 //    @Select("select * from curriculum limit #{currentPage},#{pageSize}")
 //    List<Curriculum> selectPage(int currentPage,int pageSize);
@@ -46,6 +44,7 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             " AND curriculum.name Like CONCAT('%',#{keyword},'%') "+
             "AND student_curriculum.curriculumID = curriculum.ID "+
             "LIMIT #{begin},#{size}")
+    //分页模糊查询登录学生的课程
     List<Curriculum> studentSearch(String keyword,String userID,int begin,int size);
     @Select("SELECT SUM(" +
             "CASE "+
@@ -57,5 +56,6 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             "NULL "+
             "end"+
             ") FROM curriculum,student_curriculum ")
+    //返回登录学生所模糊搜索的课程总数
     int getnum(String keyword,String userID);
 }
