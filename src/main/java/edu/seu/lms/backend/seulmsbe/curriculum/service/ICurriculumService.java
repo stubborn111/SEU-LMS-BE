@@ -17,10 +17,10 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2023-08-25
  */
 public interface ICurriculumService extends IService<Curriculum> {
-    public BaseResponse<CourseSearchDTO> searchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request);
+    public BaseResponse<CourseSearchDTO> studentsearchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request);
 
-    public BaseResponse<CourseData2DTO> listallCourse(CourseListAllRequest courseListAllRequest, HttpServletRequest request);
-    public BaseResponse<CourseListDTO> listCourse(CourseListRequest courseListRequest,HttpServletRequest request);
+    public BaseResponse<CourseListDTO> studentListCourse(CoursePageRequest coursePageRequest, HttpServletRequest request);
+    //public BaseResponse<CourseListDTO> listCourse(CourseListRequest courseListRequest,HttpServletRequest request);
     public BaseResponse<CourseListforTeacherDTO> listforteacher(CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request);
     public BaseResponse<CourseaddRequest> addCourse(CourseaddRequest courseaddRequest,HttpServletRequest request);
 }

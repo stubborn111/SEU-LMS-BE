@@ -31,10 +31,11 @@ public class CurriculumController {
     @Autowired
     private CurriculumMapper curriculumMapper;
 
-    @PostMapping("/list")
-    public BaseResponse<CourseListDTO> findPage(@RequestBody CourseListRequest courseListRequest, HttpServletRequest request)
+    @PostMapping("/student-list")
+    //未测试
+    public BaseResponse<CourseListDTO> findPage(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request)
     {
-        return iCurriculumService.listCourse(courseListRequest,request);
+        return iCurriculumService.studentListCourse(coursePageRequest,request);
     }
 
     @GetMapping("/get-into")
@@ -55,17 +56,11 @@ public class CurriculumController {
         System.out.println(curriculumMapper.selectById("1"));
     }
 
-    @GetMapping("/search")
+    @GetMapping("/student-search")
     //模糊搜索课程，显示课程的所有信息
     public BaseResponse<CourseSearchDTO> courseSearch(@RequestBody CourseSearchRequest courseSearchRequest, HttpServletRequest request){
-        return iCurriculumService.searchCourse(courseSearchRequest,request);
+        return iCurriculumService.studentsearchCourse(courseSearchRequest,request);
     }
-    @GetMapping("/listAll")
-    public BaseResponse<CourseData2DTO> courseListall(@RequestBody CourseListAllRequest courseListAllRequest, HttpServletRequest request)
-    {
-        return iCurriculumService.listallCourse(courseListAllRequest,request);
-    }
-
     @GetMapping("/list-for-teacehr")
     public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request)
     {

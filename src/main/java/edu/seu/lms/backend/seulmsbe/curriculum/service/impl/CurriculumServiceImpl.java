@@ -44,7 +44,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     StudentCurriculumMapper studentCurriculumMapper;
     @Autowired
     UserMapper userMapper;
-    public BaseResponse<CourseSearchDTO> searchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
+    public BaseResponse<CourseSearchDTO> studentsearchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         //取出数据
         int pagesize = courseSearchRequest.getPageSize();
@@ -79,42 +79,17 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         return ResultUtils.success(dto);
     }
 
-    @Override
-    public BaseResponse<CourseData2DTO> listallCourse(CourseListAllRequest courseListAllRequest, HttpServletRequest request) {
-        return null;
-    }
 
 
-//    @Override
-//    //返回所有的课程信息
-//    public BaseResponse<CourseListallDTO> listallCourse(HttpServletRequest request) {
-//        List<Curriculum> curriculumList=curriculumMapper.findAll();
-//        List<CourseData2DTO> DTO=new ArrayList<>();
-//        CourseListallDTO courseListallDTO=new CourseListallDTO();
-//        for(Curriculum tt:curriculumList)
-//        {
-//            CourseData2DTO temp=new CourseData2DTO();
-//            temp.setCourseID(tt.getId());
-//            temp.setCourseName(tt.getName());
-//            temp.setDescription(tt.getDescription());
-//            temp.setImgUrl(tt.getImgUrl());
-//            temp.setSemester(tt.getSemester());
-//            User teacher=userService.getuser(tt.getTeacherID());
-//            temp.setTeacherName(teacher.getNickname());
-//            temp.setTeacherAvatar(teacher.getAvatarUrl());
-//            DTO.add(temp);
-//        }
-//        courseListallDTO.setList(DTO);
-//        return ResultUtils.success(courseListallDTO);
-//    }
 
     @Override
     //分页返回用户的课程信息
-    public BaseResponse<CourseListDTO> listCourse(CourseListRequest courseListRequest, HttpServletRequest request) {
+    public BaseResponse<CourseListDTO> studentListCourse(CoursePageRequest coursePageRequest, HttpServletRequest request) {
         //取出数据
-        int pagesize = courseListRequest.getPageSize();
-        String userid = courseListRequest.getUserID();
-        int curPage = courseListRequest.getCurrentPage();
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        int pagesize = coursePageRequest.getPageSize();
+        String userid = currentUser.getId();
+        int curPage = coursePageRequest.getCurrentPage();
         //构建查询体
         LambdaUpdateWrapper<StudentCurriculum> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.eq(StudentCurriculum::getStudentID,userid);
