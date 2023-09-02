@@ -37,6 +37,12 @@ public class CurriculumController {
     {
         return iCurriculumService.studentListCourse(coursePageRequest,request);
     }
+    @GetMapping("/teacher-list")
+    public BaseResponse<CourseListDTO> teacherlist(@RequestBody CourseListRequest courseListRequest,HttpServletRequest request)
+    {
+        return iCurriculumService.teacehrList(courseListRequest,request);
+    }
+
 
     @GetMapping("/get-into")
     //通过课程id查找课程的所有信息

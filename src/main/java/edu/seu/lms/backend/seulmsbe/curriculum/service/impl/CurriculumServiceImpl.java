@@ -156,4 +156,35 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         return ResultUtils.success(null);
     }
 
+    @Override
+    public BaseResponse<CourseListDTO> teacehrList(CourseListRequest courseListRequest, HttpServletRequest request) {
+        int pagesize =courseListRequest.getPageSize();
+        String userid = courseListRequest.getUserID();
+        int curPage = courseListRequest.getCurrentPage();
+        //构建查询体
+        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(Curriculum::getTeacherID,userid);
+
+        Page<Curriculum> Page = curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
+        List<Curriculum> curriculumList=Page.getRecords();
+        CourseListDTO DTO=new CourseListDTO();
+        List<CourseData2DTO> dto=new ArrayList<>();
+        DTO.setTotalNum((int)Page.getTotal());
+        for(Curriculum tt:curriculumList)
+        {
+            CourseData2DTO courseData2DTO=new CourseData2DTO();
+            courseData2DTO.setCourseID(tt.getId());
+            courseData2DTO.setCourseName(tt.getName());
+            courseData2DTO.setDescription(tt.getDescription());
+            courseData2DTO.setImgUrl(tt.getImgUrl());
+            courseData2DTO.setSemester(tt.getSemester());
+            User teacher=userService.getuser(tt.getTeacherID());
+            courseData2DTO.setTeacherName(teacher.getNickname());
+            courseData2DTO.setTeacherAvatar(teacher.getAvatarUrl());
+            dto.add(courseData2DTO);
+        }
+        DTO.setList(dto);
+        return ResultUtils.success(DTO);
+    }
+
 }

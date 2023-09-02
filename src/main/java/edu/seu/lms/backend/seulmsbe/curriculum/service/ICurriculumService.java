@@ -23,4 +23,5 @@ public interface ICurriculumService extends IService<Curriculum> {
     //public BaseResponse<CourseListDTO> listCourse(CourseListRequest courseListRequest,HttpServletRequest request);
     public BaseResponse<CourseListforTeacherDTO> listforteacher(CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request);
     public BaseResponse<CourseaddRequest> addCourse(CourseaddRequest courseaddRequest,HttpServletRequest request);
+    public  BaseResponse<CourseListDTO> teacehrList(CourseListRequest courseListRequest,HttpServletRequest request);
 }
