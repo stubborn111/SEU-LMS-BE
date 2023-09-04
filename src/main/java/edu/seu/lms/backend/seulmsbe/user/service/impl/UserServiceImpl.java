@@ -121,7 +121,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public BaseResponse<Integer> modify(UserModifyRequest userModifyRequest, HttpServletRequest request) {
+    public BaseResponse<Integer> modify(UserModifyRequest1 userModifyRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, currentUser.getId())

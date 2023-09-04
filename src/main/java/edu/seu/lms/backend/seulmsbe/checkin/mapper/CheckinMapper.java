@@ -17,7 +17,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN checkin.syllabusID = #{syllabusID}"+
-            " AND checkin.position = '已签到' THEN "+
+            " AND checkin.isCheckedIn = 1 THEN "+
             "1 "+
             "else "+
             "NULL "+
@@ -27,7 +27,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN checkin.syllabusID = #{syllabusID}"+
-            " AND checkin.position = '未签到' THEN "+
+            " AND checkin.isCheckedIn = 0 THEN "+
             "1 "+
             "else "+
             "NULL "+
