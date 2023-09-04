@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.user.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * <p>

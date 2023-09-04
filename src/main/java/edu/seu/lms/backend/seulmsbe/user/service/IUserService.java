@@ -7,6 +7,7 @@ import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
 import edu.seu.lms.backend.seulmsbe.request.UserListforAdminRequest;
 import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
 import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest1;
+import edu.seu.lms.backend.seulmsbe.request.UserPasswordRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,5 +30,6 @@ public interface IUserService extends IService<User> {
     public BaseResponse<Integer> modify(UserModifyRequest1 userModifyRequest1, HttpServletRequest request);
     public User getuser(String id);
     public BaseResponse<UserListTeacherDTO> listTeacher(HttpServletRequest request);
+    public BaseResponse<Integer> modifyPassword(UserPasswordRequest userPasswordRequest,HttpServletRequest request);
     public BaseResponse<ListforAdminDTO> listforadmin(UserListforAdminRequest userListforAdminRequest, HttpServletRequest request);
 }

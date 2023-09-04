@@ -169,6 +169,11 @@ public class UserController {
         return userService.listforadmin(userListforAdminRequest,request);
     }
 
+    @PostMapping("change-psw")
+    public BaseResponse<Integer> modifyPassword(@RequestBody UserPasswordRequest userPasswordRequest, HttpServletRequest request)
+    {
+        return userService.modifyPassword(userPasswordRequest,request);
+    }
     private UserDTO toUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setPhone(user.getPhone());

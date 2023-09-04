@@ -12,10 +12,7 @@ import edu.seu.lms.backend.seulmsbe.dto.User.ListforAdminDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.TeacherDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
 import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
-import edu.seu.lms.backend.seulmsbe.request.UserListforAdminRequest;
-import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
-import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest1;
-import edu.seu.lms.backend.seulmsbe.request.UserModifyRequset;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
@@ -121,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public BaseResponse<Integer> modify(UserModifyRequest userModifyRequest, HttpServletRequest request) {
+    public BaseResponse<Integer> modify(UserModifyRequest1 userModifyRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.eq(User::getId, currentUser.getId())
@@ -160,6 +157,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         DTO.setTeacherList(dto);
         return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<Integer> modifyPassword(UserPasswordRequest userPasswordRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        System.out.println(userPasswordRequest);
+        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(User::getId,currentUser.getId())
+                .set(User::getPsw,userPasswordRequest.getPassword());
+        update(updateWrapper);
+        currentUser.setPsw(userPasswordRequest.getPassword());
+        request.getSession().setAttribute(USER_LOGIN_STATE, currentUser);
+        if(currentUser.getPsw().equals(userPasswordRequest.getPassword()))
+        {
+            return ResultUtils.success(1);
+        }else
+        {
+            return ResultUtils.success(-1);
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.curriculum.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
@@ -245,6 +246,47 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             dto.add(courseData2DTO);
         }
         DTO.setList(dto);
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseNameDTO> getCourseName(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userId=currentUser.getId();
+        LambdaUpdateWrapper<StudentCurriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(StudentCurriculum::getStudentID,userId);
+        List<StudentCurriculum> list=studentCurriculumMapper.selectList(queryMapper);
+        for(StudentCurriculum tt:list)
+        {
+            if(tt.getCurriculumID().equals(courseGetIntoRequest.getCourseID()))
+            {
+                CourseNameDTO DTO=new CourseNameDTO();
+                DTO.setCourseName(curriculumMapper.getCurriculumById(tt.getCurriculumID()).getName());
+                return ResultUtils.success(DTO);
+            }
+        }
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest, HttpServletRequest request) {
+        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(Curriculum::getId,courseModifyRequest.getCourseID())
+                .set(Curriculum::getName,courseModifyRequest.getCourseName())
+                .set(Curriculum::getSemester,courseModifyRequest.getSemester())
+                .set(Curriculum::getImgUrl,courseModifyRequest.getImgUrl());
+        update(queryMapper);
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<CourseTeacherDTO> getTeacherInfo(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+        Curriculum curriculum=curriculumMapper.getCurriculumById(courseGetIntoRequest.getCourseID());
+        String teacherID=curriculum.getTeacherID();
+        User user=userService.getuser(teacherID);
+        CourseTeacherDTO DTO=new CourseTeacherDTO();
+        DTO.setTeacherEmail(user.getEmail());
+        DTO.setTeacherPhone(user.getPhone());
         return ResultUtils.success(DTO);
     }
 
