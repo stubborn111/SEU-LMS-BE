@@ -3,9 +3,10 @@ package edu.seu.lms.backend.seulmsbe.curriculum.service;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListforTeacherDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseSearchDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Course.CourseListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Course.CourseListDescriptionDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Course.CourseListforTeacherDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Course.CourseSearchDTO;
 import edu.seu.lms.backend.seulmsbe.request.*;
 
 import javax.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package edu.seu.lms.backend.seulmsbe.dto;
+package edu.seu.lms.backend.seulmsbe.dto.Course;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

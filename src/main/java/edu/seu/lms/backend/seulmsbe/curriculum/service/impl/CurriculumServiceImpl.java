@@ -1,6 +1,5 @@
 package edu.seu.lms.backend.seulmsbe.curriculum.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
@@ -11,7 +10,7 @@ import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import edu.seu.lms.backend.seulmsbe.dto.*;
+import edu.seu.lms.backend.seulmsbe.dto.Course.*;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;

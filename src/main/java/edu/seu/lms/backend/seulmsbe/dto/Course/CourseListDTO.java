@@ -1,11 +1,11 @@
-package edu.seu.lms.backend.seulmsbe.dto;
+package edu.seu.lms.backend.seulmsbe.dto.Course;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class CourseSearchDTO {
+public class CourseListDTO {
     private List<CourseData2DTO> list;
     private int totalNum;
 
