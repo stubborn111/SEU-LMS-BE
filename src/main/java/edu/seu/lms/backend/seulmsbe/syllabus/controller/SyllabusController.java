@@ -30,7 +30,7 @@ public class SyllabusController {
     @Autowired
     private ISyllabusService syllabusService;
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     public BaseResponse<SyllabusListDTO> listSyllabus(@RequestBody SyllabusListRequest syllabusListRequest, HttpServletRequest request){
         return syllabusService.listSyllabus(syllabusListRequest,request);
     }

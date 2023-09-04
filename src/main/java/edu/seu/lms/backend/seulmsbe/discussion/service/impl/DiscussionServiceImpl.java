@@ -8,11 +8,14 @@ import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import edu.seu.lms.backend.seulmsbe.discussion.mapper.DiscussionMapper;
 import edu.seu.lms.backend.seulmsbe.discussion.service.IDiscussionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.seu.lms.backend.seulmsbe.dto.DiscussionDTO;
+import edu.seu.lms.backend.seulmsbe.dto.DiscussionListAllDTO;
 import edu.seu.lms.backend.seulmsbe.dto.DiscussionListDTO;
 import edu.seu.lms.backend.seulmsbe.request.DiscussionListRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplyListRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplySendRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
+import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -39,6 +43,8 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
 
     @Autowired
     private DiscussionMapper discussionMapper;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public BaseResponse<?> listall(DiscussionListRequest discussionListRequest, HttpServletRequest request) {
 
@@ -49,18 +55,32 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         int curPage = discussionListRequest.getCurrentPage();
 
         LambdaUpdateWrapper<Discussion> queryMapper = new LambdaUpdateWrapper<>();
-        queryMapper.eq(Discussion::getFromUserID,currentUser.getId());
+        //queryMapper.eq(Discussion::getFromUserID,currentUser.getId());
         queryMapper.eq(Discussion::getCurriculumID,courseid);
         queryMapper.isNull(Discussion::getReplyID);
 
         Page<Discussion> discussionPage = discussionMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
         //DiscussionListDTO dto = new DiscussionListDTO(discussionPage,discussionPage.getTotal());
-        DiscussionListDTO dto = new DiscussionListDTO();
+        DiscussionListAllDTO dto = new DiscussionListAllDTO();
         dto.setTotalNum((int)discussionPage.getTotal());
-        dto.setList(discussionPage.getRecords());
+        List<Discussion> temp = discussionPage.getRecords();
+        List<DiscussionDTO> tt = temp.stream().map(Discussion->{return todiscussionDTO(Discussion);}).collect(Collectors.toList());
+        dto.setList(tt);
         return ResultUtils.success(dto);
     }
-
+    private DiscussionDTO todiscussionDTO(Discussion tmp){
+        DiscussionDTO temp = new DiscussionDTO();
+        temp.setDiscussionID(tmp.getId());
+        temp.setTitle(tmp.getTitle());
+        if (tmp.getTime()!=null) {
+            temp.setTime(tmp.getTime().toString());
+        }
+        temp.setContent(tmp.getContent());
+        User user = userMapper.selectById(tmp.getFromUserID());
+        temp.setFromUserName(user.getNickname());
+        temp.setFromUserAvatar(user.getAvatarUrl());
+        return temp;
+    }
     @Override
     public BaseResponse<DiscussionListDTO> listreply(ReplyListRequest replyListRequest, HttpServletRequest request) {
 
@@ -79,6 +99,7 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         DiscussionListDTO dto = new DiscussionListDTO();
         dto.setTotalNum((int)discussionPage.getTotal());
         dto.setList(discussionPage.getRecords());
+
         return ResultUtils.success(dto);
     }
 

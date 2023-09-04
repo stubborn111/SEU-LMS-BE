@@ -28,12 +28,12 @@ import javax.servlet.http.HttpServletRequest;
 public class DiscussionController {
     @Autowired
     private IDiscussionService discussionService;
-    @GetMapping("/list")
+    @PostMapping("/list")
     public BaseResponse<?> listdiscussion(@RequestBody DiscussionListRequest discussionListRequest, HttpServletRequest request){
         return discussionService.listall(discussionListRequest,request);
     }
 
-    @GetMapping("/reply-list")
+    @PostMapping("/reply-list")
     public BaseResponse<DiscussionListDTO> listreply(@RequestBody ReplyListRequest replyListRequest, HttpServletRequest request){
         return discussionService.listreply(replyListRequest,request);
     }
