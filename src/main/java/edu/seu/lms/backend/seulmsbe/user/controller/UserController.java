@@ -3,19 +3,17 @@ package edu.seu.lms.backend.seulmsbe.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
-import edu.seu.lms.backend.seulmsbe.dto.UserDTO;
-import edu.seu.lms.backend.seulmsbe.dto.UserListTeacherDTO;
+import edu.seu.lms.backend.seulmsbe.dto.User.ListforAdminDTO;
+import edu.seu.lms.backend.seulmsbe.dto.User.UserDTO;
+import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
 import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
-import lombok.Data;
-import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -92,13 +90,13 @@ public class UserController {
 
     /**
      * 修改用户信息
-     * @param userModifyRequest
+     * @param userModifyRequest1
      * @param request
      * @return
      */
     @PostMapping("/modify")
-    public BaseResponse<Integer> userModify(@RequestBody UserModifyRequest userModifyRequest, HttpServletRequest request) {
-        return userService.modify(userModifyRequest, request);
+    public BaseResponse<Integer> userModify(@RequestBody UserModifyRequest1 userModifyRequest1, HttpServletRequest request) {
+        return userService.modify(userModifyRequest1, request);
     }
 
     /**
@@ -164,6 +162,11 @@ public class UserController {
         updateWrapper.eq(User::getId,userModifyRequset.getKey());
         userMapper.update(user,updateWrapper);
         return ResultUtils.success(null);
+    }
+    @PostMapping("list-for-admin")
+    public BaseResponse<ListforAdminDTO> ListforAdmin(@RequestBody UserListforAdminRequest userListforAdminRequest,HttpServletRequest request)
+    {
+        return userService.listforadmin(userListforAdminRequest,request);
     }
 
     private UserDTO toUserDTO(User user) {

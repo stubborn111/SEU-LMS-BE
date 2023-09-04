@@ -2,16 +2,20 @@ package edu.seu.lms.backend.seulmsbe.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
-import edu.seu.lms.backend.seulmsbe.dto.TeacherDTO;
-import edu.seu.lms.backend.seulmsbe.dto.UserListTeacherDTO;
+import edu.seu.lms.backend.seulmsbe.dto.User.ListforAdminDTO;
+import edu.seu.lms.backend.seulmsbe.dto.User.TeacherDTO;
+import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
 import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
+import edu.seu.lms.backend.seulmsbe.request.UserListforAdminRequest;
 import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
-import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest;
+import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest1;
+import edu.seu.lms.backend.seulmsbe.request.UserModifyRequset;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
@@ -19,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-//import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
@@ -156,6 +159,45 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             dto.add(teacherDTO);
         }
         DTO.setTeacherList(dto);
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<ListforAdminDTO> listforadmin(UserListforAdminRequest userListforAdminRequest, HttpServletRequest request) {
+        int pagesize = userListforAdminRequest.getPageSize();
+        int curPage = userListforAdminRequest.getCurrentPage();
+        String id=userListforAdminRequest.getId();
+        String nickName= userListforAdminRequest.getNickName();
+        LambdaUpdateWrapper<User> queryMapper = new LambdaUpdateWrapper<>();
+        if(id==null&&nickName!=null)
+        {
+            queryMapper.like(User::getNickname,nickName);
+        }else if(id!=null&&nickName==null)
+        {
+            queryMapper.like(User::getId,id);
+        } else if (id!=null&&nickName!=null) {
+            queryMapper.like(User::getId,id)
+                    .like(User::getNickname,nickName);
+        }
+
+        Page<User> Page=userMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
+        ListforAdminDTO DTO=new ListforAdminDTO();
+        DTO.setTotalnum((int)Page.getTotal());
+        List<User> users=Page.getRecords();
+        List<UserModifyRequset> dto=new ArrayList<>();
+        for(User tt:users)
+        {
+            UserModifyRequset userModifyRequset=new UserModifyRequset();
+            userModifyRequset.setKey(tt.getId());
+            userModifyRequset.setID(tt.getId());
+            userModifyRequset.setEmail(tt.getEmail());
+            userModifyRequset.setAccess(tt.getAccess());
+            userModifyRequset.setPhone(tt.getPhone());
+            userModifyRequset.setAvatarUrl(tt.getAvatarUrl());
+            userModifyRequset.setNickName(tt.getNickname());
+            dto.add(userModifyRequset);
+        }
+        DTO.setList(dto);
         return ResultUtils.success(DTO);
     }
 
