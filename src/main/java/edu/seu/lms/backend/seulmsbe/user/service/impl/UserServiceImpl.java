@@ -2,10 +2,13 @@ package edu.seu.lms.backend.seulmsbe.user.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.dto.TeacherDTO;
+import edu.seu.lms.backend.seulmsbe.dto.UserListTeacherDTO;
 import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
 import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
 import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest;
@@ -16,8 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import javax.jws.soap.SOAPBinding;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 import static com.sun.javafx.font.FontResource.SALT;
 /**
@@ -131,6 +139,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public User getuser(String id) {
         return userMapper.selectById(id);
+    }
+
+    @Override
+    public BaseResponse<UserListTeacherDTO> listTeacher(HttpServletRequest request) {
+        LambdaUpdateWrapper<User> updateWrapper=new LambdaUpdateWrapper<>();
+        updateWrapper.eq(User::getAccess,2);
+        List<User> users=userMapper.selectList(updateWrapper);
+        UserListTeacherDTO DTO=new UserListTeacherDTO();
+        List<TeacherDTO> dto=new ArrayList<>();
+        for(User tt:users)
+        {
+            TeacherDTO teacherDTO=new TeacherDTO();
+            teacherDTO.setTeacherID(tt.getId());
+            teacherDTO.setTeacherName(tt.getNickname());
+            dto.add(teacherDTO);
+        }
+        DTO.setTeacherList(dto);
+        return ResultUtils.success(DTO);
     }
 
 }

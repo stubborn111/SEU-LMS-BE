@@ -54,7 +54,6 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         //构建查询体
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.like(Curriculum::getName,keyword);
-
         List<Curriculum> tmp = curriculumMapper.studentSearch(keyword,currentUser.getId(),pagesize*(curPage-1),pagesize);
 
         CourseSearchDTO dto = new CourseSearchDTO();
