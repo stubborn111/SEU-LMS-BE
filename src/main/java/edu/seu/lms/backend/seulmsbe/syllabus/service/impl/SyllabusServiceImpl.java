@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
-import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
-import edu.seu.lms.backend.seulmsbe.dto.DiscussionListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusListRequest;

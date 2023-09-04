@@ -21,16 +21,14 @@ public class Assignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("studentID")
+    @TableId("ID")
+    private String ID;
     private String studentID;
-
+    private String syllabusID;
     private String describe;
-
+    private String name;
     private Float score;
-
+    private String type;
     private String file;
-
     private Integer status;
-
-
 }

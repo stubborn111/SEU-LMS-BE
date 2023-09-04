@@ -32,12 +32,12 @@ public class CurriculumController {
     private CurriculumMapper curriculumMapper;
 
     @PostMapping("/student-list")
-    //1
+    //未测试1
     public BaseResponse<CourseListDTO> findPage(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request)
     {
         return iCurriculumService.studentListCourse(coursePageRequest,request);
     }
-    @PostMapping("/teacher-list")
+    @GetMapping("/teacher-list")
     //1
     public BaseResponse<CourseListDTO> teacherlist(@RequestBody CourseListRequest courseListRequest,HttpServletRequest request)
     {
@@ -45,9 +45,9 @@ public class CurriculumController {
     }
 
 
-    @PostMapping("/get-into")
+    @GetMapping("/get-into")
     //通过课程id查找课程的所有信息1
-    public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
+    public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         String id=courseGetIntoRequest.getCourseId();
         Curriculum curriculum=curriculumMapper.getCurriculumById(id);
@@ -57,47 +57,35 @@ public class CurriculumController {
         return ResultUtils.success(courseDataDTO);
     }
 
-    @PostMapping("/test")
+    @GetMapping("/test")
     public void test( )
     {
         System.out.println(curriculumMapper.selectById("1"));
     }
 
-    @PostMapping("/student-search")
+    @GetMapping("/student-search")
     //模糊搜索课程，显示课程的所有信息1
     public BaseResponse<CourseSearchDTO> courseSearch(@RequestBody CourseSearchRequest courseSearchRequest, HttpServletRequest request){
         return iCurriculumService.studentsearchCourse(courseSearchRequest,request);
     }
-    @PostMapping("teacher-search")
-    public BaseResponse<CourseListDTO> courseTeacherSearch(@RequestBody CourseSearchRequest courseSearchRequest,HttpServletRequest request)
-    {
-        return iCurriculumService.teacherSearch(courseSearchRequest,request);
-    }
-
-    @PostMapping("/list-for-teacehr")
-    public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request)
+    @GetMapping("/list-for-teacehr")
+    public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest, HttpServletRequest request)
     {
         return iCurriculumService.listforteacher(couseListforTeacherRequest,request);
     }
 
-    @PostMapping("/delete")
+    @GetMapping("/delete")
     //1
-    public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
+    public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         curriculumMapper.deleteById(courseGetIntoRequest.getCourseId());
         return ResultUtils.success(null);
     }
-    @PostMapping("/add")
+    @GetMapping("/addCourse")
     //1
     public BaseResponse<CourseaddRequest> addCouse(@RequestBody CourseaddRequest courseaddRequest,HttpServletRequest request)
     {
         return iCurriculumService.addCourse(courseaddRequest,request);
-    }
-    @PostMapping("/list-description")
-    //未测试
-    public BaseResponse<CourseListDescriptionDTO> listDescription(HttpServletRequest request)
-    {
-        return iCurriculumService.listDescription(request);
     }
 
 

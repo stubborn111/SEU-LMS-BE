@@ -8,22 +8,21 @@ import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import edu.seu.lms.backend.seulmsbe.discussion.mapper.DiscussionMapper;
 import edu.seu.lms.backend.seulmsbe.discussion.service.IDiscussionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import edu.seu.lms.backend.seulmsbe.dto.DiscussionDTO;
-import edu.seu.lms.backend.seulmsbe.dto.DiscussionListAllDTO;
-import edu.seu.lms.backend.seulmsbe.dto.DiscussionListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Discussion.Discussion2DTO;
+import edu.seu.lms.backend.seulmsbe.dto.Discussion.DiscussionDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Discussion.DiscussionListAllDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Discussion.DiscussionListDTO;
 import edu.seu.lms.backend.seulmsbe.request.DiscussionListRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplyListRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplySendRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -98,11 +97,25 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         //DiscussionListDTO dto = new DiscussionListDTO(discussionPage,discussionPage.getTotal());
         DiscussionListDTO dto = new DiscussionListDTO();
         dto.setTotalNum((int)discussionPage.getTotal());
-        dto.setList(discussionPage.getRecords());
+        dto.setList(discussionPage.getRecords().stream().map(Discussion->{
+            return todiscussion2DTO(Discussion);
+        }).collect(Collectors.toList()));
 
         return ResultUtils.success(dto);
     }
-
+    private Discussion2DTO todiscussion2DTO(Discussion tmp){
+        Discussion2DTO temp = new Discussion2DTO();
+        temp.setReplyID(tmp.getReplyID());
+        temp.setTitle(tmp.getTitle());
+        if (tmp.getTime()!=null) {
+            temp.setTime(tmp.getTime().toString());
+        }
+        temp.setContent(tmp.getContent());
+        User user = userMapper.selectById(tmp.getFromUserID());
+        temp.setFromUserName(user.getNickname());
+        temp.setFromUserAvatar(user.getAvatarUrl());
+        return temp;
+    }
     @Override
     public BaseResponse<String> replysend(ReplySendRequest replySendRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);

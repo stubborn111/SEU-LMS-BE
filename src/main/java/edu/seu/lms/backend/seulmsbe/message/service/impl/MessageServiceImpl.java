@@ -2,15 +2,11 @@ package edu.seu.lms.backend.seulmsbe.message.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
-import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
-import edu.seu.lms.backend.seulmsbe.dto.CourseData2DTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseSearchDTO;
 import edu.seu.lms.backend.seulmsbe.dto.MessageDTO;
 import edu.seu.lms.backend.seulmsbe.dto.MessageListDTO;
 import edu.seu.lms.backend.seulmsbe.message.entity.Message;
@@ -27,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +79,8 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             temp.setFromUserAccess(user.getAccess()==0?"admin":"teacher");
             temp.setFromUserName(user.getNickname());
             temp.setFromUserAvatar(user.getAvatarUrl());
-            temp.setTime(tt.getTime().toString());
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            temp.setTime(formatter.format(tt.getTime()));
             temp.setIsRead(tt.getIsRead()==0?Boolean.FALSE:Boolean.TRUE);
             DTO.add(temp);
         }
