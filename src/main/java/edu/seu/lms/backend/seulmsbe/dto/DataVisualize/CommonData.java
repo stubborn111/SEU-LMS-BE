@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class CommonData {
     private String type;
-    private int value;
+    private Integer value;
 }

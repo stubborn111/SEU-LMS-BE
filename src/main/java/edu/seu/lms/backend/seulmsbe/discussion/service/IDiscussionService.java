@@ -21,5 +21,5 @@ import javax.servlet.http.HttpServletRequest;
 public interface IDiscussionService extends IService<Discussion> {
     BaseResponse<?> listall(DiscussionListRequest discussionListRequest, HttpServletRequest request);
     BaseResponse<DiscussionListDTO> listreply(ReplyListRequest replyListRequest,HttpServletRequest request);
-    BaseResponse<String> replysend(ReplySendRequest replySendRequest, HttpServletRequest request);
+    BaseResponse<Integer> replysend(ReplySendRequest replySendRequest, HttpServletRequest request);
 }

@@ -32,7 +32,7 @@ public class MessageController {
     }
 
     @PostMapping("/send-to-class")
-    public BaseResponse<String> sendToClass(@RequestBody SendToClassRequest sendToClassRequest,HttpServletRequest request){
+    public BaseResponse<Integer> sendToClass(@RequestBody SendToClassRequest sendToClassRequest,HttpServletRequest request){
         return iMessageService.sendToClass(sendToClassRequest,request);
     }
 

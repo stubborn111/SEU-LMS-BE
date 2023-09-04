@@ -23,7 +23,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
             "NULL "+
             "end"+
             ") FROM checkin ")
-    int getCheckedNum(String syllabusID);
+    Integer getCheckedNum(String syllabusID);
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN checkin.syllabusID = #{syllabusID}"+
@@ -33,6 +33,6 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
             "NULL "+
             "end"+
             ") FROM checkin ")
-    int getNotCheckedNum(String syllabusID);
+    Integer getNotCheckedNum(String syllabusID);
 
 }

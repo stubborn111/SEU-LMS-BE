@@ -74,7 +74,8 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             DTO.add(temp);
         }
         dto.setList(DTO);
-        dto.setTotalNum(curriculumMapper.getnum(keyword,currentUser.getId()));
+        if (curriculumMapper.getnum(keyword,currentUser.getId())!=null) dto.setTotalNum(curriculumMapper.getnum(keyword,currentUser.getId()));
+        else dto.setTotalNum(0);
         return ResultUtils.success(dto);
     }
 
@@ -122,7 +123,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     @Override
     //通过教师的id找到他所有的课程，返回课程id和name
     public BaseResponse<CourseListforTeacherDTO> listforteacher(CouseListforTeacherRequest couseListforTeacherRequest, HttpServletRequest request) {
-        String teacherId=couseListforTeacherRequest.getTeacherId();
+        String teacherId=couseListforTeacherRequest.getTeacherID();
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.eq(Curriculum::getTeacherID,teacherId);
         List<Curriculum> curriculumList=curriculumMapper.selectList(queryMapper);
@@ -131,7 +132,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         for(Curriculum curriculum:curriculumList)
         {
             CourseData3DTO courseData3DTO=new CourseData3DTO();
-            courseData3DTO.setCourseId(curriculum.getId());
+            courseData3DTO.setCourseID(curriculum.getId());
             courseData3DTO.setCourseName(curriculum.getName());
             courseData3DTOList.add(courseData3DTO);
         }
@@ -157,12 +158,13 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
 
     @Override
     public BaseResponse<CourseListDTO> teacehrList(CourseListRequest courseListRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         int pagesize =courseListRequest.getPageSize();
         String userid = courseListRequest.getUserID();
         int curPage = courseListRequest.getCurrentPage();
         //构建查询体
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
-        queryMapper.eq(Curriculum::getTeacherID,userid);
+        queryMapper.eq(Curriculum::getTeacherID,currentUser.getId());
 
         Page<Curriculum> Page = curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
         List<Curriculum> curriculumList=Page.getRecords();
@@ -207,10 +209,10 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         {
             CourseData3DTO tem=new CourseData3DTO();
             tem.setCourseName(tt.getName());
-            tem.setCourseId(tt.getId());
+            tem.setCourseID(tt.getId());
             dto.add(tem);
         }
-        DTO.setDescription(dto);
+        DTO.setDescriptionList(dto);
         return ResultUtils.success(DTO);
     }
 

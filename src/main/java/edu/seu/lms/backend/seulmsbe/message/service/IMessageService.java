@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface IMessageService extends IService<Message> {
     BaseResponse<MessageListDTO> list(MessageListRequest messageListRequest, HttpServletRequest request);
-    BaseResponse<String> sendToClass(SendToClassRequest sendToClassRequest,HttpServletRequest request);
+    BaseResponse<Integer> sendToClass(SendToClassRequest sendToClassRequest,HttpServletRequest request);
 
     BaseResponse<String> markmessage(MarkMessageRequest markMessageRequest,HttpServletRequest request);
 }

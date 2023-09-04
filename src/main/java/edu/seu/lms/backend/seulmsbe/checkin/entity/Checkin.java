@@ -23,7 +23,7 @@ public class Checkin implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("syllabusID")
+    @TableField("syllabusID")
     private String syllabusID;
 
     @TableField("studentID")
@@ -32,6 +32,9 @@ public class Checkin implements Serializable {
     private LocalDate time;
 
     private String position;
+
+    @TableId("ID")
+    private String ID;
 
 
 }

@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.curriculum.mapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
+import io.swagger.models.auth.In;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
@@ -57,5 +58,5 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             "end"+
             ") FROM curriculum,student_curriculum ")
     //返回登录学生所模糊搜索的课程总数
-    int getnum(String keyword,String userID);
+    Integer getnum(String keyword, String userID);
 }

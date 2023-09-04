@@ -4,6 +4,8 @@ import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -22,7 +24,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             "NULL "+
             "end"+
             ") FROM assignment ")
-    int getStatus0num(String syllabusID);
+    Integer getStatus0num(String syllabusID);
 
     @Select("SELECT SUM(" +
             "CASE "+
@@ -33,7 +35,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             "NULL "+
             "end"+
             ") FROM assignment ")
-    int getStatus1num(String syllabusID);
+    Integer getStatus1num(String syllabusID);
 
     @Select("SELECT SUM(" +
             "CASE "+
@@ -44,12 +46,11 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             "NULL "+
             "end"+
             ") FROM assignment ")
-    int getStatus2num(String syllabusID);
+    Integer getStatus2num(String syllabusID);
 
-    @Select("SELECT AVG(" +
-            "assignment.score"+
-            ") WHERE assignment.syllabusID = #{syllabusID} " +
-            "FROM assignment ")
-    int getAvgScore(String syllabusID);
+    @Select(" SELECT AVG(assignment.score) FROM assignment WHERE assignment.syllabusID = #{syllabusID} ")
+    Integer getAvgScore(String syllabusID);
 
+    @Select("SELECT * FROM assignment WHERE syllabusID = #{id}")
+    List<Assignment> getlist(String id);
 }

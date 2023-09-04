@@ -7,5 +7,5 @@ import java.util.List;
 
 @Data
 public class TeacherChartDTO {
-    private List<ChartData> chartData;
+    private ChartData chartData;
 }

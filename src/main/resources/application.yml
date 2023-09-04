@@ -4,9 +4,6 @@ Server:
   servlet:
     context-path: /api
 
-
-
-
 spring:
   servlet:
     multipart:
@@ -58,6 +55,9 @@ mybatis-plus:
 logging:
   config:
     classpath: logback.xml
+  level:
+    edu/seu/lms/backend/seulmsbe/syllabus/mapper/SyllabusMapper: debug
+
 
 pagehelper:
   helperDialect: mysql

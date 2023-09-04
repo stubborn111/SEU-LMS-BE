@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -72,7 +74,7 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         temp.setDiscussionID(tmp.getId());
         temp.setTitle(tmp.getTitle());
         if (tmp.getTime()!=null) {
-            temp.setTime(tmp.getTime().toString());
+            temp.setTime(tmp.getTime().toString().replace("T"," "));
         }
         temp.setContent(tmp.getContent());
         User user = userMapper.selectById(tmp.getFromUserID());
@@ -108,7 +110,7 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         temp.setReplyID(tmp.getReplyID());
         temp.setTitle(tmp.getTitle());
         if (tmp.getTime()!=null) {
-            temp.setTime(tmp.getTime().toString());
+            temp.setTime(tmp.getTime().toString().replace("T"," "));
         }
         temp.setContent(tmp.getContent());
         User user = userMapper.selectById(tmp.getFromUserID());
@@ -117,7 +119,7 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         return temp;
     }
     @Override
-    public BaseResponse<String> replysend(ReplySendRequest replySendRequest, HttpServletRequest request) {
+    public BaseResponse<Integer> replysend(ReplySendRequest replySendRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         String id = UUID.randomUUID().toString().substring(0,7);
         Discussion temp = new Discussion();
@@ -126,8 +128,8 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         temp.setCurriculumID(replySendRequest.getCourseID());
         temp.setFromUserID(currentUser.getId());
         temp.setReplyID(replySendRequest.getDiscussionID());
-        temp.setTime(LocalDate.now());
+        temp.setTime(LocalDateTime.now());
         discussionMapper.insert(temp);
-        return ResultUtils.success(null);
+        return ResultUtils.success(1);
     }
 }

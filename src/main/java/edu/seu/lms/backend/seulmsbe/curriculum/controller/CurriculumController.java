@@ -74,7 +74,7 @@ public class CurriculumController {
         return iCurriculumService.teacherSearch(courseSearchRequest,request);
     }
 
-    @PostMapping("/list-for-teacehr")
+    @PostMapping("/list-for-teacher")
     public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest, HttpServletRequest request)
     {
         return iCurriculumService.listforteacher(couseListforTeacherRequest,request);
@@ -93,7 +93,7 @@ public class CurriculumController {
     {
         return iCurriculumService.addCourse(courseaddRequest,request);
     }
-    @PostMapping("/list-description")
+    @GetMapping("/list-description")
     //未测试
     public BaseResponse<CourseListDescriptionDTO> listDescription(HttpServletRequest request)
     {

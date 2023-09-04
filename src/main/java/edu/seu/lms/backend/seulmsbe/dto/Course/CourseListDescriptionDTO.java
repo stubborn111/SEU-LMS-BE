@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class CourseListDescriptionDTO {
-    List<CourseData3DTO> description;
+    List<CourseData3DTO> descriptionList;
 }

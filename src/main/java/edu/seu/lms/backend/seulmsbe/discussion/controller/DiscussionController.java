@@ -36,7 +36,7 @@ public class DiscussionController {
     }
 
     @PostMapping("/reply-send")
-    public BaseResponse<String>  replysend(@RequestBody ReplySendRequest replySendRequest, HttpServletRequest request){
+    public BaseResponse<Integer>  replysend(@RequestBody ReplySendRequest replySendRequest, HttpServletRequest request){
         return discussionService.replysend(replySendRequest,request);
     }
 }

@@ -63,8 +63,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         //取出数据
         int pagesize = messageListRequest.getPageSize();
         int curPage = messageListRequest.getCurrentPage();
+        LambdaUpdateWrapper<Message> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(Message::getToUserID,currentUser.getId());
 
-        Page<Message> Page = messageMapper.selectPage(new Page<>(curPage,pagesize),null);
+        Page<Message> Page = messageMapper.selectPage(new Page<>(curPage,pagesize),lambdaUpdateWrapper);
         MessageListDTO dto = new MessageListDTO();
         dto.setTotalNum((int)Page.getTotal());
 
@@ -79,8 +81,11 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             temp.setFromUserAccess(user.getAccess()==0?"admin":"teacher");
             temp.setFromUserName(user.getNickname());
             temp.setFromUserAvatar(user.getAvatarUrl());
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-            temp.setTime(formatter.format(tt.getTime()));
+            //SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            //temp.setTime(formatter.format(tt.getTime()));
+            if (tt.getTime()!=null) {
+                temp.setTime(tt.getTime().toString().replace("T"," "));
+            }
             temp.setIsRead(tt.getIsRead()==0?Boolean.FALSE:Boolean.TRUE);
             DTO.add(temp);
         }
@@ -89,7 +94,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
     }
 
     @Override
-    public BaseResponse<String> sendToClass(SendToClassRequest sendToClassRequest, HttpServletRequest request) {
+    public BaseResponse<Integer> sendToClass(SendToClassRequest sendToClassRequest, HttpServletRequest request) {
         LambdaUpdateWrapper<StudentCurriculum> lambdaUpdateWrapper = new LambdaUpdateWrapper();
         lambdaUpdateWrapper.eq(StudentCurriculum::getCurriculumID,sendToClassRequest.getId());
         List<StudentCurriculum> sc = studentCurriculumMapper.selectList(lambdaUpdateWrapper);
@@ -104,7 +109,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             tmp.setFromUserID(teacherID);
             messageMapper.insert(tmp);
         }
-        return ResultUtils.success(null);
+        return ResultUtils.success(1);
     }
 
     @Override
