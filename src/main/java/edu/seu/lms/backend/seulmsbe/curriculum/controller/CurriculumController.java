@@ -47,7 +47,7 @@ public class CurriculumController {
 
     @GetMapping("/get-into")
     //通过课程id查找课程的所有信息1
-    public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
+    public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         String id=courseGetIntoRequest.getCourseId();
         Curriculum curriculum=curriculumMapper.getCurriculumById(id);
@@ -69,14 +69,14 @@ public class CurriculumController {
         return iCurriculumService.studentsearchCourse(courseSearchRequest,request);
     }
     @GetMapping("/list-for-teacehr")
-    public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request)
+    public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest, HttpServletRequest request)
     {
         return iCurriculumService.listforteacher(couseListforTeacherRequest,request);
     }
 
     @GetMapping("/delete")
     //1
-    public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
+    public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         curriculumMapper.deleteById(courseGetIntoRequest.getCourseId());
         return ResultUtils.success(null);

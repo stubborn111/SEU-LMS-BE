@@ -3,6 +3,8 @@ package edu.seu.lms.backend.seulmsbe.syllabus.entity;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -37,5 +39,7 @@ public class Syllabus implements Serializable {
     @TableField("isCheckedIn")
     private boolean isCheckedIn;
 
+    @TableField("time")
+    private LocalDateTime time;
 
 }

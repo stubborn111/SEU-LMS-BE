@@ -2,17 +2,14 @@ package edu.seu.lms.backend.seulmsbe.discussion.controller;
 
 
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
-import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.discussion.service.IDiscussionService;
-import edu.seu.lms.backend.seulmsbe.dto.DiscussionDTO;
-import edu.seu.lms.backend.seulmsbe.dto.DiscussionListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Discussion.DiscussionListDTO;
 import edu.seu.lms.backend.seulmsbe.request.DiscussionListRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplyListRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplySendRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 /**
