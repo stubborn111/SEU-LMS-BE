@@ -6,7 +6,7 @@ import lombok.Data;
  * 修改请求
  */
 @Data
-public class UserModifyRequest {
+public class UserModifyRequest1 {
     private String phone;
     private String name;
     private String avatar;
