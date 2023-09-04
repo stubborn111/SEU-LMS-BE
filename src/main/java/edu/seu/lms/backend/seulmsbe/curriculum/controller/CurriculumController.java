@@ -6,13 +6,8 @@ import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
-import edu.seu.lms.backend.seulmsbe.dto.CourseDataDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseListallDTO;
-import edu.seu.lms.backend.seulmsbe.dto.CourseSearchDTO;
-import edu.seu.lms.backend.seulmsbe.request.CourseGetIntoRequest;
-import edu.seu.lms.backend.seulmsbe.request.CourseListRequest;
-import edu.seu.lms.backend.seulmsbe.request.CourseSearchRequest;
+import edu.seu.lms.backend.seulmsbe.dto.*;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -36,17 +31,25 @@ public class CurriculumController {
     @Autowired
     private CurriculumMapper curriculumMapper;
 
-    @PostMapping("/list")
-    public BaseResponse<CourseListDTO> findPage(@RequestBody CourseListRequest courseListRequest, HttpServletRequest request)
+    @PostMapping("/student-list")
+    //未测试1
+    public BaseResponse<CourseListDTO> findPage(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request)
     {
-        return iCurriculumService.listCourse(courseListRequest,request);
+        return iCurriculumService.studentListCourse(coursePageRequest,request);
+    }
+    @GetMapping("/teacher-list")
+    //1
+    public BaseResponse<CourseListDTO> teacherlist(@RequestBody CourseListRequest courseListRequest,HttpServletRequest request)
+    {
+        return iCurriculumService.teacehrList(courseListRequest,request);
     }
 
+
     @GetMapping("/get-into")
-    //通过课程id查找课程的所有信息
+    //通过课程id查找课程的所有信息1
     public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
     {
-        String id=courseGetIntoRequest.getId();
+        String id=courseGetIntoRequest.getCourseId();
         Curriculum curriculum=curriculumMapper.getCurriculumById(id);
         String courseId=curriculum.getTeacherID();
         User teacher=curriculumMapper.selectUserById(courseId);
@@ -60,14 +63,29 @@ public class CurriculumController {
         System.out.println(curriculumMapper.selectById("1"));
     }
 
-    @GetMapping("/search")
-    //模糊搜索课程，显示课程的所有信息
+    @GetMapping("/student-search")
+    //模糊搜索课程，显示课程的所有信息1
     public BaseResponse<CourseSearchDTO> courseSearch(@RequestBody CourseSearchRequest courseSearchRequest, HttpServletRequest request){
-        return iCurriculumService.searchCourse(courseSearchRequest,request);
+        return iCurriculumService.studentsearchCourse(courseSearchRequest,request);
     }
-    @GetMapping("/listAll")
-    public BaseResponse<CourseListallDTO> courseListall(HttpServletRequest request)
+    @GetMapping("/list-for-teacehr")
+    public BaseResponse<CourseListforTeacherDTO> courselistforteacher(@RequestBody CouseListforTeacherRequest couseListforTeacherRequest,HttpServletRequest request)
     {
-        return iCurriculumService.listallCourse(request);
+        return iCurriculumService.listforteacher(couseListforTeacherRequest,request);
     }
+
+    @GetMapping("/delete")
+    //1
+    public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
+    {
+        curriculumMapper.deleteById(courseGetIntoRequest.getCourseId());
+        return ResultUtils.success(null);
+    }
+    @GetMapping("/addCourse")
+    //1
+    public BaseResponse<CourseaddRequest> addCouse(@RequestBody CourseaddRequest courseaddRequest,HttpServletRequest request)
+    {
+        return iCurriculumService.addCourse(courseaddRequest,request);
+    }
+
 }
