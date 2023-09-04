@@ -2,6 +2,7 @@ package edu.seu.lms.backend.seulmsbe.user.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
+import edu.seu.lms.backend.seulmsbe.dto.UserListTeacherDTO;
 import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
 import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
@@ -25,4 +26,5 @@ public interface IUserService extends IService<User> {
     public void userLogout(HttpServletRequest request);
     public BaseResponse<Integer> modify(UserModifyRequest userModifyRequest, HttpServletRequest request);
     public User getuser(String id);
+    public BaseResponse<UserListTeacherDTO> listTeacher(HttpServletRequest request);
 }

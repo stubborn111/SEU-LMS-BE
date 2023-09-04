@@ -1,5 +1,6 @@
 package edu.seu.lms.backend.seulmsbe.curriculum.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
@@ -53,7 +54,6 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         //构建查询体
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.like(Curriculum::getName,keyword);
-
         List<Curriculum> tmp = curriculumMapper.studentSearch(keyword,currentUser.getId(),pagesize*(curPage-1),pagesize);
 
         CourseSearchDTO dto = new CourseSearchDTO();
@@ -103,9 +103,9 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         for(StudentCurriculum studentCurriculum:tmp)
         {
             CourseData2DTO temp=new CourseData2DTO();
-            String id=studentCurriculum.getCurriculumID();
+            String stuId=studentCurriculum.getCurriculumID();
             temp.setCourseID(studentCurriculum.getCurriculumID());
-            Curriculum curriculum=curriculumMapper.getCurriculumById(id);
+            Curriculum curriculum=curriculumMapper.selectById(stuId);
             temp.setDescription(curriculum.getDescription());
             temp.setImgUrl(curriculum.getImgUrl());
             temp.setSemester(curriculum.getSemester());
@@ -170,6 +170,66 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         CourseListDTO DTO=new CourseListDTO();
         List<CourseData2DTO> dto=new ArrayList<>();
         DTO.setTotalNum((int)Page.getTotal());
+        for(Curriculum tt:curriculumList)
+        {
+            CourseData2DTO courseData2DTO=new CourseData2DTO();
+            courseData2DTO.setCourseID(tt.getId());
+            courseData2DTO.setCourseName(tt.getName());
+            courseData2DTO.setDescription(tt.getDescription());
+            courseData2DTO.setImgUrl(tt.getImgUrl());
+            courseData2DTO.setSemester(tt.getSemester());
+            User teacher=userService.getuser(tt.getTeacherID());
+            courseData2DTO.setTeacherName(teacher.getNickname());
+            courseData2DTO.setTeacherAvatar(teacher.getAvatarUrl());
+            dto.add(courseData2DTO);
+        }
+        DTO.setList(dto);
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseListDescriptionDTO> listDescription(HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        int access=currentUser.getAccess();
+        CourseListDescriptionDTO DTO=new CourseListDescriptionDTO();
+        List<CourseData3DTO> dto=new ArrayList<>();
+        LambdaUpdateWrapper<Curriculum> queryWrapper=new LambdaUpdateWrapper<>();
+        List<Curriculum> curriculumList=new ArrayList<>();
+        if(access==0)//管理员
+        {
+            curriculumList=curriculumMapper.findAll();
+        }
+        else if (access==2)//老师
+            {
+            queryWrapper.eq(Curriculum::getTeacherID,currentUser.getId());
+            curriculumList=curriculumMapper.selectList(queryWrapper);
+        }
+        for(Curriculum tt:curriculumList)
+        {
+            CourseData3DTO tem=new CourseData3DTO();
+            tem.setCourseName(tt.getName());
+            tem.setCourseId(tt.getId());
+            dto.add(tem);
+        }
+        DTO.setDescription(dto);
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseListDTO> teacherSearch(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userId=currentUser.getId();
+        String keword=courseSearchRequest.getKeyword();
+        int pagesize =courseSearchRequest.getPageSize();
+        int curPage = courseSearchRequest.getCurrentPage();
+        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(Curriculum::getTeacherID,userId);
+        queryMapper.like(Curriculum::getName,keword);
+        Page<Curriculum> Page=curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
+        CourseListDTO DTO=new CourseListDTO();
+        DTO.setTotalNum((int)Page.getTotal());
+        List<Curriculum> curriculumList=Page.getRecords();
+        List<CourseData2DTO> dto=new ArrayList<>();
         for(Curriculum tt:curriculumList)
         {
             CourseData2DTO courseData2DTO=new CourseData2DTO();
