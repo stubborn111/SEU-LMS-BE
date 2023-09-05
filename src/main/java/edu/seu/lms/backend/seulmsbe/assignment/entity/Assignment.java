@@ -2,6 +2,8 @@ package edu.seu.lms.backend.seulmsbe.assignment.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -31,4 +33,5 @@ public class Assignment implements Serializable {
     private String type;
     private String file;
     private Integer status;
+    private LocalDateTime time;
 }

@@ -21,7 +21,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             " AND assignment.status = 0 THEN "+
             "1 "+
             "else "+
-            "NULL "+
+            "0 "+
             "end"+
             ") FROM assignment ")
     Integer getStatus0num(String syllabusID);
@@ -32,7 +32,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             " AND assignment.status = 1 THEN "+
             "1 "+
             "else "+
-            "NULL "+
+            "0 "+
             "end"+
             ") FROM assignment ")
     Integer getStatus1num(String syllabusID);
@@ -43,7 +43,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             " AND assignment.status = 2 THEN "+
             "1 "+
             "else "+
-            "NULL "+
+            "0 "+
             "end"+
             ") FROM assignment ")
     Integer getStatus2num(String syllabusID);
@@ -53,4 +53,19 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
 
     @Select("SELECT * FROM assignment WHERE syllabusID = #{id}")
     List<Assignment> getlist(String id);
+
+    @Select("SELECT SUM(CASE WHEN assignment.status = 2 " +
+            "AND DATE(assignment.time) = CURDATE() " +
+            "THEN 1 else 0 end) FROM assignment")
+    Integer getToday();
+
+    @Select("SELECT SUM(CASE WHEN assignment.status = 2 " +
+            "AND DATE(assignment.time) = CURDATE()-interval 1 day " +
+            "THEN 1 else 0 end) FROM assignment")
+    Integer getYesterday();
+
+    @Select("SELECT SUM(CASE WHEN assignment.status = 2 " +
+            "AND DATE(assignment.time) = CURDATE()-interval 2 day " +
+            "THEN 1 else 0 end) FROM assignment")
+    Integer getTwoday();
 }

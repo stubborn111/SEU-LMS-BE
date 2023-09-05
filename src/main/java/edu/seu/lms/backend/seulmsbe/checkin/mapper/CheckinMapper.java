@@ -4,6 +4,8 @@ import edu.seu.lms.backend.seulmsbe.checkin.entity.Checkin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.List;
+
 /**
  * <p>
  *  Mapper 接口
@@ -17,7 +19,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN checkin.syllabusID = #{syllabusID}"+
-            " AND checkin.position = '已签到' THEN "+
+            " AND checkin.isCheckedIn = 1 THEN "+
             "1 "+
             "else "+
             "NULL "+
@@ -27,7 +29,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN checkin.syllabusID = #{syllabusID}"+
-            " AND checkin.position = '未签到' THEN "+
+            " AND checkin.isCheckedIn = 0 THEN "+
             "1 "+
             "else "+
             "NULL "+
@@ -35,4 +37,18 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
             ") FROM checkin ")
     Integer getNotCheckedNum(String syllabusID);
 
+    @Select("SELECT SUM(CASE WHEN checkin.isCheckedIn = 1 " +
+            "AND DATE(checkin.time) = CURDATE() " +
+            "THEN 1 else 0 end) FROM checkin")
+    Integer getCheckIntodayNum();
+
+    @Select("SELECT SUM(CASE WHEN checkin.isCheckedIn = 1 " +
+            "AND DATE(checkin.time) = CURDATE()-interval 1 day " +
+            "THEN 1 else 0 end) FROM checkin")
+    Integer getCheckInYesterdayNum();
+
+    @Select("SELECT SUM(CASE WHEN checkin.isCheckedIn = 1 " +
+            "AND DATE(checkin.time) = CURDATE()-interval 2 day " +
+            "THEN 1 else 0 end) FROM checkin")
+    Integer getCheckIntwodayNum();
 }

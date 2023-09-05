@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
+import edu.seu.lms.backend.seulmsbe.request.SyllabusCommonRequest;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusListRequest;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
@@ -46,6 +48,9 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         queryMapper.eq(Syllabus::getCurriculumID,courseid);
 
         Page<Syllabus> Page = syllabusMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
+        if(currentUser.getAccess()==1){
+
+        }
         SyllabusListDTO dto = new SyllabusListDTO();
         dto.setTotalNum((int)Page.getTotal());
         List<Syllabus> tmp = Page.getRecords();
@@ -70,5 +75,15 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         }
         dto.setList(DTO);
         return ResultUtils.success(dto);
+    }
+
+    @Override
+    public BaseResponse<String> checkin(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request) {
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<MaterialListDTO> listMaterial(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request) {
+        return null;
     }
 }

@@ -31,7 +31,8 @@ public class Checkin implements Serializable {
 
     private LocalDate time;
 
-    private String position;
+    @TableField("isCheckedIn")
+    private Integer isCheckedIn;
 
     @TableId("ID")
     private String ID;
