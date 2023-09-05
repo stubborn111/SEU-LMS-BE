@@ -2,6 +2,7 @@ package edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper;
 
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -12,5 +13,33 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2023-08-31
  */
 public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
+    @Select("SELECT COUNT(DISTINCT curriculumID)\n" +
+            "FROM student_curriculum\n" +
+            "WHERE curriculumID IN (\n" +
+            "  SELECT curriculumID\n" +
+            "  FROM student_curriculum\n" +
+            "  GROUP BY curriculumID\n" +
+            "  HAVING COUNT(DISTINCT studentID) between 0 and 20\n" +
+            ")")
+    Integer get0_20Num();
+    @Select("SELECT COUNT(DISTINCT curriculumID)\n" +
+            "FROM student_curriculum\n" +
+            "WHERE curriculumID IN (\n" +
+            "  SELECT curriculumID\n" +
+            "  FROM student_curriculum\n" +
+            "  GROUP BY curriculumID\n" +
+            "  HAVING COUNT(DISTINCT studentID) between 20 and 40\n" +
+            ")")
+    Integer get20_40Num();
+    @Select("SELECT COUNT(DISTINCT curriculumID)\n" +
+            "FROM student_curriculum\n" +
+            "WHERE curriculumID IN (\n" +
+            "  SELECT curriculumID\n" +
+            "  FROM student_curriculum\n" +
+            "  GROUP BY curriculumID\n" +
+            "  HAVING COUNT(DISTINCT studentID) > 40\n" +
+            ")")
+    Integer getOver40Num();
+
 
 }

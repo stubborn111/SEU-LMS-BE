@@ -2,6 +2,7 @@ package edu.seu.lms.backend.seulmsbe.discussion.mapper;
 
 import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * <p>
@@ -12,5 +13,23 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2023-08-25
  */
 public interface DiscussionMapper extends BaseMapper<Discussion> {
+    @Select("SELECT SUM(" +
+            "CASE "+
+            "WHEN discussion.replyID is null THEN "+
+            "1 "+
+            "else "+
+            "0 "+
+            "end"+
+            ") FROM discussion ")
+    Integer getDiscussionNum();
 
+    @Select("SELECT SUM(" +
+            "CASE "+
+            "WHEN discussion.replyID is not null THEN "+
+            "1 "+
+            "else "+
+            "0 "+
+            "end"+
+            ") FROM discussion ")
+    Integer getReplyNum();
 }
