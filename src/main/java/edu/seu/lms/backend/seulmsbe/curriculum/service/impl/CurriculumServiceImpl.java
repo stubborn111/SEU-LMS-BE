@@ -321,20 +321,17 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     }
 
     @Override
-    public BaseResponse<CourseAdminDTO> adminList(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
-        String keyword=courseSearchRequest.getKeyword();
-        int pagesize =courseSearchRequest.getPageSize();
-        int curPage = courseSearchRequest.getCurrentPage();
-        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
-        if(keyword!=null)
-        {
-            queryMapper.like(Curriculum::getName,keyword);
-        }
-        Page<Curriculum> Page=curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
+    public BaseResponse<CourseAdminDTO> adminList(CourseAdminRequest courseAdminRequest, HttpServletRequest request) {
+        String keyword=courseAdminRequest.getKeyword();
+        String teachername=courseAdminRequest.getTeacherName();
+        int pagesize =courseAdminRequest.getPageSize();
+        int curPage = courseAdminRequest.getCurrentPage();
+        System.out.println(keyword);
+        List<Curriculum> curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,teachername,pagesize*(curPage-1),pagesize);
+
         CourseAdminDTO DTO=new CourseAdminDTO();
-        DTO.setTotalNum((int)Page.getTotal());
+        DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,teachername));
         List<CourseAdminDataDTO> dto1=new ArrayList<>();
-        List<Curriculum> curriculumList=Page.getRecords();
         for(Curriculum tt:curriculumList)
         {
             CourseAdminDataDTO dto=new CourseAdminDataDTO();

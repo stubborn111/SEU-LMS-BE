@@ -47,6 +47,25 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             "LIMIT #{begin},#{size}")
     //分页模糊查询登录学生的课程
     List<Curriculum> studentSearch(String keyword,String userID,int begin,int size);
+
+    @Select("select * from curriculum,user" +
+            " where curriculum.name like CONCAT('%',#{keyword},'%')" +
+            " AND user.nickname like CONCAT('%',#{teacherName},'%')" +
+            " AND curriculum.teacherID=user.ID" +
+            " limit #{begin},#{size}")
+    List<Curriculum> SearchByNameAndTeacher(String keyword,String teacherName,int begin,int size);
+
+    @Select("select SUM(" +
+            "case " +
+            " when curriculum.name like CONCAT('%',#{keyword},'%')" +
+            " AND user.nickname like CONCAT('%',#{teacherName},'%')" +
+            " AND curriculum.teacherID=user.ID then" +
+            " 1" +
+            " else" +
+            " NULL" +
+            " end" +
+            ") from curriculum,user")
+    int getnumAdmin(String keyword,String teacherName);
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN student_curriculum.studentID = #{userID}"+

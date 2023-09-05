@@ -113,9 +113,9 @@ public class CurriculumController {
         return iCurriculumService.getInto(courseGetIntoRequest,request);
     }
     @PostMapping("admin-list")
-    public BaseResponse<CourseAdminDTO> adminList(@RequestBody CourseSearchRequest courseSearchRequest, HttpServletRequest request)
+    public BaseResponse<CourseAdminDTO> adminList(@RequestBody CourseAdminRequest courseAdminRequest, HttpServletRequest request)
     {
-        return iCurriculumService.adminList(courseSearchRequest,request);
+        return iCurriculumService.adminList(courseAdminRequest,request);
     }
 
 }
