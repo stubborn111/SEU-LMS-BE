@@ -38,13 +38,14 @@ public class SyllabusController {
     }
 
     @PostMapping("/check-in")
-    public BaseResponse<String> checkin(SyllabusCommonRequest syllabusCommonRequest,HttpServletRequest request){
+    public BaseResponse<Integer> checkin(@RequestBody SyllabusCommonRequest syllabusCommonRequest,HttpServletRequest request){
         return syllabusService.checkin(syllabusCommonRequest,request);
     }
-    @PostMapping("/material-list")
-    public BaseResponse<MaterialListDTO> listMaterial(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request){
+    @PostMapping("/material/list")
+    public BaseResponse<MaterialListDTO> listMaterial(@RequestBody SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request){
         return syllabusService.listMaterial(syllabusCommonRequest,request);
     }
+
     @PostMapping("/upload")
     public BaseResponse<String> uploadFile (@RequestParam("file")MultipartFile file,HttpServletRequest request){
         if (file.isEmpty()) {

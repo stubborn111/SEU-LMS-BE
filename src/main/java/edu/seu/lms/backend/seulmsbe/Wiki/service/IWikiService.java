@@ -3,8 +3,12 @@ package edu.seu.lms.backend.seulmsbe.Wiki.service;
 import edu.seu.lms.backend.seulmsbe.Wiki.entity.Wiki;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
+import edu.seu.lms.backend.seulmsbe.dto.WikiAdminListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.WikiListDTO;
+import edu.seu.lms.backend.seulmsbe.request.CoursePageRequest;
+import edu.seu.lms.backend.seulmsbe.request.PostAnswerRequest;
 import edu.seu.lms.backend.seulmsbe.request.WikiListRequest;
+import edu.seu.lms.backend.seulmsbe.request.WikiMarkRequest;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,4 +22,10 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface IWikiService extends IService<Wiki> {
     public BaseResponse<WikiListDTO> listWiki(WikiListRequest wikiListRequest, HttpServletRequest request);
+
+    BaseResponse<String> postAnswer(PostAnswerRequest postAnswerRequest, HttpServletRequest request);
+
+    BaseResponse<String> mark(WikiMarkRequest wikiMarkRequest, HttpServletRequest request);
+
+    BaseResponse<WikiAdminListDTO> adminlist(CoursePageRequest coursePageRequest, HttpServletRequest request);
 }

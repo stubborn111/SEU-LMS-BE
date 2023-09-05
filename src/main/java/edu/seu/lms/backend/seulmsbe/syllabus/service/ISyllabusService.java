@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 public interface ISyllabusService extends IService<Syllabus> {
     public BaseResponse<SyllabusListDTO> listSyllabus(SyllabusListRequest syllabusListRequest, HttpServletRequest request);
 
-    BaseResponse<String> checkin(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request);
+    BaseResponse<Integer> checkin(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request);
 
     BaseResponse<MaterialListDTO> listMaterial(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request);
 }
