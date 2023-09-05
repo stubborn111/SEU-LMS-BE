@@ -8,5 +8,5 @@ import java.util.List;
 public class CourseAdminDTO {
     int totalNum;
     List<String> teacherList;
-
+    List<CourseAdminDataDTO> list;
 }

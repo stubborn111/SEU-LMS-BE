@@ -309,7 +309,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         DTO.setTeacherName(teacehr.getNickname());
         DTO.setTeacherPhone(teacehr.getPhone());
         String[] tem;
-        tem=curriculum.getDescription().split("\\.");
+        tem=curriculum.getDescription().split("##");
         dto.setUnit(tem[0]);
         dto.setCredit(tem[1]);
         dto.setTeachingTime(tem[2]);
@@ -317,6 +317,48 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         dto.setTeachingMethod(tem[4]);
         dto.setIntroduction(tem[5]);
         DTO.setDescription(dto);
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseAdminDTO> adminList(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
+        String keyword=courseSearchRequest.getKeyword();
+        int pagesize =courseSearchRequest.getPageSize();
+        int curPage = courseSearchRequest.getCurrentPage();
+        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        if(keyword!=null)
+        {
+            queryMapper.like(Curriculum::getName,keyword);
+        }
+        Page<Curriculum> Page=curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
+        CourseAdminDTO DTO=new CourseAdminDTO();
+        DTO.setTotalNum((int)Page.getTotal());
+        List<CourseAdminDataDTO> dto1=new ArrayList<>();
+        List<Curriculum> curriculumList=Page.getRecords();
+        for(Curriculum tt:curriculumList)
+        {
+            CourseAdminDataDTO dto=new CourseAdminDataDTO();
+            User teacher=userService.getuser(tt.getTeacherID());
+            dto.setKey(tt.getId());
+            dto.setDescription(tt.getDescription());
+            dto.setSemester(tt.getSemester());
+            dto.setCourseName(tt.getName());
+            dto.setTeacherAvatar(teacher.getAvatarUrl());
+            dto.setCourseID(tt.getId());
+            dto.setTeacherName(teacher.getNickname());
+            dto.setImgUrl(tt.getImgUrl());
+            dto1.add(dto);
+        }
+        DTO.setList(dto1);
+        LambdaUpdateWrapper<User> updateWrapper1=new LambdaUpdateWrapper<>();
+        updateWrapper1.eq(User::getAccess,2);
+        List<User> teachers=userMapper.selectList(updateWrapper1);
+        List<String> list=new ArrayList<>();
+        for(User tt:teachers)
+        {
+            list.add(tt.getNickname());
+        }
+        DTO.setTeacherList(list);
         return ResultUtils.success(DTO);
     }
 
