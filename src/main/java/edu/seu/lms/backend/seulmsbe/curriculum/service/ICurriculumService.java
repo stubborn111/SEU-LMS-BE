@@ -31,4 +31,6 @@ public interface ICurriculumService extends IService<Curriculum> {
     public BaseResponse<CourseNameDTO> getCourseName(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request);
     public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest,HttpServletRequest request);
     public BaseResponse<CourseTeacherDTO> getTeacherInfo(CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request);
+
+    public BaseResponse<CourseGetinfoDTO>  getInto(CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request);
 }

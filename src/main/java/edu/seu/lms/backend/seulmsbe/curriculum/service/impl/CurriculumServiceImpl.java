@@ -271,10 +271,14 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     @Override
     public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest, HttpServletRequest request) {
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        LambdaUpdateWrapper<User> queryMapper1 = new LambdaUpdateWrapper<>();
+        queryMapper1.eq(User::getNickname,courseModifyRequest.getTeacherName());
+        User teacher=userMapper.selectOne(queryMapper1);
         queryMapper.eq(Curriculum::getId,courseModifyRequest.getCourseID())
                 .set(Curriculum::getName,courseModifyRequest.getCourseName())
                 .set(Curriculum::getSemester,courseModifyRequest.getSemester())
-                .set(Curriculum::getImgUrl,courseModifyRequest.getImgUrl());
+                .set(Curriculum::getImgUrl,courseModifyRequest.getImgUrl())
+                .set(Curriculum::getTeacherID,teacher.getId());
         update(queryMapper);
         return ResultUtils.success(null);
     }
@@ -287,6 +291,32 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         CourseTeacherDTO DTO=new CourseTeacherDTO();
         DTO.setTeacherEmail(user.getEmail());
         DTO.setTeacherPhone(user.getPhone());
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseGetinfoDTO> getInto(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+        String courseID=courseGetIntoRequest.getCourseID();
+        Curriculum curriculum=curriculumMapper.getCurriculumById(courseID);
+        CourseGetinfoDTO DTO=new CourseGetinfoDTO();
+        CourseDescriptionDTO dto=new CourseDescriptionDTO();
+        DTO.setCourseName(curriculum.getName());
+        DTO.setSemester(curriculum.getSemester());
+        DTO.setImgUrl(curriculum.getImgUrl());
+        User teacehr=userService.getuser(curriculum.getTeacherID());
+        DTO.setTeacherAvatar(teacehr.getAvatarUrl());
+        DTO.setTeacherEmail(teacehr.getEmail());
+        DTO.setTeacherName(teacehr.getNickname());
+        DTO.setTeacherPhone(teacehr.getPhone());
+        String[] tem;
+        tem=curriculum.getDescription().split("\\.");
+        dto.setUnit(tem[0]);
+        dto.setCredit(tem[1]);
+        dto.setTeachingTime(tem[2]);
+        dto.setTeachingLocation(tem[3]);
+        dto.setTeachingMethod(tem[4]);
+        dto.setIntroduction(tem[5]);
+        DTO.setDescription(dto);
         return ResultUtils.success(DTO);
     }
 

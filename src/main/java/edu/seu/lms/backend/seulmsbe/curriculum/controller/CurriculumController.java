@@ -48,17 +48,6 @@ public class CurriculumController {
     }
 
 
-    @PostMapping("/get-into")
-    //通过课程id查找课程的所有信息1
-    public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
-    {
-        String id=courseGetIntoRequest.getCourseID();
-        Curriculum curriculum=curriculumMapper.getCurriculumById(id);
-        String courseId=curriculum.getTeacherID();
-        User teacher=curriculumMapper.selectUserById(courseId);
-        CourseDataDTO courseDataDTO=new CourseDataDTO(curriculum.getName(),curriculum.getDescription(),curriculum.getImgUrl(),teacher.getNickname(),teacher.getAvatarUrl(),teacher.getPhone(),curriculum.getSemester(),teacher.getEmail());
-        return ResultUtils.success(courseDataDTO);
-    }
 
     @PostMapping("/test")
     public void test( )
@@ -116,6 +105,12 @@ public class CurriculumController {
     public BaseResponse<CourseTeacherDTO> getTeacherInfo(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         return iCurriculumService.getTeacherInfo(courseGetIntoRequest,request);
+    }
+
+    @PostMapping("get-into")
+    public BaseResponse<CourseGetinfoDTO> getInto(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
+    {
+        return iCurriculumService.getInto(courseGetIntoRequest,request);
     }
 
 }
