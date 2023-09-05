@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.curriculum.controller;
 
 
+import com.baomidou.mybatisplus.extension.api.R;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
@@ -13,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+
+import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * <p>
@@ -45,17 +48,6 @@ public class CurriculumController {
     }
 
 
-    @PostMapping("/get-into")
-    //通过课程id查找课程的所有信息1
-    public BaseResponse<CourseDataDTO> findCourse(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
-    {
-        String id=courseGetIntoRequest.getCourseId();
-        Curriculum curriculum=curriculumMapper.getCurriculumById(id);
-        String courseId=curriculum.getTeacherID();
-        User teacher=curriculumMapper.selectUserById(courseId);
-        CourseDataDTO courseDataDTO=new CourseDataDTO(curriculum.getName(),curriculum.getDescription(),curriculum.getImgUrl(),teacher.getNickname(),teacher.getAvatarUrl(),teacher.getPhone(),curriculum.getSemester(),teacher.getEmail());
-        return ResultUtils.success(courseDataDTO);
-    }
 
     @PostMapping("/test")
     public void test( )
@@ -84,7 +76,7 @@ public class CurriculumController {
     //1
     public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
-        curriculumMapper.deleteById(courseGetIntoRequest.getCourseId());
+        curriculumMapper.deleteById(courseGetIntoRequest.getCourseID());
         return ResultUtils.success(null);
     }
     @PostMapping("/add")
@@ -99,6 +91,31 @@ public class CurriculumController {
     {
         return iCurriculumService.listDescription(request);
     }
+    @PostMapping("get-name")
+    public BaseResponse<CourseNameDTO> getCourseName(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
+    {
+        return iCurriculumService.getCourseName(courseGetIntoRequest,request);
+    }
+    @PostMapping("modify-course")
+    public BaseResponse<Curriculum> modifyCourse(@RequestBody CourseModifyRequest courseModifyRequest, HttpServletRequest request)
+    {
+        return iCurriculumService.modifyCourse(courseModifyRequest,request);
+    }
+    @PostMapping("get-teacher-info")
+    public BaseResponse<CourseTeacherDTO> getTeacherInfo(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
+    {
+        return iCurriculumService.getTeacherInfo(courseGetIntoRequest,request);
+    }
 
+    @PostMapping("get-into")
+    public BaseResponse<CourseGetinfoDTO> getInto(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
+    {
+        return iCurriculumService.getInto(courseGetIntoRequest,request);
+    }
+    @PostMapping("admin-list")
+    public BaseResponse<CourseAdminDTO> adminList(@RequestBody CourseSearchRequest courseSearchRequest, HttpServletRequest request)
+    {
+        return iCurriculumService.adminList(courseSearchRequest,request);
+    }
 
 }

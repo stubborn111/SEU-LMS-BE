@@ -169,6 +169,18 @@ public class UserController {
         return userService.listforadmin(userListforAdminRequest,request);
     }
 
+    @PostMapping("change-psw")
+    public BaseResponse<Integer> modifyPassword(@RequestBody UserPasswordRequest userPasswordRequest, HttpServletRequest request)
+    {
+        return userService.modifyPassword(userPasswordRequest,request);
+    }
+    @PostMapping("delete")
+    public BaseResponse<User> deleteone(@RequestBody UserDeleteRequest userDeleteRequest,HttpServletRequest request)
+    {
+        userMapper.deleteById(userDeleteRequest.getId());
+        return ResultUtils.success(null);
+    }
+
     private UserDTO toUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setPhone(user.getPhone());

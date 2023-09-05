@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.curriculum.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
@@ -245,6 +246,119 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             dto.add(courseData2DTO);
         }
         DTO.setList(dto);
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseNameDTO> getCourseName(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userId=currentUser.getId();
+        LambdaUpdateWrapper<StudentCurriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(StudentCurriculum::getStudentID,userId);
+        List<StudentCurriculum> list=studentCurriculumMapper.selectList(queryMapper);
+        for(StudentCurriculum tt:list)
+        {
+            if(tt.getCurriculumID().equals(courseGetIntoRequest.getCourseID()))
+            {
+                CourseNameDTO DTO=new CourseNameDTO();
+                DTO.setCourseName(curriculumMapper.getCurriculumById(tt.getCurriculumID()).getName());
+                return ResultUtils.success(DTO);
+            }
+        }
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest, HttpServletRequest request) {
+        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        LambdaUpdateWrapper<User> queryMapper1 = new LambdaUpdateWrapper<>();
+        queryMapper1.eq(User::getNickname,courseModifyRequest.getTeacherName());
+        User teacher=userMapper.selectOne(queryMapper1);
+        queryMapper.eq(Curriculum::getId,courseModifyRequest.getCourseID())
+                .set(Curriculum::getName,courseModifyRequest.getCourseName())
+                .set(Curriculum::getSemester,courseModifyRequest.getSemester())
+                .set(Curriculum::getImgUrl,courseModifyRequest.getImgUrl())
+                .set(Curriculum::getTeacherID,teacher.getId());
+        update(queryMapper);
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<CourseTeacherDTO> getTeacherInfo(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+        Curriculum curriculum=curriculumMapper.getCurriculumById(courseGetIntoRequest.getCourseID());
+        String teacherID=curriculum.getTeacherID();
+        User user=userService.getuser(teacherID);
+        CourseTeacherDTO DTO=new CourseTeacherDTO();
+        DTO.setTeacherEmail(user.getEmail());
+        DTO.setTeacherPhone(user.getPhone());
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseGetinfoDTO> getInto(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+        String courseID=courseGetIntoRequest.getCourseID();
+        Curriculum curriculum=curriculumMapper.getCurriculumById(courseID);
+        CourseGetinfoDTO DTO=new CourseGetinfoDTO();
+        CourseDescriptionDTO dto=new CourseDescriptionDTO();
+        DTO.setCourseName(curriculum.getName());
+        DTO.setSemester(curriculum.getSemester());
+        DTO.setImgUrl(curriculum.getImgUrl());
+        User teacehr=userService.getuser(curriculum.getTeacherID());
+        DTO.setTeacherAvatar(teacehr.getAvatarUrl());
+        DTO.setTeacherEmail(teacehr.getEmail());
+        DTO.setTeacherName(teacehr.getNickname());
+        DTO.setTeacherPhone(teacehr.getPhone());
+        String[] tem;
+        tem=curriculum.getDescription().split("##");
+        dto.setUnit(tem[0]);
+        dto.setCredit(tem[1]);
+        dto.setTeachingTime(tem[2]);
+        dto.setTeachingLocation(tem[3]);
+        dto.setTeachingMethod(tem[4]);
+        dto.setIntroduction(tem[5]);
+        DTO.setDescription(dto);
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseAdminDTO> adminList(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
+        String keyword=courseSearchRequest.getKeyword();
+        int pagesize =courseSearchRequest.getPageSize();
+        int curPage = courseSearchRequest.getCurrentPage();
+        LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        if(keyword!=null)
+        {
+            queryMapper.like(Curriculum::getName,keyword);
+        }
+        Page<Curriculum> Page=curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
+        CourseAdminDTO DTO=new CourseAdminDTO();
+        DTO.setTotalNum((int)Page.getTotal());
+        List<CourseAdminDataDTO> dto1=new ArrayList<>();
+        List<Curriculum> curriculumList=Page.getRecords();
+        for(Curriculum tt:curriculumList)
+        {
+            CourseAdminDataDTO dto=new CourseAdminDataDTO();
+            User teacher=userService.getuser(tt.getTeacherID());
+            dto.setKey(tt.getId());
+            dto.setDescription(tt.getDescription());
+            dto.setSemester(tt.getSemester());
+            dto.setCourseName(tt.getName());
+            dto.setTeacherAvatar(teacher.getAvatarUrl());
+            dto.setCourseID(tt.getId());
+            dto.setTeacherName(teacher.getNickname());
+            dto.setImgUrl(tt.getImgUrl());
+            dto1.add(dto);
+        }
+        DTO.setList(dto1);
+        LambdaUpdateWrapper<User> updateWrapper1=new LambdaUpdateWrapper<>();
+        updateWrapper1.eq(User::getAccess,2);
+        List<User> teachers=userMapper.selectList(updateWrapper1);
+        List<String> list=new ArrayList<>();
+        for(User tt:teachers)
+        {
+            list.add(tt.getNickname());
+        }
+        DTO.setTeacherList(list);
         return ResultUtils.success(DTO);
     }
 

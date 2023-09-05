@@ -3,11 +3,9 @@ package edu.seu.lms.backend.seulmsbe.curriculum.service;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import com.baomidou.mybatisplus.extension.service.IService;
-import edu.seu.lms.backend.seulmsbe.dto.Course.CourseListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.Course.CourseListDescriptionDTO;
-import edu.seu.lms.backend.seulmsbe.dto.Course.CourseListforTeacherDTO;
-import edu.seu.lms.backend.seulmsbe.dto.Course.CourseSearchDTO;
+import edu.seu.lms.backend.seulmsbe.dto.Course.*;
 import edu.seu.lms.backend.seulmsbe.request.*;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,4 +28,10 @@ public interface ICurriculumService extends IService<Curriculum> {
 
     public BaseResponse<CourseListDescriptionDTO> listDescription(HttpServletRequest request);
     public BaseResponse<CourseListDTO> teacherSearch(CourseSearchRequest courseSearchRequest,HttpServletRequest request);
+    public BaseResponse<CourseNameDTO> getCourseName(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request);
+    public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest,HttpServletRequest request);
+    public BaseResponse<CourseTeacherDTO> getTeacherInfo(CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request);
+
+    public BaseResponse<CourseGetinfoDTO>  getInto(CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request);
+    public BaseResponse<CourseAdminDTO> adminList(CourseSearchRequest courseSearchRequest,HttpServletRequest request);
 }
