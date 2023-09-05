@@ -2,24 +2,27 @@ package edu.seu.lms.backend.seulmsbe.syllabus.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
+import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
 import edu.seu.lms.backend.seulmsbe.checkin.entity.Checkin;
 import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.checkin.service.ICheckinService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
-import edu.seu.lms.backend.seulmsbe.dto.MaterialDTO;
-import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.SyllabusDTO;
-import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
+import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
+import edu.seu.lms.backend.seulmsbe.dto.*;
+import edu.seu.lms.backend.seulmsbe.dto.DataVisualize.Homework;
 import edu.seu.lms.backend.seulmsbe.file.entity.File;
 import edu.seu.lms.backend.seulmsbe.file.mapper.FileMapper;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusCommonRequest;
+import edu.seu.lms.backend.seulmsbe.request.SyllabusListHomeworkRequest;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusListRequest;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
+import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +51,10 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     private ICheckinService iCheckinService;
     @Autowired
     private FileMapper fileMapper;
+    @Autowired
+    private AssignmentMapper assignmentMapper;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public BaseResponse<SyllabusListDTO> listSyllabus(SyllabusListRequest syllabusListRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -131,12 +138,13 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         Syllabus syllabustmp = syllabusMapper.selectById(syllabusID);
         if(syllabustmp.getMaterials()==null || syllabustmp.getMaterials().isEmpty()) return ResultUtils.error(777,"无文件",null);
         else {
-            String[] list = syllabustmp.getMaterials().split("##");
+            //String[] list = syllabustmp.getMaterials().split("##");
             MaterialListDTO dto = new MaterialListDTO();
             List<MaterialDTO> dtoList = new ArrayList<>();
-            for(String t:list){
+            List<File> list = fileMapper.selectList(new LambdaUpdateWrapper<File>().eq(File::getSyllabusID,syllabusID));
+            for(File tmp:list){
                 MaterialDTO materialDTO = new MaterialDTO();
-                File tmp = fileMapper.selectById(t);
+                //File tmp = fileMapper.selectById(t);
                 materialDTO.setDescription(tmp.getDescription());
                 materialDTO.setName(tmp.getName());
                 materialDTO.setTime(tmp.getTime());
@@ -148,5 +156,41 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             dto.setFileList(dtoList);
             return ResultUtils.success(dto);
         }
+    }
+
+    @Override
+    public BaseResponse<SyllabusHomeworkListDTO> listHomework(SyllabusListHomeworkRequest syllabusListHomeworkRequest, HttpServletRequest request) {
+        String syllabusID = syllabusListHomeworkRequest.getSyllabusID();
+        int curPage = syllabusListHomeworkRequest.getCurrentPage();
+        int pageSize = syllabusListHomeworkRequest.getPageSize();
+        LambdaUpdateWrapper<Assignment> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(Assignment::getSyllabusID,syllabusID);
+        Page<Assignment> Page = assignmentMapper.selectPage(new Page<>(curPage,pageSize),queryMapper);
+        List<Assignment> assignmentList = Page.getRecords();
+        List<SyllabusHomeworkDTO> syllabusHomeworkDTOList = new ArrayList<>();
+        for(Assignment tmp:assignmentList){
+            SyllabusHomeworkDTO temp = new SyllabusHomeworkDTO();
+            temp.setFileName(tmp.getName());
+            temp.setFileType(tmp.getType());
+            temp.setStatus(tmp.getStatus());
+            temp.setFileUrl(tmp.getFile());
+            User user = userMapper.selectById(tmp.getStudentID());
+            temp.setStudentAvatar(user.getAvatarUrl());
+            temp.setStudentNickName(user.getNickname());
+            syllabusHomeworkDTOList.add(temp);
+        }
+        SyllabusHomeworkListDTO dto = new SyllabusHomeworkListDTO();
+        dto.setTotalNum((int)Page.getTotal());
+        dto.setList(syllabusHomeworkDTOList);
+        SyllabusHomeworkInfoDTO infoDTO = new SyllabusHomeworkInfoDTO();
+        Syllabus syllabustmp = syllabusMapper.selectById(syllabusID);
+        if(syllabustmp.getAssiments()==null || syllabustmp.getAssiments().isEmpty()) infoDTO.setHomeworkName(syllabustmp.getAssiments());
+        if(!assignmentList.isEmpty()){
+            infoDTO.setHomeworkDescription(assignmentList.get(0).getContent());
+        }
+        infoDTO.setUncommittedNum(assignmentMapper.getStatus0num(syllabusID));
+        infoDTO.setToBeCorrectedNum(assignmentMapper.getStatus1num(syllabusID));
+        dto.setInfo(infoDTO);
+        return ResultUtils.success(dto);
     }
 }

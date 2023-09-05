@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.Wiki.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -37,5 +38,7 @@ public class Wiki implements Serializable {
     @TableField("fromUserID")
     private String fromUserID;
 
+    @TableField("time")
+    private LocalDateTime time;
 
 }

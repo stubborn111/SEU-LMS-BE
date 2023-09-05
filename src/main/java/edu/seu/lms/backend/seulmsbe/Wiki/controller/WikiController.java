@@ -49,7 +49,7 @@ public class WikiController {
     }
 
     @PostMapping("/admin-list")
-    public BaseResponse<WikiAdminListDTO> adminlist(CoursePageRequest coursePageRequest, HttpServletRequest request){
+    public BaseResponse<WikiAdminListDTO> adminlist(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request){
         return iWikiService.adminlist(coursePageRequest,request);
     }
 }

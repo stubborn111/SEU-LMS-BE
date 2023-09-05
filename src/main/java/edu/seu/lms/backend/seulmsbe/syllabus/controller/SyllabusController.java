@@ -5,8 +5,10 @@ import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.SyllabusHomeworkListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusCommonRequest;
+import edu.seu.lms.backend.seulmsbe.request.SyllabusListHomeworkRequest;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusListRequest;
 import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,10 @@ public class SyllabusController {
         return syllabusService.listMaterial(syllabusCommonRequest,request);
     }
 
+    @PostMapping("/homework/list")
+    public BaseResponse<SyllabusHomeworkListDTO> listHomework(@RequestBody SyllabusListHomeworkRequest syllabusListHomeworkRequest,HttpServletRequest request){
+        return syllabusService.listHomework(syllabusListHomeworkRequest,request);
+    }
     @PostMapping("/upload")
     public BaseResponse<String> uploadFile (@RequestParam("file")MultipartFile file,HttpServletRequest request){
         if (file.isEmpty()) {
