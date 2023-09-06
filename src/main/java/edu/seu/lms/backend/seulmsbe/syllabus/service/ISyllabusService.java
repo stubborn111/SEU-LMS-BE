@@ -30,4 +30,6 @@ public interface ISyllabusService extends IService<Syllabus> {
     BaseResponse<String> haveCheckIn(HaveCheckInRequest haveCheckInRequest, HttpServletRequest request);
 
     BaseResponse<String> checkinStop(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request);
+
+    BaseResponse<String> homeworkPublish(HomeworkPublishRequest homeworkPublishRequest, HttpServletRequest request);
 }

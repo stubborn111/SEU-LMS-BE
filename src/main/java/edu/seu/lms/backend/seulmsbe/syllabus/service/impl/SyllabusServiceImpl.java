@@ -13,6 +13,8 @@ import edu.seu.lms.backend.seulmsbe.checkin.service.ICheckinService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.dto.*;
+import edu.seu.lms.backend.seulmsbe.event.entity.Event;
+import edu.seu.lms.backend.seulmsbe.event.mapper.EventMapper;
 import edu.seu.lms.backend.seulmsbe.file.entity.File;
 import edu.seu.lms.backend.seulmsbe.file.mapper.FileMapper;
 import edu.seu.lms.backend.seulmsbe.request.*;
@@ -22,13 +24,22 @@ import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
+import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,6 +69,8 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     private UserMapper userMapper;
     @Autowired
     private StudentCurriculumMapper studentCurriculumMapper;
+    @Autowired
+    private EventMapper eventMapper;
     @Override
     public BaseResponse<SyllabusListDTO> listSyllabus(SyllabusListRequest syllabusListRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -230,6 +243,54 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(Syllabus::getId,syllabusCommonRequest.getSyllabusID()).set(Syllabus::getIsCheckedIn,2);
         update(lambdaUpdateWrapper);
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<String> homeworkPublish(HomeworkPublishRequest homeworkPublishRequest, HttpServletRequest request) {
+        String syllabusID = homeworkPublishRequest.getSyllabusID();
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = format.parse(homeworkPublishRequest.getDeadline());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        String str = homeworkPublishRequest.getDeadline()+" 23:59:59";
+        Date datetime = null;
+        DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            datetime = format2.parse(str);
+        } catch (ParseException e) {
+
+        }
+        Syllabus syllabus= syllabusMapper.selectById(syllabusID);
+        LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(Syllabus::getId,syllabusID).set(Syllabus::getAssiments,homeworkPublishRequest.getHomeworkName());
+        update(lambdaUpdateWrapper);
+        LambdaUpdateWrapper<StudentCurriculum> lambdaUpdateWrapper1 = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper1.eq(StudentCurriculum::getCurriculumID,syllabus.getCurriculumID());
+        List<StudentCurriculum> studentCurriculumList = studentCurriculumMapper.selectList(lambdaUpdateWrapper1);
+        ZoneId zoneId = ZoneId.systemDefault();
+        for(StudentCurriculum sc:studentCurriculumList){
+            User user = userMapper.selectById(sc.getStudentID());
+            Assignment assignment = new Assignment();
+            assignment.setSyllabusID(syllabusID);
+            assignment.setID(UUID.randomUUID().toString().substring(0,7));
+            assignment.setStudentID(user.getId());
+            assignment.setStatus(0);
+            assignment.setContent(homeworkPublishRequest.getHomeworkDescription());
+            assignment.setTime(datetime.toInstant().atZone(zoneId).toLocalDateTime());
+            assignmentMapper.insert(assignment);
+            Event event = new Event();
+            event.setId(UUID.randomUUID().toString().substring(0,7));
+            event.setDate(date.toInstant().atZone(zoneId).toLocalDate());
+            event.setContent(homeworkPublishRequest.getHomeworkName());
+            event.setType("assignment");
+            event.setUserID(user.getId());
+            event.setContent(homeworkPublishRequest.getHomeworkName());
+            eventMapper.insert(event);
+        }
         return ResultUtils.success(null);
     }
 }

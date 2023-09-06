@@ -1,6 +1,8 @@
 package edu.seu.lms.backend.seulmsbe.event.entity;
 
 import java.time.LocalDate;
+
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
@@ -23,7 +25,7 @@ public class Event implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("ID")
+    @TableId(value = "ID",type = IdType.INPUT)
     private String id;
 
     private LocalDate date;
@@ -33,5 +35,6 @@ public class Event implements Serializable {
     @TableField("userID")
     private String userID;
 
-
+    @TableField("type")
+    private String type;
 }

@@ -1,5 +1,6 @@
 package edu.seu.lms.backend.seulmsbe.assignment.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
@@ -24,7 +25,7 @@ public class Assignment implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId("ID")
+    @TableId(value = "ID",type = IdType.INPUT)
     private String ID;
     @TableField("studentID")
     private String studentID;

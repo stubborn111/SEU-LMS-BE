@@ -54,9 +54,14 @@ public class SyllabusController {
     public BaseResponse<String> haveCheckin(@RequestBody HaveCheckInRequest haveCheckInRequest,HttpServletRequest request){
         return syllabusService.haveCheckIn(haveCheckInRequest,request);
     }
+
     @PostMapping("/checkin/stop")
     public BaseResponse<String> checkinStop(@RequestBody SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request){
         return syllabusService.checkinStop(syllabusCommonRequest,request);
+    }
+    @PostMapping("/homework/publish")
+    public BaseResponse<String> homeworkPublish(@RequestBody HomeworkPublishRequest homeworkPublishRequest,HttpServletRequest request){
+        return syllabusService.homeworkPublish(homeworkPublishRequest,request);
     }
     @PostMapping("/upload")
     public BaseResponse<String> uploadFile (@RequestParam("file")MultipartFile file,HttpServletRequest request){
