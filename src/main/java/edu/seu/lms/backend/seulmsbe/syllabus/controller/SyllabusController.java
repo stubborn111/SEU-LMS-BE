@@ -63,6 +63,14 @@ public class SyllabusController {
     public BaseResponse<String> homeworkPublish(@RequestBody HomeworkPublishRequest homeworkPublishRequest,HttpServletRequest request){
         return syllabusService.homeworkPublish(homeworkPublishRequest,request);
     }
+    @PostMapping("/add")
+    public BaseResponse<String> addSyllabus(@RequestBody SyllabusAddRequest syllabusAddRequest,HttpServletRequest request){
+        return syllabusService.addsyllabus(syllabusAddRequest,request);
+    }
+    @PostMapping("/modify")
+    public BaseResponse<String> modifySyllabus(@RequestBody SyllabusModifyRequest syllabusModifyRequest,HttpServletRequest request){
+        return syllabusService.modifySyllabus(syllabusModifyRequest,request);
+    }
     @PostMapping("/upload")
     public BaseResponse<String> uploadFile (@RequestParam("file")MultipartFile file,HttpServletRequest request){
         if (file.isEmpty()) {

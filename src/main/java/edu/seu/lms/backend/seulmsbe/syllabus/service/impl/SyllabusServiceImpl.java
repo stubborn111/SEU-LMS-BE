@@ -293,4 +293,42 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         }
         return ResultUtils.success(null);
     }
+
+    @Override
+    public BaseResponse<String> addsyllabus(SyllabusAddRequest syllabusAddRequest, HttpServletRequest request) {
+        Syllabus syllabus = new Syllabus();
+        syllabus.setId(UUID.randomUUID().toString().substring(0,7));
+        syllabus.setTitle(syllabusAddRequest.getSyllabusTitle());
+        Date datetime = null;
+        DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            datetime = format2.parse(syllabusAddRequest.getSelectedDateTime());
+        } catch (ParseException e) {
+
+        }
+        syllabus.setIsCheckedIn(0);
+        ZoneId zoneId = ZoneId.systemDefault();
+        syllabus.setTime(datetime.toInstant().atZone(zoneId).toLocalDateTime());
+        syllabus.setCurriculumID(syllabusAddRequest.getCourseID());
+        syllabusMapper.insert(syllabus);
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<String> modifySyllabus(SyllabusModifyRequest syllabusModifyRequest, HttpServletRequest request) {
+        Date datetime = null;
+        DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            datetime = format2.parse(syllabusModifyRequest.getSelectedDateTime());
+        } catch (ParseException e) {
+
+        }
+        ZoneId zoneId = ZoneId.systemDefault();
+        LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(Syllabus::getId,syllabusModifyRequest.getSyllabusID())
+                .set(Syllabus::getTitle,syllabusModifyRequest.getSyllabusTitle())
+                .set(Syllabus::getTime,datetime.toInstant().atZone(zoneId).toLocalDateTime());
+        update(lambdaUpdateWrapper);
+        return ResultUtils.success(null);
+    }
 }
