@@ -70,14 +70,14 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
     Integer getTwoday();
 
     @Select("select count(*)\n" +
-            "from assignment where score<#{end} and score>=#{begin} and status=2")
-    Integer getScoreNum(float begin,float end);
+            "from assignment where score<#{end} and score>=#{begin} and status=2 and syllabusID=#{syllabusID}")
+    Integer getScoreNum(float begin,float end,String syllabusID);
     @Select("select count(*)\n" +
-            "from assignment where score=#{score} and status=2")
-    Integer getScoreOneNum(float score);
+            "from assignment where score=#{score} and status=2 and syllabusID=#{syllabusID}")
+    Integer getScoreOneNum(float score,String syllabusID);
     @Select("select count(*)\n" +
-            "from assignment where status!=2")
-    Integer getNotCheckinNum();
+            "from assignment where status!=2 and syllabusID=#{syllabusID}")
+    Integer getNotCheckinNum(String syllabusID);
     @Select("select count(*) from assignment where syllabusID=#{syllabusID} and status=2")
     Integer getAssignmentNum(String syllabusID);
     @Select("select SUM(score) from assignment where syllabusID=#{syllabusID} and status=2")

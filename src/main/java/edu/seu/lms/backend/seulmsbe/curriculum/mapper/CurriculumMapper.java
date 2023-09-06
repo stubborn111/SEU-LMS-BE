@@ -43,6 +43,8 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
     @Select("select * from curriculum where teacherID=#{teacherID}")
     List<Curriculum> selectCurriculumByteacher(String teacherID);
 
+    @Select("select * from curriculum where name=#{name}")
+    List<Curriculum> selectCurriculumByName(String name);
     @Select("SELECT * FROM curriculum,student_curriculum "+
             "WHERE student_curriculum.studentID = #{userID}"+
             " AND curriculum.name Like CONCAT('%',#{keyword},'%') "+

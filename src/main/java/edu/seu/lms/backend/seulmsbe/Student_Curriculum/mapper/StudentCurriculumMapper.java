@@ -46,4 +46,7 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
             " when student_curriculum.curriculumID=#{curriculumID} then 1 else NULL end) from student_curriculum")
     int getNumofCourse(String curriculumID);
 
+    @Select("select count(*) from student_curriculum where curriculumID=#{curriculumID}")
+    Integer getCourseNum(String curriculumID);
+
 }
