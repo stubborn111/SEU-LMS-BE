@@ -1,6 +1,8 @@
 package edu.seu.lms.backend.seulmsbe.checkin.entity;
 
 import java.time.LocalDate;
+
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
@@ -34,7 +36,7 @@ public class Checkin implements Serializable {
     @TableField("isCheckedIn")
     private Integer isCheckedIn;
 
-    @TableId("ID")
+    @TableId(value = "ID",type = IdType.INPUT)
     private String ID;
 
 

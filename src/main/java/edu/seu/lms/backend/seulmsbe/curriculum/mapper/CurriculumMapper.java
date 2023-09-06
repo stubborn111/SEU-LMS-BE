@@ -53,6 +53,26 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
     //分页模糊查询登录学生的课程
     List<Curriculum> studentSearch(String keyword,String userID,int begin,int size);
 
+    @Select("SELECT * FROM user,student_curriculum "+
+            "WHERE student_curriculum.curriculumID = #{courseID}"+
+            " AND user.nickname Like CONCAT('%',#{keyword},'%') "+
+            "AND student_curriculum.studentID = user.ID "+
+            "AND user.access = 1 "+
+            "LIMIT #{begin},#{size}")
+        //分页模糊查询登录学生的课程
+    List<User> listStudent(String keyword,String courseID,int begin,int size);
+    @Select("select SUM(" +
+            "case " +
+            "WHEN student_curriculum.curriculumID = #{courseID}"+
+            " AND user.nickname Like CONCAT('%',#{keyword},'%') "+
+            "AND student_curriculum.studentID = user.ID "+
+            "AND user.access = 1 THEN "+
+            " 1" +
+            " else" +
+            " 0" +
+            " end" +
+            ") from user,student_curriculum")
+    Integer getListStudentNum(String keyword,String courseID);
     @Select("select * from curriculum,user" +
             " where curriculum.name like CONCAT('%',#{keyword},'%')" +
             " AND user.nickname like CONCAT('%',#{teacherName},'%')" +
@@ -67,10 +87,10 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             " AND curriculum.teacherID=user.ID then" +
             " 1" +
             " else" +
-            " NULL" +
+            " 0" +
             " end" +
             ") from curriculum,user")
-    int getnumAdmin(String keyword,String teacherName);
+    Integer getnumAdmin(String keyword,String teacherName);
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN student_curriculum.studentID = #{userID}"+

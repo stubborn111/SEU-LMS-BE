@@ -12,4 +12,5 @@ public class SyllabusDTO {
     private Integer isCheckedIn;
     private Boolean haveMaterial;
     private Boolean haveHomework;
+    private String time;
 }

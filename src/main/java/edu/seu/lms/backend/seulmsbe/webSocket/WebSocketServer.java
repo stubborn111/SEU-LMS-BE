@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-@ServerEndpoint("/ws/{userId}")
+@ServerEndpoint("/ws/test")
 @Component
 public class WebSocketServer {
 
@@ -49,15 +49,16 @@ public class WebSocketServer {
      * @param userId
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam("userId") String userId) {
+    public void onOpen(Session session) {
         this.session = session;
-        this.userId = userId;
-
-        webSocketMap.put(userId, this);
-        log.info("webSocketMap -> " + JSON.toJSONString(webSocketMap));
-
-        addOnlineCount(); // 在线数 +1
-        log.info("有新窗口开始监听:" + userId + ",当前在线人数为" + getOnlineCount());
+//        this.session = session;
+//        this.userId = userId;
+//
+//        webSocketMap.put(userId, this);
+//        log.info("webSocketMap -> " + JSON.toJSONString(webSocketMap));
+//
+//        addOnlineCount(); // 在线数 +1
+//        log.info("有新窗口开始监听:" + userId + ",当前在线人数为" + getOnlineCount());
 
         try {
             sendMessage(JSON.toJSONString("连接成功"));
@@ -72,14 +73,21 @@ public class WebSocketServer {
      * 关闭连接
      */
 
-    @OnClose
-    public void onClose() {
-        if (webSocketMap.get(this.userId) != null) {
-            webSocketMap.remove(this.userId);
-            subOnlineCount(); // 人数 -1
-            log.info("有一连接关闭，当前在线人数为：" + getOnlineCount());
-        }
-    }
+//    @OnClose
+//    public void onClose() {
+////        if (webSocketMap.get(this.userId) != null) {
+////            webSocketMap.remove(this.userId);
+////            subOnlineCount(); // 人数 -1
+////            log.info("有一连接关闭，当前在线人数为：" + getOnlineCount());
+////        }
+//        try {
+//            sendMessage(JSON.toJSONString("连接断开"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            throw new ApiException("websocket IO异常！！！！");
+//        }
+//
+//    }
 
     /**
      * 收到客户端消息后调用的方法

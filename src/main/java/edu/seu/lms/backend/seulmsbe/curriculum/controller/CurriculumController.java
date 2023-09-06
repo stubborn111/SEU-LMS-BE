@@ -46,7 +46,10 @@ public class CurriculumController {
     {
         return iCurriculumService.teacehrList(courseListRequest,request);
     }
-
+    @PostMapping("/list-student")
+    public BaseResponse<CourseListStudentDTO> listStudent(@RequestBody CourseListStudent2Request courseListStudentRequest,HttpServletRequest request){
+        return iCurriculumService.listStudent(courseListStudentRequest,request);
+    }
 
 
     @PostMapping("/test")
@@ -91,28 +94,28 @@ public class CurriculumController {
     {
         return iCurriculumService.listDescription(request);
     }
-    @PostMapping("get-name")
+    @PostMapping("/get-name")
     public BaseResponse<CourseNameDTO> getCourseName(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
     {
         return iCurriculumService.getCourseName(courseGetIntoRequest,request);
     }
-    @PostMapping("modify-course")
+    @PostMapping("/modify")
     public BaseResponse<Curriculum> modifyCourse(@RequestBody CourseModifyRequest courseModifyRequest, HttpServletRequest request)
     {
         return iCurriculumService.modifyCourse(courseModifyRequest,request);
     }
-    @PostMapping("get-teacher-info")
+    @PostMapping("/get-teacher-info")
     public BaseResponse<CourseTeacherDTO> getTeacherInfo(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         return iCurriculumService.getTeacherInfo(courseGetIntoRequest,request);
     }
 
-    @PostMapping("get-into")
+    @PostMapping("/get-into")
     public BaseResponse<CourseGetinfoDTO> getInto(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         return iCurriculumService.getInto(courseGetIntoRequest,request);
     }
-    @PostMapping("admin-list")
+    @PostMapping("/admin-list")
     public BaseResponse<CourseAdminDTO> adminList(@RequestBody CourseAdminRequest courseAdminRequest, HttpServletRequest request)
     {
         return iCurriculumService.adminList(courseAdminRequest,request);

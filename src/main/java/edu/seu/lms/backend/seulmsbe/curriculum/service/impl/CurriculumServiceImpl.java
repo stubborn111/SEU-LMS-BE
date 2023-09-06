@@ -1,7 +1,6 @@
 package edu.seu.lms.backend.seulmsbe.curriculum.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
@@ -327,10 +326,24 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         int pagesize =courseAdminRequest.getPageSize();
         int curPage = courseAdminRequest.getCurrentPage();
         System.out.println(keyword);
-        List<Curriculum> curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,teachername,pagesize*(curPage-1),pagesize);
-
         CourseAdminDTO DTO=new CourseAdminDTO();
-        DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,teachername));
+        List<Curriculum> curriculumList;
+        if(keyword==null&&teachername==null) {
+            curriculumList = curriculumMapper.SearchByNameAndTeacher("","",pagesize*(curPage-1),pagesize);
+            DTO.setTotalNum(curriculumMapper.getnumAdmin("",""));
+        } else if (keyword==null && teachername!=null) {
+            curriculumList = curriculumMapper.SearchByNameAndTeacher("",teachername,pagesize*(curPage-1),pagesize);
+            DTO.setTotalNum(curriculumMapper.getnumAdmin("",teachername));
+        }
+        else if(keyword != null && teachername==null){
+            curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,"",pagesize*(curPage-1),pagesize);
+            DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,""));
+        }
+        else {
+            curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,teachername,pagesize*(curPage-1),pagesize);
+            DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,teachername));
+        }
+
         List<CourseAdminDataDTO> dto1=new ArrayList<>();
         for(Curriculum tt:curriculumList)
         {
@@ -347,16 +360,48 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             dto1.add(dto);
         }
         DTO.setList(dto1);
-        LambdaUpdateWrapper<User> updateWrapper1=new LambdaUpdateWrapper<>();
-        updateWrapper1.eq(User::getAccess,2);
-        List<User> teachers=userMapper.selectList(updateWrapper1);
-        List<String> list=new ArrayList<>();
-        for(User tt:teachers)
-        {
-            list.add(tt.getNickname());
-        }
-        DTO.setTeacherList(list);
+//        LambdaUpdateWrapper<User> updateWrapper1=new LambdaUpdateWrapper<>();
+//        updateWrapper1.eq(User::getAccess,2);
+//        List<User> teachers=userMapper.selectList(updateWrapper1);
+//        List<String> list=new ArrayList<>();
+//        for(User tt:teachers)
+//        {
+//            list.add(tt.getNickname());
+//        }
+        //DTO.setTeacherList(list);
         return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<CourseListStudentDTO> listStudent(CourseListStudent2Request courseListStudentRequest, HttpServletRequest request) {
+        int curPage = courseListStudentRequest.getCurrentPage();
+        int pagesize = courseListStudentRequest.getPageSize();
+        String keyword = courseListStudentRequest.getNickName();
+        String courseID = courseListStudentRequest.getCourseID();
+        int num;
+        List<User> userList;
+        if(keyword==null){
+            num = curriculumMapper.getListStudentNum("",courseID);
+            userList = curriculumMapper.listStudent("",courseID,(curPage-1)*pagesize,pagesize);
+        }
+        else {
+            num = curriculumMapper.getListStudentNum(keyword,courseID);
+            userList = curriculumMapper.listStudent(keyword,courseID,(curPage-1)*pagesize,pagesize);
+        }
+        CourseListStudentDTO dto = new CourseListStudentDTO();
+        dto.setTotalNum(num);
+        List<CourseStudentDTO> courseStudentDTOList =new ArrayList<>();
+        for(User tmp:userList){
+            CourseStudentDTO temp = new CourseStudentDTO();
+            temp.setAvatarUrl(tmp.getAvatarUrl());
+            temp.setId(tmp.getId());
+            temp.setName(tmp.getNickname());
+            temp.setPhone(tmp.getPhone());
+            temp.setEmail(tmp.getEmail());
+            courseStudentDTOList.add(temp);
+        }
+        dto.setList(courseStudentDTOList);
+        return ResultUtils.success(dto);
     }
 
 }

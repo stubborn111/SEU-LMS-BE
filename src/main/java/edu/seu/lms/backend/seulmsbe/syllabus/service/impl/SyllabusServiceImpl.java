@@ -1,7 +1,10 @@
 package edu.seu.lms.backend.seulmsbe.syllabus.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
+import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
 import edu.seu.lms.backend.seulmsbe.checkin.entity.Checkin;
@@ -9,14 +12,10 @@ import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.checkin.service.ICheckinService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
-import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import edu.seu.lms.backend.seulmsbe.dto.*;
-import edu.seu.lms.backend.seulmsbe.dto.DataVisualize.Homework;
 import edu.seu.lms.backend.seulmsbe.file.entity.File;
 import edu.seu.lms.backend.seulmsbe.file.mapper.FileMapper;
-import edu.seu.lms.backend.seulmsbe.request.SyllabusCommonRequest;
-import edu.seu.lms.backend.seulmsbe.request.SyllabusListHomeworkRequest;
-import edu.seu.lms.backend.seulmsbe.request.SyllabusListRequest;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
@@ -28,8 +27,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -55,6 +56,8 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     private AssignmentMapper assignmentMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private StudentCurriculumMapper studentCurriculumMapper;
     @Override
     public BaseResponse<SyllabusListDTO> listSyllabus(SyllabusListRequest syllabusListRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -81,6 +84,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             SyllabusDTO temp = new SyllabusDTO();
             temp.setSyllabusID(tt.getId());
             temp.setTitle(tt.getTitle());
+            temp.setTime(tt.getTime().toString().replace("T"," "));
 //            String[] material = null;
 //            String[] homework = null;
 //            if(tt.getMaterials() != null){
@@ -114,22 +118,25 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     }
 
     @Override
-    public BaseResponse<Integer> checkin(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request) {
+    public BaseResponse<Integer> checkin(CheckInRequest checkInRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
-        String syllabusID = syllabusCommonRequest.getSyllabusID();
+        String syllabusID = checkInRequest.getSyllabusID();
+        String psw = checkInRequest.getCheckInPsw();
         Syllabus temp = syllabusMapper.selectById(syllabusID);
         if(temp.getIsCheckedIn() == 2){
-            return ResultUtils.success(0);
+            return ResultUtils.success(-1);
         }
-        else if(temp.getIsCheckedIn() == 1){
+        else if(temp.getIsCheckedIn() == 1 && psw.equals(temp.getCheckInPsw())){
             LambdaUpdateWrapper<Checkin> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-            lambdaUpdateWrapper.eq(Checkin::getSyllabusID,syllabusID).eq(Checkin::getStudentID,currentUser)
+            lambdaUpdateWrapper.eq(Checkin::getSyllabusID,syllabusID).eq(Checkin::getStudentID,currentUser.getId())
                     .set(Checkin::getIsCheckedIn,1);
             iCheckinService.update(lambdaUpdateWrapper);
             return ResultUtils.success(1);
-
         }
-        else return ResultUtils.success(-1);
+        else if(temp.getIsCheckedIn() == 1 && psw != temp.getCheckInPsw()){
+            return ResultUtils.success(0);
+        }
+        else return ResultUtils.success(2);
     }
 
     @Override
@@ -192,5 +199,37 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         infoDTO.setToBeCorrectedNum(assignmentMapper.getStatus1num(syllabusID));
         dto.setInfo(infoDTO);
         return ResultUtils.success(dto);
+    }
+
+    @Override
+    public BaseResponse<String> haveCheckIn(HaveCheckInRequest haveCheckInRequest, HttpServletRequest request) {
+        String syllabusID = haveCheckInRequest.getSyllabusID();
+        String psw = haveCheckInRequest.getPassword();
+        Syllabus syllabus = syllabusMapper.selectById(syllabusID);
+        LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(Syllabus::getId,syllabusID).set(Syllabus::getCheckInPsw,psw).set(Syllabus::getIsCheckedIn,1);
+        update(lambdaUpdateWrapper);
+        LambdaUpdateWrapper<StudentCurriculum> lambdaUpdateWrapper1 = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper1.eq(StudentCurriculum::getCurriculumID,syllabus.getCurriculumID());
+        List<StudentCurriculum> studentCurriculumList =  studentCurriculumMapper.selectList(lambdaUpdateWrapper1);
+        for(StudentCurriculum tmp:studentCurriculumList){
+            User user = userMapper.selectById(tmp.getStudentID());
+            Checkin checkin = new Checkin();
+            checkin.setSyllabusID(syllabusID);
+            checkin.setIsCheckedIn(0);
+            checkin.setTime(LocalDate.now());
+            checkin.setID(UUID.randomUUID().toString().substring(0,7));
+            checkin.setStudentID(user.getId());
+            checkinMapper.insert(checkin);
+        }
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<String> checkinStop(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request) {
+        LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.eq(Syllabus::getId,syllabusCommonRequest.getSyllabusID()).set(Syllabus::getIsCheckedIn,2);
+        update(lambdaUpdateWrapper);
+        return ResultUtils.success(null);
     }
 }

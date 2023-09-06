@@ -7,9 +7,7 @@ import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusHomeworkListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
-import edu.seu.lms.backend.seulmsbe.request.SyllabusCommonRequest;
-import edu.seu.lms.backend.seulmsbe.request.SyllabusListHomeworkRequest;
-import edu.seu.lms.backend.seulmsbe.request.SyllabusListRequest;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +38,8 @@ public class SyllabusController {
     }
 
     @PostMapping("/check-in")
-    public BaseResponse<Integer> checkin(@RequestBody SyllabusCommonRequest syllabusCommonRequest,HttpServletRequest request){
-        return syllabusService.checkin(syllabusCommonRequest,request);
+    public BaseResponse<Integer> checkin(@RequestBody CheckInRequest checkInRequest, HttpServletRequest request){
+        return syllabusService.checkin(checkInRequest,request);
     }
     @PostMapping("/material/list")
     public BaseResponse<MaterialListDTO> listMaterial(@RequestBody SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request){
@@ -51,6 +49,14 @@ public class SyllabusController {
     @PostMapping("/homework/list")
     public BaseResponse<SyllabusHomeworkListDTO> listHomework(@RequestBody SyllabusListHomeworkRequest syllabusListHomeworkRequest,HttpServletRequest request){
         return syllabusService.listHomework(syllabusListHomeworkRequest,request);
+    }
+    @PostMapping("/checkin/start")
+    public BaseResponse<String> haveCheckin(@RequestBody HaveCheckInRequest haveCheckInRequest,HttpServletRequest request){
+        return syllabusService.haveCheckIn(haveCheckInRequest,request);
+    }
+    @PostMapping("/checkin/stop")
+    public BaseResponse<String> checkinStop(@RequestBody SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request){
+        return syllabusService.checkinStop(syllabusCommonRequest,request);
     }
     @PostMapping("/upload")
     public BaseResponse<String> uploadFile (@RequestParam("file")MultipartFile file,HttpServletRequest request){

@@ -304,7 +304,8 @@ public class DataVisualizeController {
                 notcheckin0=notcheckin0+checkinMapper.getCheckinBySylNum(0, ss.getId());
             }
         }
-        dto.setGaugeChartData((checkin0*100)/(checkin0+notcheckin0));
+        if(checkin0+notcheckin0==0) dto.setGaugeChartData(0);
+        else dto.setGaugeChartData((checkin0*100)/(checkin0+notcheckin0));
         //第三个图表
         List<CommonData> chartData3=new ArrayList<>();
         int[] nums=new int[5];
