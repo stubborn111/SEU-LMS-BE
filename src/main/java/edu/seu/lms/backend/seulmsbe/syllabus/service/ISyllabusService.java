@@ -2,8 +2,10 @@ package edu.seu.lms.backend.seulmsbe.syllabus.service;
 
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.SyllabusHomeworkListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusCommonRequest;
+import edu.seu.lms.backend.seulmsbe.request.SyllabusListHomeworkRequest;
 import edu.seu.lms.backend.seulmsbe.request.SyllabusListRequest;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,7 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 public interface ISyllabusService extends IService<Syllabus> {
     public BaseResponse<SyllabusListDTO> listSyllabus(SyllabusListRequest syllabusListRequest, HttpServletRequest request);
 
-    BaseResponse<String> checkin(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request);
+    BaseResponse<Integer> checkin(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request);
 
     BaseResponse<MaterialListDTO> listMaterial(SyllabusCommonRequest syllabusCommonRequest, HttpServletRequest request);
+
+    BaseResponse<SyllabusHomeworkListDTO> listHomework(SyllabusListHomeworkRequest syllabusListHomeworkRequest, HttpServletRequest request);
 }

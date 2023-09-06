@@ -90,7 +90,59 @@ public class UploadController {
         iUserService.update(queryWrapper);
         return ResultUtils.success(returnUrl);
     }
+    @PostMapping("/file")
+    public BaseResponse<String> uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+        if (file.isEmpty()) {
+            return ResultUtils.error(ErrorCode.FILE_EMPTY);
+        }
 
+        String bucketNanme=aliyunOSSConfig.getBucketName();
+        String endPoint = aliyunOSSConfig.getEndPoint();
+        String accessKeyId = aliyunOSSConfig.getAccessKeyId();
+        String accessKeySecret = aliyunOSSConfig.getAccessKeySecret();
+        String fileHost = aliyunOSSConfig.getFileHost();
+        //返回的Url
+        String returnUrl="";
+        //审核上传文件是否符合规定格式
+//        boolean isLegal=false;
+//        for (String type:IMAGE_TYPE){
+//            if (StringUtils.endsWithIgnoreCase(file.getOriginalFilename(),type)){
+//                isLegal=true;
+//                break;
+//            }
+//        }
+//        if (!isLegal){
+////            如果不正确返回错误状态码
+//            return StatusCode.ERROR.getMsg();
+//        }
+        //获取文件的名称
+        String originalFilename = file.getOriginalFilename();
+        //截取文件类型
+        String fileType = originalFilename.substring(originalFilename.lastIndexOf("."));
+//        最终保存文件名称
+        String newFileName= UUID.randomUUID().toString()+ fileType;
+        //构建日期路径  ps ：oss目标文件夹/yyyy/MM/dd文件名称
+        String filePath=new SimpleDateFormat("yyyy/MM/dd").format(new Date());
+//        文件上传文件的路径
+        String uploadUrl=fileHost+"/"+filePath+"/"+newFileName;
+//        获取文件输入流
+        InputStream inputStream=null;
+        try{
+            inputStream=file.getInputStream();
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        //文件上传到阿里云oss
+//        ossClient.put
+        ossClient.putObject(bucketNanme,uploadUrl,inputStream);//,meta
+        returnUrl="http://"+bucketNanme+"."+endPoint+"/"+uploadUrl;
+        User user =(User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        LambdaUpdateWrapper<User> queryWrapper = new LambdaUpdateWrapper<>();
+        queryWrapper.eq(User::getId,user.getId()).set(User::getAvatarUrl,returnUrl);
+        iUserService.update(queryWrapper);
+        return ResultUtils.success(returnUrl);
+    }
     @PostMapping("/test")
     public BaseResponse<String> test(@RequestParam("file") MultipartFile file, HttpServletRequest request){
         String bucketNanme=aliyunOSSConfig.getBucketName();

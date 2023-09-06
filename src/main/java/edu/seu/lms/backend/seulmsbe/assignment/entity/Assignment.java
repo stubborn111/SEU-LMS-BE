@@ -1,5 +1,6 @@
 package edu.seu.lms.backend.seulmsbe.assignment.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -25,13 +26,22 @@ public class Assignment implements Serializable {
 
     @TableId("ID")
     private String ID;
+    @TableField("studentID")
     private String studentID;
+    @TableField("syllabusID")
     private String syllabusID;
-    private String describe;
+    @TableField("content")
+    private String content;
+    @TableField("name")
     private String name;
+    @TableField("score")
     private Float score;
+    @TableField("type")
     private String type;
+    @TableField("file")
     private String file;
+    @TableField("status")
     private Integer status;
+    @TableField("time")
     private LocalDateTime time;
 }
