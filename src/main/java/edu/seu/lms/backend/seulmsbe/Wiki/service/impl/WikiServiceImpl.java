@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,10 +48,10 @@ public class WikiServiceImpl extends ServiceImpl<WikiMapper, Wiki> implements IW
 
 
         Page<Wiki> WikiPage = wikiMapper.selectPage(new Page<>(curPage,pagesize),null);
-
+        List<Wiki> wikiList = wikiMapper.getList((curPage-1)*pagesize,pagesize);
         WikiListDTO dto = new WikiListDTO();
         dto.setTotalNum((int)WikiPage.getTotal());
-        dto.setList(WikiPage.getRecords());
+        dto.setList(wikiList);
         return ResultUtils.success(dto);
     }
 
@@ -58,7 +59,9 @@ public class WikiServiceImpl extends ServiceImpl<WikiMapper, Wiki> implements IW
     public BaseResponse<String> postAnswer(PostAnswerRequest postAnswerRequest, HttpServletRequest request) {
         LambdaUpdateWrapper<Wiki> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(Wiki::getWikiID,postAnswerRequest.getWikiID())
-                .set(Wiki::getAnswer,postAnswerRequest.getAnswer());
+                .set(Wiki::getAnswer,postAnswerRequest.getAnswer())
+                .set(Wiki::getIsSolved,true)
+                .set(Wiki::getTime, LocalDateTime.now());
         update(lambdaUpdateWrapper);
         return ResultUtils.success(null);
     }
@@ -78,7 +81,8 @@ public class WikiServiceImpl extends ServiceImpl<WikiMapper, Wiki> implements IW
         int pageSize = coursePageRequest.getPageSize();
         int curPage = coursePageRequest.getCurrentPage();
         Page<Wiki> Page = wikiMapper.selectPage(new Page<>(curPage,pageSize),null);
-        List<Wiki> wikiList = Page.getRecords();
+        //List<Wiki> wikiList = Page.getRecords();
+        List<Wiki> wikiList = wikiMapper.getList((curPage-1)*pageSize,pageSize);
         dto.setTotalNum((int) Page.getTotal());
         List<WikiDTO> wikiDTOList = new ArrayList<>();
         for(Wiki tmp:wikiList){

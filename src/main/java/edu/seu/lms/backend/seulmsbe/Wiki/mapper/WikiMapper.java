@@ -2,6 +2,9 @@ package edu.seu.lms.backend.seulmsbe.Wiki.mapper;
 
 import edu.seu.lms.backend.seulmsbe.Wiki.entity.Wiki;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2023-08-25
  */
 public interface WikiMapper extends BaseMapper<Wiki> {
+    @Select("SELECT * FROM wiki "+
+            "order by wiki.isSolved asc,wiki.time desc "+
+            "LIMIT #{begin},#{size}")
+    List<Wiki> getList(int begin,int size);
 
 }

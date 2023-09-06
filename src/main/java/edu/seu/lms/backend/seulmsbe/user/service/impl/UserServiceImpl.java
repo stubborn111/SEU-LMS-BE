@@ -149,7 +149,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public BaseResponse<UserListTeacherDTO> listTeacher(TeacherListRequest teacherListRequest, HttpServletRequest request) {
         LambdaUpdateWrapper<User> updateWrapper=new LambdaUpdateWrapper<>();
-        if(teacherListRequest.getTeacherID()!=null){
+        if(teacherListRequest.getTeacherID()!=null&&(!teacherListRequest.getTeacherID().isEmpty())){
             updateWrapper.eq(User::getId,teacherListRequest.getTeacherID());
         }
         else updateWrapper.eq(User::getAccess,2);

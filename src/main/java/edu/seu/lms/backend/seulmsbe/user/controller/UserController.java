@@ -117,7 +117,7 @@ public class UserController {
         return ResultUtils.success(toUserDTO(user));
     }
 
-    @GetMapping("list-teacher")
+    @PostMapping("list-teacher")
     public BaseResponse<UserListTeacherDTO> listTeacher(@RequestBody TeacherListRequest teacherListRequest, HttpServletRequest request)
     {
         return userService.listTeacher(teacherListRequest,request);
