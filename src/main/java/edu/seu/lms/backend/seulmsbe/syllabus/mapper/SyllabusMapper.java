@@ -18,4 +18,11 @@ import java.util.List;
 public interface SyllabusMapper extends BaseMapper<Syllabus> {
     @Select("SELECT * FROM syllabus where syllabus.curriculumID = #{courseID} order by syllabus.time desc limit 0,1")
     Syllabus getlatest(@Param("courseID") String courseID);
+
+    @Select("select count(*) from syllabus")
+    int AllNum();
+    @Select("select count(*) from syllabus where syllabus.isCheckedIn=1")
+    int CheckinNum();
+    @Select("select * from syllabus where curriculumID=#{curriculumID} and isCheckedIn=1")
+    List<Syllabus> getSyllabusByCourseID(String curriculumID);
 }

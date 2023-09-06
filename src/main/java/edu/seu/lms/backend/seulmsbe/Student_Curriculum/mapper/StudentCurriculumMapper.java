@@ -41,5 +41,9 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
             ")")
     Integer getOver40Num();
 
+    @Select("select SUM(" +
+            " case " +
+            " when student_curriculum.curriculumID=#{curriculumID} then 1 else NULL end) from student_curriculum")
+    int getNumofCourse(String curriculumID);
 
 }
