@@ -51,4 +51,8 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
             "AND DATE(checkin.time) = CURDATE()-interval 2 day " +
             "THEN 1 else 0 end) FROM checkin")
     Integer getCheckIntwodayNum();
+    @Select("select count(*) from checkin where isCheckedIn=#{isCheckedIn}")
+    int getCheckinNum(int isCheckedIn);
+    @Select("select count(*) from checkin where isCheckedIn=#{isCheckedIn} and syllabusID=#{syllabusID}")//找到对应大纲的签到人数和未签到人数
+    int getCheckinBySylNum(int isCheckedIn,String syllabusID);
 }

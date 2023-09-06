@@ -9,9 +9,12 @@ import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.checkin.mapper.DateCountDao;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
+import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.discussion.mapper.DiscussionMapper;
 import edu.seu.lms.backend.seulmsbe.dto.DataVisualize.*;
 import edu.seu.lms.backend.seulmsbe.request.TeacherChartRequest;
+import edu.seu.lms.backend.seulmsbe.request.TeacherIDRequest;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
@@ -42,6 +45,8 @@ public class DataVisualizeController {
     private StudentCurriculumMapper studentCurriculumMapper;
     @Autowired
     private DiscussionMapper discussionMapper;
+    @Autowired
+    private CurriculumMapper curriculumMapper;
     @PostMapping("/teacher-chart")
     public BaseResponse<TeacherChartDTO> teacherChart(@RequestBody TeacherChartRequest teacherChartRequest, HttpServletRequest request){
         String courseID = teacherChartRequest.getCourseID();
@@ -266,5 +271,114 @@ public class DataVisualizeController {
 
         dto.setChartData(generalChartData);
         return ResultUtils.success(dto);
+    }
+    @PostMapping("teacher-statistics")
+    public BaseResponse<TeacherStatisticsDTO> teacherStatistics(@RequestBody TeacherIDRequest teacherIDRequest,HttpServletRequest request)
+    {
+        String id=teacherIDRequest.getTeacherID();
+        TeacherStatisticsDTO DTO=new TeacherStatisticsDTO();
+        ChartData1 dto=new ChartData1();
+        //第一个图表
+        List<CommonData> chartData1=new ArrayList<>();
+        List<Curriculum> curriculumList=curriculumMapper.selectCurriculumByteacher(id);
+        for(Curriculum tt:curriculumList)
+        {
+            CommonData tem=new CommonData();
+            tem.setType(tt.getName());
+            tem.setValue(studentCurriculumMapper.getNumofCourse(tt.getId()));
+            chartData1.add(tem);
+        }
+        dto.setDountChartData(chartData1);
+        //第二个图表
+        float data2;
+        data2= (float) checkinMapper.getCheckinNum(1)/(checkinMapper.getCheckinNum(1)+checkinMapper.getCheckinNum(0));
+        data2=data2*100;
+        dto.setGaugeChartData(data2);
+        //第三个图表
+        List<CommonData> chartData3=new ArrayList<>();
+        CommonData tem=new CommonData();
+        tem.setType("90-100");
+        tem.setValue(assignmentMapper.getScoreNum(90,100)+assignmentMapper.getScoreOneNum(100));
+        chartData3.add(tem);
+        CommonData tem5=new CommonData();
+        tem5.setType("80-90");
+        tem5.setValue(assignmentMapper.getScoreNum(80,90));
+        chartData3.add(tem5);
+        CommonData tem0=new CommonData();
+        tem0.setType("70-80");
+        tem0.setValue(assignmentMapper.getScoreNum(70,80));
+        chartData3.add(tem0);
+        CommonData tem2=new CommonData();
+        tem2.setType("60-70");
+        tem2.setValue(assignmentMapper.getScoreNum(60,70));
+        chartData3.add(tem2);
+        CommonData tem3=new CommonData();
+        tem3.setType("其他");
+        tem3.setValue(assignmentMapper.getScoreNum(0,60));
+        chartData3.add(tem3);
+        CommonData tem4=new CommonData();
+        tem4.setType("未提交");
+        tem4.setValue(assignmentMapper.getNotCheckinNum());
+        chartData3.add(tem4);
+        dto.setPieChartData(chartData3);
+        //第四个图表
+        List<CommonData> chartData4=new ArrayList<>();
+        int checkin=0;
+        int notcheckin=0;
+        for (Curriculum tt:curriculumList)
+        {
+            List<Syllabus> syllabusList=syllabusMapper.getSyllabusByCourseID(tt.getId());
+
+            CommonData tem1=new CommonData();
+            tem1.setType(tt.getName());
+            checkin=0;
+            notcheckin=0;
+            for(Syllabus aa:syllabusList)
+            {
+                checkin=checkin+checkinMapper.getCheckinBySylNum(1, aa.getId());
+                notcheckin=notcheckin+checkinMapper.getCheckinBySylNum(0, aa.getId());
+            }
+            if(checkin+notcheckin==0)
+            {
+                tem1.setValue(100);
+            }
+            else {
+                System.out.println(checkin);
+                System.out.println(notcheckin);
+                tem1.setValue((checkin*100)/(notcheckin+checkin));
+            }
+            chartData4.add(tem1);
+        }
+        dto.setLineChartData(chartData4);
+        //第五个表格
+        List<CommonData> chartData5=new ArrayList<>();
+        int score=0;
+        int num=0;
+        for(Curriculum tt:curriculumList)
+        {
+            List<Syllabus> syllabusList=syllabusMapper.getSyllabusByCourseID(tt.getId());
+            CommonData tem1=new CommonData();
+            tem1.setType(tt.getName());
+            score=0;
+            num=0;
+            for(Syllabus ss:syllabusList)
+            {
+                if(assignmentMapper.getAllScore(ss.getId())!=null)
+                {
+                    score=score+assignmentMapper.getAllScore(ss.getId());
+                    num=num+assignmentMapper.getAssignmentNum(ss.getId());
+                }
+            }
+            if(num==0)
+            {
+                tem1.setValue(0);
+            }else {
+                tem1.setValue(score/num);
+            }
+            chartData5.add(tem1);
+        }
+        dto.setColumnChartData(chartData5);
+        DTO.setChartData(dto);
+        return ResultUtils.success(DTO);
     }
 }

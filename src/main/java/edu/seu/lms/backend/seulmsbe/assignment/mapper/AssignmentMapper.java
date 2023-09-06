@@ -68,4 +68,18 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
             "AND DATE(assignment.time) = CURDATE()-interval 2 day " +
             "THEN 1 else 0 end) FROM assignment")
     Integer getTwoday();
+
+    @Select("select count(*)\n" +
+            "from assignment where score<#{end} and score>=#{begin} and status=2")
+    Integer getScoreNum(float begin,float end);
+    @Select("select count(*)\n" +
+            "from assignment where score=#{score} and status=2")
+    Integer getScoreOneNum(float score);
+    @Select("select count(*)\n" +
+            "from assignment where status!=2")
+    Integer getNotCheckinNum();
+    @Select("select count(*) from assignment where syllabusID=#{syllabusID} and status=2")
+    Integer getAssignmentNum(String syllabusID);
+    @Select("select SUM(score) from assignment where syllabusID=#{syllabusID} and status=2")
+    Integer getAllScore(String syllabusID);
 }
