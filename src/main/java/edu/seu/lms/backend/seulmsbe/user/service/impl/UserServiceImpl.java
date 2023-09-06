@@ -4,30 +4,33 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.dto.User.ListforAdminDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.TeacherDTO;
+import edu.seu.lms.backend.seulmsbe.dto.User.UserDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
 import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
+import edu.seu.lms.backend.seulmsbe.message.entity.Message;
+import edu.seu.lms.backend.seulmsbe.message.mapper.MessageMapper;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
-import static com.sun.javafx.font.FontResource.SALT;
+
 /**
  * <p>
  *  服务实现类
@@ -40,6 +43,8 @@ import static com.sun.javafx.font.FontResource.SALT;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private MessageMapper messageMapper;
     @Override
     public int createuser(User user) {
         int count =userMapper.insert(user);
@@ -142,9 +147,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     }
 
     @Override
-    public BaseResponse<UserListTeacherDTO> listTeacher(HttpServletRequest request) {
+    public BaseResponse<UserListTeacherDTO> listTeacher(TeacherListRequest teacherListRequest, HttpServletRequest request) {
         LambdaUpdateWrapper<User> updateWrapper=new LambdaUpdateWrapper<>();
-        updateWrapper.eq(User::getAccess,2);
+        if(teacherListRequest.getTeacherID()!=null){
+            updateWrapper.eq(User::getId,teacherListRequest.getTeacherID());
+        }
+        else updateWrapper.eq(User::getAccess,2);
         List<User> users=userMapper.selectList(updateWrapper);
         UserListTeacherDTO DTO=new UserListTeacherDTO();
         List<TeacherDTO> dto=new ArrayList<>();
@@ -200,21 +208,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         ListforAdminDTO DTO=new ListforAdminDTO();
         DTO.setTotalnum((int)Page.getTotal());
         List<User> users=Page.getRecords();
-        List<UserModifyRequset> dto=new ArrayList<>();
-        for(User tt:users)
+        List<UserDTO> dto=new ArrayList<>();
+        for(User user:users)
         {
-            UserModifyRequset userModifyRequset=new UserModifyRequset();
-            userModifyRequset.setKey(tt.getId());
-            userModifyRequset.setID(tt.getId());
-            userModifyRequset.setEmail(tt.getEmail());
-            userModifyRequset.setAccess(tt.getAccess());
-            userModifyRequset.setPhone(tt.getPhone());
-            userModifyRequset.setAvatarUrl(tt.getAvatarUrl());
-            userModifyRequset.setNickName(tt.getNickname());
-            dto.add(userModifyRequset);
+            UserDTO userDTO = new UserDTO();
+            userDTO.setPhone(user.getPhone());
+            userDTO.setId(user.getId());
+            userDTO.setNickName(user.getNickname());
+            userDTO.setImgUrl(user.getAvatarUrl());
+            userDTO.setEmail(user.getEmail());
+            if(user.getAccess() == 0){
+                userDTO.setAccess("admin");
+            }
+            else if(user.getAccess() == 1){
+                userDTO.setAccess("student");
+            }
+            else userDTO.setAccess("teacher");
+            dto.add(userDTO);
         }
         DTO.setList(dto);
         return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<String> sendPM(SendPMRequest sendPMRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String useID = sendPMRequest.getId();
+        String msg = sendPMRequest.getAnswer();
+        Message message = new Message();
+        message.setId(UUID.randomUUID().toString().substring(0,7));
+        message.setFromUserID(currentUser.getId());
+        message.setToUserID(useID);
+        message.setContent(msg);
+        message.setIsRead(0);
+        message.setTime(LocalDateTime.now());
+        messageMapper.insert(message);
+        return ResultUtils.success(null);
     }
 
 }

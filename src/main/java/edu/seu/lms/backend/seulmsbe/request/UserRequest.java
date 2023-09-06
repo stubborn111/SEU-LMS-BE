@@ -5,9 +5,6 @@ import lombok.Data;
 @Data
 public class UserRequest {
     String nickName;
-    String  ID;
-    int access;
-    String  email;
-    String  phone;
-    String  avatarUrl;
+    String  id;
+    String access;
 }

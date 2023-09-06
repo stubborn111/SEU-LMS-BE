@@ -10,5 +10,5 @@ import java.util.List;
 @Data
 public class ListforAdminDTO {
     int totalnum;
-    List<UserModifyRequset> list;
+    List<UserDTO> list;
 }

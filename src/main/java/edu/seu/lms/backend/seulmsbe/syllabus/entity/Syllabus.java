@@ -43,4 +43,7 @@ public class Syllabus implements Serializable {
     @TableField("time")
     private LocalDateTime time;
 
+    @TableField("checkInPsw")
+    private String checkInPsw;
+
 }

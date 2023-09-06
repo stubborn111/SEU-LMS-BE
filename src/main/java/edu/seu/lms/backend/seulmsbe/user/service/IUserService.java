@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.dto.User.ListforAdminDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
-import edu.seu.lms.backend.seulmsbe.request.UserListforAdminRequest;
-import edu.seu.lms.backend.seulmsbe.request.UserLoginRequest;
-import edu.seu.lms.backend.seulmsbe.request.UserModifyRequest1;
-import edu.seu.lms.backend.seulmsbe.request.UserPasswordRequest;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,7 +26,9 @@ public interface IUserService extends IService<User> {
     public void userLogout(HttpServletRequest request);
     public BaseResponse<Integer> modify(UserModifyRequest1 userModifyRequest1, HttpServletRequest request);
     public User getuser(String id);
-    public BaseResponse<UserListTeacherDTO> listTeacher(HttpServletRequest request);
+    public BaseResponse<UserListTeacherDTO> listTeacher(TeacherListRequest teacherListRequest, HttpServletRequest request);
     public BaseResponse<Integer> modifyPassword(UserPasswordRequest userPasswordRequest,HttpServletRequest request);
     public BaseResponse<ListforAdminDTO> listforadmin(UserListforAdminRequest userListforAdminRequest, HttpServletRequest request);
+
+    BaseResponse<String> sendPM(SendPMRequest sendPMRequest, HttpServletRequest request);
 }

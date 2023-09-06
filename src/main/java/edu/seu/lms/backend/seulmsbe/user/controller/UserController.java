@@ -118,9 +118,9 @@ public class UserController {
     }
 
     @GetMapping("list-teacher")
-    public BaseResponse<UserListTeacherDTO> listTeacher(HttpServletRequest request)
+    public BaseResponse<UserListTeacherDTO> listTeacher(@RequestBody TeacherListRequest teacherListRequest, HttpServletRequest request)
     {
-        return userService.listTeacher(request);
+        return userService.listTeacher(teacherListRequest,request);
     }
 
     @PostMapping("add-user")
@@ -128,12 +128,14 @@ public class UserController {
     {
         User user=new User();
         System.out.println(userRequest.getAccess());
-        user.setId(userRequest.getID());
+        user.setId(userRequest.getId());
         user.setNickname(userRequest.getNickName());
-        user.setEmail(userRequest.getEmail());
-        user.setAccess(userRequest.getAccess());
-        user.setAvatarUrl(userRequest.getAvatarUrl());
-        user.setPhone(userRequest.getPhone());
+        if(userRequest.getAccess()=="student") user.setAccess(1);
+        else if(userRequest.getAccess()=="teacher") user.setAccess(2);
+        else user.setAccess(0);
+        //user.setAccess(userRequest.getAccess());
+        user.setAvatarUrl("https://pic.imgdb.cn/item/64f7dd30661c6c8e54d951e4.png");
+        //user.setPhone(userRequest.getPhone());
         user.setPsw("123456");
         userMapper.insertUser(user);
         return ResultUtils.success(null);
@@ -180,7 +182,10 @@ public class UserController {
         userMapper.deleteById(userDeleteRequest.getId());
         return ResultUtils.success(null);
     }
-
+    @PostMapping("sendPM")
+    public BaseResponse<String> sendPM(@RequestBody SendPMRequest sendPMRequest,HttpServletRequest request){
+        return userService.sendPM(sendPMRequest,request);
+    }
     private UserDTO toUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setPhone(user.getPhone());
