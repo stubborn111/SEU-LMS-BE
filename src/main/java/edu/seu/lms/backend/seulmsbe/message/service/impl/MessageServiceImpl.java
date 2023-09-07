@@ -70,7 +70,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         MessageListDTO dto = new MessageListDTO();
         dto.setTotalNum((int)Page.getTotal());
 
-        List<Message> tmp = Page.getRecords();
+        List<Message> tmp = messageMapper.getlist(currentUser.getId(),(curPage-1)*pagesize,pagesize);
         List<MessageDTO> DTO = new ArrayList<>();
 
         for(Message tt : tmp){

@@ -9,6 +9,6 @@ import java.util.List;
 
 @Data
 public class ListforAdminDTO {
-    int totalnum;
+    int totalNum;
     List<UserDTO> list;
 }

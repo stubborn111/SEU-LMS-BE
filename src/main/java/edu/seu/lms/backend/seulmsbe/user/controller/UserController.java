@@ -130,8 +130,8 @@ public class UserController {
         System.out.println(userRequest.getAccess());
         user.setId(userRequest.getId());
         user.setNickname(userRequest.getNickName());
-        if(userRequest.getAccess()=="student") user.setAccess(1);
-        else if(userRequest.getAccess()=="teacher") user.setAccess(2);
+        if(userRequest.getAccess().equals("student")) user.setAccess(1);
+        else if(userRequest.getAccess().equals("teacher")) user.setAccess(2);
         else user.setAccess(0);
         //user.setAccess(userRequest.getAccess());
         user.setAvatarUrl("https://pic.imgdb.cn/item/64f7dd30661c6c8e54d951e4.png");

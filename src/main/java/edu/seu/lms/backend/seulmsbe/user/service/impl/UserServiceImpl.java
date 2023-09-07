@@ -67,7 +67,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = userMapper.selectOne(queryMapper);
         if(user == null) {
             System.out.println("originUser login failed, userAccount cannot match userPassword");
-            throw new BusinessException(ErrorCode.NULL_ERROR, "用户名或密码错误");
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户名或密码错误");
         }
 
         //用户脱敏
@@ -206,7 +206,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
         Page<User> Page=userMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
         ListforAdminDTO DTO=new ListforAdminDTO();
-        DTO.setTotalnum((int)Page.getTotal());
+        DTO.setTotalNum((int)Page.getTotal());
         List<User> users=Page.getRecords();
         List<UserDTO> dto=new ArrayList<>();
         for(User user:users)
