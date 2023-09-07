@@ -1,4 +1,4 @@
-package edu.seu.lms.backend.seulmsbe.dto;
+package edu.seu.lms.backend.seulmsbe.dto.Wiki;
 
 import lombok.Data;
 

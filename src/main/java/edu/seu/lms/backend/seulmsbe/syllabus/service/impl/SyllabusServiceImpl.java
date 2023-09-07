@@ -331,4 +331,12 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         update(lambdaUpdateWrapper);
         return ResultUtils.success(null);
     }
+
+    @Override
+    public BaseResponse<String> postText(SyllabusPostTextRequest syllabusPostTextRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userID=currentUser.getId();
+        syllabusMapper.updateAssignPostText(syllabusPostTextRequest.getSyllabusID(),userID,syllabusPostTextRequest.getHomeworkTitle(),syllabusPostTextRequest.getBody());
+        return ResultUtils.success(null);
+    }
 }

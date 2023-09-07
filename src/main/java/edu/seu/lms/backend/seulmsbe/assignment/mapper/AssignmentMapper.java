@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.assignment.mapper;
 import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -82,4 +83,10 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
     Integer getAssignmentNum(String syllabusID);
     @Select("select SUM(score) from assignment where syllabusID=#{syllabusID} and status=2")
     Integer getAllScore(String syllabusID);
+
+    @Update("update assignment set file=#{homeworkUrl},status='1',type=#{type},name=#{homeworkTitle} where studentID=#{userID} and syllabusID=#{syllabusID}")
+    void syllabusPostFile(String userID,String syllabusID,String homeworkTitle,String homeworkUrl,String type);
+
+    @Update("update assignment set score=#{rate},feedback=#{feedback},status='2' where ID=#{homeworkID}")
+    void syllabusFeedback(String homeworkID,int rate,String feedback);
 }

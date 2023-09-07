@@ -307,7 +307,11 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         DTO.setTeacherEmail(teacehr.getEmail());
         DTO.setTeacherName(teacehr.getNickname());
         DTO.setTeacherPhone(teacehr.getPhone());
-        String[] tem;
+        String[] tem=new String[6];
+        if(curriculum.getDescription()==null)
+        {
+            tem=null;
+        }
         tem=curriculum.getDescription().split("##");
         dto.setUnit(tem[0]);
         dto.setCredit(tem[1]);

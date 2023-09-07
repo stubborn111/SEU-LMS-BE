@@ -36,4 +36,5 @@ public interface ISyllabusService extends IService<Syllabus> {
     BaseResponse<String> addsyllabus(SyllabusAddRequest syllabusAddRequest, HttpServletRequest request);
 
     BaseResponse<String> modifySyllabus(SyllabusModifyRequest syllabusModifyRequest, HttpServletRequest request);
+    BaseResponse<String> postText(SyllabusPostTextRequest syllabusPostTextRequest,HttpServletRequest request);
 }
