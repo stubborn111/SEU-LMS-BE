@@ -10,4 +10,5 @@ public class SyllabusHomeworkDTO {
     private String fileUrl;
     private String fileType;
     private Integer status;
+    private String homeworkID;
 }

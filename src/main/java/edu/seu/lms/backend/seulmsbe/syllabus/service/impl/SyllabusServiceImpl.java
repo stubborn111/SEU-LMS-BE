@@ -221,6 +221,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             User user = userMapper.selectById(tmp.getStudentID());
             temp.setStudentAvatar(user.getAvatarUrl());
             temp.setStudentNickName(user.getNickname());
+            temp.setHomeworkID(assignmentMapper.selectAssignment(syllabusID,user.getId()).getID());
             syllabusHomeworkDTOList.add(temp);
         }
         SyllabusHomeworkListDTO dto = new SyllabusHomeworkListDTO();
@@ -386,5 +387,18 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         String userID=currentUser.getId();
         syllabusMapper.updateAssignPostText(syllabusPostTextRequest.getSyllabusID(),userID,syllabusPostTextRequest.getHomeworkTitle(),syllabusPostTextRequest.getBody());
         return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<HomeWorkIntroDTO> homeworkIntro(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userID=currentUser.getId();
+        Syllabus syllabus=syllabusMapper.selectById(syllabusIDRequest.getSyllabusID());
+        Assignment assignment=assignmentMapper.selectAssignment(syllabus.getId(), userID);
+        HomeWorkIntroDTO DTO=new HomeWorkIntroDTO();
+        DTO.setDeadline(assignment.getTime().toString());
+        DTO.setHomeworkName(syllabus.getAssiments());
+        DTO.setHomeworkDescription(assignment.getContent());
+        return ResultUtils.success(DTO);
     }
 }
