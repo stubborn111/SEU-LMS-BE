@@ -313,13 +313,24 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             tem=null;
         }
         tem=curriculum.getDescription().split("##");
-        dto.setUnit(tem[0]);
-        dto.setCredit(tem[1]);
-        dto.setTeachingTime(tem[2]);
-        dto.setTeachingLocation(tem[3]);
-        dto.setTeachingMethod(tem[4]);
-        dto.setIntroduction(tem[5]);
-        DTO.setDescription(dto);
+        if(tem.length == 6){
+            dto.setUnit(tem[0]);
+            dto.setCredit(tem[1]);
+            dto.setTeachingTime(tem[2]);
+            dto.setTeachingLocation(tem[3]);
+            dto.setTeachingMethod(tem[4]);
+            dto.setIntroduction(tem[5]);
+            DTO.setDescription(dto);
+        }
+        else {
+            dto.setUnit("暂无");
+            dto.setCredit("暂无");
+            dto.setTeachingTime("暂无");
+            dto.setTeachingLocation("暂无");
+            dto.setTeachingMethod("暂无");
+            dto.setIntroduction("暂无");
+            DTO.setDescription(dto);
+        }
         return ResultUtils.success(DTO);
     }
 
