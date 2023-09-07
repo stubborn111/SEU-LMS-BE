@@ -4,7 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.exceptions.ApiException;
+import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
+import edu.seu.lms.backend.seulmsbe.dto.WebSocketDTO;
+import edu.seu.lms.backend.seulmsbe.dto.checkInData;
+import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
+import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -15,16 +21,32 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+
 @Slf4j
 @ServerEndpoint("/ws/test")
 @Component
 public class WebSocketServer {
+//    @Autowired
+//    private CheckinMapper checkinMapper;
+//
+//    @Autowired
+//    private SyllabusMapper syllabusMapper;
 
+    private static SyllabusMapper syllabusMapper;
+    @Autowired
+    public void setSyllabusMapper(SyllabusMapper syllabusMapperTmp) {
+        syllabusMapper=syllabusMapperTmp;
+    }
+    private static CheckinMapper checkinMapper;
+    @Autowired
+    public void setCheckinMapper(CheckinMapper checkinMapperTmp) {
+        checkinMapper = checkinMapperTmp;
+    }
     /**
      * 静态变量，用来记录当前在线连接数。应该把它设计成线程安全的
      */
     private static int onlineCount = 0;
-
+    public static WebSocketServer test;
     /**
      * concurrent 包的线程安全Set，用来存放每个客户端对应的 myWebSocket对象
      * 根据userId来获取对应的 WebSocket
@@ -34,23 +56,24 @@ public class WebSocketServer {
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
-    private Session session;
-
+    public Session session;
+    //public Integer num;
     /**
      * 接收 sid
      */
-    private String userId = "";
+    //private String userId = "";
 
 
     /**
      * 连接建立成功调用的方法
      *
      * @param session
-     * @param userId
      */
     @OnOpen
-    public void onOpen(Session session) {
+    public void onOpen(Session session,@PathParam("syllabusID") String syllabusID) {
         this.session = session;
+        test = this;
+       // num++;
 //        this.session = session;
 //        this.userId = userId;
 //
@@ -59,14 +82,30 @@ public class WebSocketServer {
 //
 //        addOnlineCount(); // 在线数 +1
 //        log.info("有新窗口开始监听:" + userId + ",当前在线人数为" + getOnlineCount());
-
+        System.out.println("success");
         try {
+
             sendMessage(JSON.toJSONString("连接成功"));
         } catch (IOException e) {
             e.printStackTrace();
             throw new ApiException("websocket IO异常！！！！");
         }
 
+    }
+    @OnMessage
+    public void onMessage(String syllabusID){
+        WebSocketDTO webSocketDTO = new WebSocketDTO();
+        Syllabus syllabus = syllabusMapper.selectById(syllabusID);
+        webSocketDTO.setPassword(syllabus.getCheckInPsw()==null?"":syllabus.getCheckInPsw());
+        checkInData checkInData = new checkInData();
+        checkInData.setIsCheckedIn(checkinMapper.getCheckedNum(syllabusID));
+        checkInData.setNotCheckedIn(checkinMapper.getNotCheckedNum(syllabusID));
+        webSocketDTO.setCheckInData(checkInData);
+        try {
+            sendMessage(JSONObject.toJSONString(webSocketDTO));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -125,7 +164,7 @@ public class WebSocketServer {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("用户错误：" + this.userId + "，原因：" + error.getMessage());
+        log.error("发生错误");
         error.printStackTrace();
     }
 
@@ -162,8 +201,9 @@ public class WebSocketServer {
             }
 
         }
-
-
+    }
+    public void sendCheckIn(WebSocketDTO webSocketDTO) throws IOException, EncodeException {
+        this.session.getBasicRemote().sendObject(webSocketDTO);
     }
 
     private static synchronized int getOnlineCount() {

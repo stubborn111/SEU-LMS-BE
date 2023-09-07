@@ -22,7 +22,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
             " AND checkin.isCheckedIn = 1 THEN "+
             "1 "+
             "else "+
-            "NULL "+
+            "0 "+
             "end"+
             ") FROM checkin ")
     Integer getCheckedNum(String syllabusID);
@@ -32,7 +32,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
             " AND checkin.isCheckedIn = 0 THEN "+
             "1 "+
             "else "+
-            "NULL "+
+            "0 "+
             "end"+
             ") FROM checkin ")
     Integer getNotCheckedNum(String syllabusID);

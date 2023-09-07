@@ -1,5 +1,6 @@
 package edu.seu.lms.backend.seulmsbe.syllabus.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.api.R;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,6 +13,8 @@ import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.checkin.service.ICheckinService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
+import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.dto.*;
 import edu.seu.lms.backend.seulmsbe.event.entity.Event;
 import edu.seu.lms.backend.seulmsbe.event.mapper.EventMapper;
@@ -24,6 +27,7 @@ import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
+import edu.seu.lms.backend.seulmsbe.webSocket.WebSocketServer;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
@@ -32,7 +36,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.websocket.EncodeException;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -71,6 +77,8 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     private StudentCurriculumMapper studentCurriculumMapper;
     @Autowired
     private EventMapper eventMapper;
+    @Autowired
+    private CurriculumMapper curriculumMapper;
     @Override
     public BaseResponse<SyllabusListDTO> listSyllabus(SyllabusListRequest syllabusListRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -116,9 +124,12 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
                 queryWrapper.eq(Checkin::getStudentID,currentUser.getId());
                 Checkin checkintmp = checkinMapper.selectOne(queryWrapper);
                 if(tt.getIsCheckedIn()==0) temp.setIsCheckedIn(0);
-                else if(tt.getIsCheckedIn()==1 && checkintmp.getIsCheckedIn()==1) temp.setIsCheckedIn(1);
-                else if(tt.getIsCheckedIn()==1 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(2);
-                else if(tt.getIsCheckedIn()==2 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(3);
+                else {
+                    if((tt.getIsCheckedIn()==1 || tt.getIsCheckedIn() == 2)&& checkintmp.getIsCheckedIn()==1) temp.setIsCheckedIn(1);
+                    else if(tt.getIsCheckedIn()==1 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(2);
+                    else if(tt.getIsCheckedIn()==2 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(3);
+                }
+
             }
             else if(currentUser.getAccess()==2){
                 temp.setIsCheckedIn(tt.getIsCheckedIn());
@@ -144,6 +155,19 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             lambdaUpdateWrapper.eq(Checkin::getSyllabusID,syllabusID).eq(Checkin::getStudentID,currentUser.getId())
                     .set(Checkin::getIsCheckedIn,1);
             iCheckinService.update(lambdaUpdateWrapper);
+            if(WebSocketServer.test.session !=null){
+                WebSocketDTO webSocketDTO = new WebSocketDTO();
+                webSocketDTO.setPassword(temp.getCheckInPsw());
+                checkInData checkInData = new checkInData();
+                checkInData.setIsCheckedIn(checkinMapper.getCheckedNum(syllabusID));
+                checkInData.setNotCheckedIn(checkinMapper.getNotCheckedNum(syllabusID));
+                webSocketDTO.setCheckInData(checkInData);
+                try {
+                    WebSocketServer.test.sendMessage(JSONObject.toJSONString(webSocketDTO));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             return ResultUtils.success(1);
         }
         else if(temp.getIsCheckedIn() == 1 && psw != temp.getCheckInPsw()){
@@ -285,7 +309,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             Event event = new Event();
             event.setId(UUID.randomUUID().toString().substring(0,7));
             event.setDate(date.toInstant().atZone(zoneId).toLocalDate());
-            event.setContent(homeworkPublishRequest.getHomeworkName());
+            //event.setContent(homeworkPublishRequest.getHomeworkName());
             event.setType("assignment");
             event.setUserID(user.getId());
             event.setContent(homeworkPublishRequest.getHomeworkName());
@@ -306,12 +330,36 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         } catch (ParseException e) {
 
         }
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = format.parse(syllabusAddRequest.getSelectedDateTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         syllabus.setIsCheckedIn(0);
         ZoneId zoneId = ZoneId.systemDefault();
         syllabus.setTime(datetime.toInstant().atZone(zoneId).toLocalDateTime());
         syllabus.setCurriculumID(syllabusAddRequest.getCourseID());
         syllabusMapper.insert(syllabus);
+        LambdaUpdateWrapper<StudentCurriculum> lambdaUpdateWrapper1 = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper1.eq(StudentCurriculum::getCurriculumID,syllabus.getCurriculumID());
+        List<StudentCurriculum> studentCurriculumList = studentCurriculumMapper.selectList(lambdaUpdateWrapper1);
+        // ZoneId zoneId = ZoneId.systemDefault();
+        for(StudentCurriculum sc:studentCurriculumList){
+            User user = userMapper.selectById(sc.getStudentID());
+            Event event = new Event();
+            event.setId(UUID.randomUUID().toString().substring(0,7));
+            event.setDate(date.toInstant().atZone(zoneId).toLocalDate());
+            //event.setContent();
+            event.setType("syllabus");
+            event.setUserID(user.getId());
+            Curriculum curriculum = curriculumMapper.getCurriculumById(syllabusAddRequest.getCourseID());
+            event.setContent(curriculum.getName()+" "+syllabusAddRequest.getSyllabusTitle());
+            eventMapper.insert(event);
+        }
         return ResultUtils.success(null);
+
     }
 
     @Override

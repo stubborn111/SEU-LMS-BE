@@ -3,6 +3,10 @@ package edu.seu.lms.backend.seulmsbe.Wiki.controller;
 
 import edu.seu.lms.backend.seulmsbe.Wiki.service.IWikiService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
+import edu.seu.lms.backend.seulmsbe.discussion.service.IDiscussionService;
+import edu.seu.lms.backend.seulmsbe.dto.WikiAdminListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.WikiListDTO;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.dto.Wiki.WikiAdminListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.Wiki.WikiListDTO;
 import edu.seu.lms.backend.seulmsbe.request.CoursePageRequest;
@@ -37,7 +41,7 @@ public class WikiController {
         return iWikiService.listWiki(wikiListRequest,request);
     }
 
-    @PostMapping("/postAnswer")
+    @PostMapping("/answer")
     public BaseResponse<String> postAnswer(@RequestBody PostAnswerRequest postAnswerRequest,HttpServletRequest request){
         return iWikiService.postAnswer(postAnswerRequest,request);
     }
@@ -50,5 +54,10 @@ public class WikiController {
     @PostMapping("/admin-list")
     public BaseResponse<WikiAdminListDTO> adminlist(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request){
         return iWikiService.adminlist(coursePageRequest,request);
+    }
+
+    @PostMapping("/question")
+    public BaseResponse<String> wikiQuestion(@RequestBody WikiQuestionRequest wikiQuestionRequest,HttpServletRequest request){
+        return iWikiService.question(wikiQuestionRequest,request);
     }
 }

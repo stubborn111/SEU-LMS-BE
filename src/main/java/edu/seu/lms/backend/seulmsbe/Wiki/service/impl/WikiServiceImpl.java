@@ -15,6 +15,10 @@ import edu.seu.lms.backend.seulmsbe.request.CoursePageRequest;
 import edu.seu.lms.backend.seulmsbe.request.PostAnswerRequest;
 import edu.seu.lms.backend.seulmsbe.request.WikiListRequest;
 import edu.seu.lms.backend.seulmsbe.request.WikiMarkRequest;
+import edu.seu.lms.backend.seulmsbe.dto.WikiAdminListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.WikiDTO;
+import edu.seu.lms.backend.seulmsbe.dto.WikiListDTO;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * <p>
@@ -89,7 +94,7 @@ public class WikiServiceImpl extends ServiceImpl<WikiMapper, Wiki> implements IW
             temp.setWikiID(tmp.getWikiID());
             temp.setTime(tmp.getTime().toString().replace("T"," "));
             temp.setAnswer(tmp.getAnswer());
-            temp.setIsSolved(tmp.getIsSolved());
+            //temp.setIsSolved(tmp.getIsSolved());
             temp.setQuestion(tmp.getQuestion());
             User user = userMapper.selectById(tmp.getFromUserID());
             temp.setFromUserAvatar(user.getAvatarUrl());
@@ -99,5 +104,17 @@ public class WikiServiceImpl extends ServiceImpl<WikiMapper, Wiki> implements IW
         }
         dto.setList(wikiDTOList);
         return ResultUtils.success(dto);
+    }
+
+    @Override
+    public BaseResponse<String> question(WikiQuestionRequest wikiQuestionRequest, HttpServletRequest request) {
+        Wiki wiki = new Wiki();
+        wiki.setWikiID(UUID.randomUUID().toString().substring(0,7));
+        wiki.setQuestion(wikiQuestionRequest.getQuestion());
+        wiki.setIsSolved(false);
+        wiki.setFromUserID(wikiQuestionRequest.getUserID());
+        wiki.setTime(LocalDateTime.now());
+        wikiMapper.insert(wiki);
+        return ResultUtils.success(null);
     }
 }
