@@ -65,7 +65,7 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         //DiscussionListDTO dto = new DiscussionListDTO(discussionPage,discussionPage.getTotal());
         DiscussionListAllDTO dto = new DiscussionListAllDTO();
         dto.setTotalNum((int)discussionPage.getTotal());
-        List<Discussion> temp = discussionPage.getRecords();
+        List<Discussion> temp = discussionMapper.getlist(courseid,(curPage-1)*pagesize,pagesize);
         List<DiscussionDTO> tt = temp.stream().map(Discussion->{return todiscussionDTO(Discussion);}).collect(Collectors.toList());
         dto.setList(tt);
         return ResultUtils.success(dto);

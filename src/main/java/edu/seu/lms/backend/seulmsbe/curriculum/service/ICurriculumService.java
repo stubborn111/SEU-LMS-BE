@@ -32,7 +32,7 @@ public interface ICurriculumService extends IService<Curriculum> {
     public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest,HttpServletRequest request);
     public BaseResponse<CourseTeacherDTO> getTeacherInfo(CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request);
 
-    public BaseResponse<CourseGetinfoDTO>  getInto(CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request);
+    public BaseResponse<CourseInfoDTO>  getInto(CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request);
     public BaseResponse<CourseAdminDTO> adminList(CourseAdminRequest courseAdminRequest,HttpServletRequest request);
 
     BaseResponse<CourseListStudentDTO> listStudent(CourseListStudent2Request courseListStudentRequest, HttpServletRequest request);

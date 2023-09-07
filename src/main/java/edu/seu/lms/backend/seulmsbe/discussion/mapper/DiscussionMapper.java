@@ -2,8 +2,11 @@ package edu.seu.lms.backend.seulmsbe.discussion.mapper;
 
 import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import edu.seu.lms.backend.seulmsbe.message.entity.Message;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -36,4 +39,10 @@ public interface DiscussionMapper extends BaseMapper<Discussion> {
     @Insert("insert into discussion(id,curriculumID,fromUserID,content,title,time)" +
             " value (#{id},#{curriculumID},#{fromUserID},#{content},#{title},#{time})")
     void insertDiscussion(Discussion discussion);
+
+    @Select("SELECT * FROM discussion "+
+            "WHERE discussion.curriculumID = #{courseID} AND discussion.replyID is NULL "+
+            "order by discussion.time desc "+
+            "LIMIT #{begin},#{size}")
+    List<Discussion> getlist(String courseID, int begin, int size);
 }

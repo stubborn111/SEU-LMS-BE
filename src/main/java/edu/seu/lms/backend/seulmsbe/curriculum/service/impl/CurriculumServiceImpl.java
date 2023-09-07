@@ -294,7 +294,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     }
 
     @Override
-    public BaseResponse<CourseGetinfoDTO> getInto(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+    public BaseResponse<CourseInfoDTO> getInto(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
         String courseID=courseGetIntoRequest.getCourseID();
         Curriculum curriculum=curriculumMapper.getCurriculumById(courseID);
         CourseGetinfoDTO DTO=new CourseGetinfoDTO();
@@ -331,7 +331,9 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             dto.setIntroduction("暂无");
             DTO.setDescription(dto);
         }
-        return ResultUtils.success(DTO);
+        CourseInfoDTO courseInfoDTO = new CourseInfoDTO();
+        courseInfoDTO.setCourseData(DTO);
+        return ResultUtils.success(courseInfoDTO);
     }
 
     @Override

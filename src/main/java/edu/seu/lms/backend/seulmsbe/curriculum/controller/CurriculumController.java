@@ -111,7 +111,7 @@ public class CurriculumController {
     }
 
     @PostMapping("/get-intro")
-    public BaseResponse<CourseGetinfoDTO> getInto(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
+    public BaseResponse<CourseInfoDTO> getInto(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
         return iCurriculumService.getInto(courseGetIntoRequest,request);
     }
