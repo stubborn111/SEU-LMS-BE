@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.dto.WikiAdminListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.WikiListDTO;
-import edu.seu.lms.backend.seulmsbe.request.CoursePageRequest;
-import edu.seu.lms.backend.seulmsbe.request.PostAnswerRequest;
-import edu.seu.lms.backend.seulmsbe.request.WikiListRequest;
-import edu.seu.lms.backend.seulmsbe.request.WikiMarkRequest;
+import edu.seu.lms.backend.seulmsbe.request.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,4 +25,6 @@ public interface IWikiService extends IService<Wiki> {
     BaseResponse<String> mark(WikiMarkRequest wikiMarkRequest, HttpServletRequest request);
 
     BaseResponse<WikiAdminListDTO> adminlist(CoursePageRequest coursePageRequest, HttpServletRequest request);
+
+    BaseResponse<String> question(WikiQuestionRequest wikiQuestionRequest, HttpServletRequest request);
 }

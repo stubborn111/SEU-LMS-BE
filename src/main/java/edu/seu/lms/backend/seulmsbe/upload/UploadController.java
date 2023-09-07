@@ -120,7 +120,7 @@ public class UploadController {
         //截取文件类型
         String fileType = originalFilename.substring(originalFilename.lastIndexOf("."));
 //        最终保存文件名称
-        String newFileName= UUID.randomUUID().toString()+ fileType;
+        String newFileName= UUID.randomUUID().toString().substring(0,7)+ fileType;
         //构建日期路径  ps ：oss目标文件夹/yyyy/MM/dd文件名称
         String filePath=new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 //        文件上传文件的路径
@@ -137,10 +137,10 @@ public class UploadController {
 //        ossClient.put
         ossClient.putObject(bucketNanme,uploadUrl,inputStream);//,meta
         returnUrl="http://"+bucketNanme+"."+endPoint+"/"+uploadUrl;
-        User user =(User) request.getSession().getAttribute(USER_LOGIN_STATE);
-        LambdaUpdateWrapper<User> queryWrapper = new LambdaUpdateWrapper<>();
-        queryWrapper.eq(User::getId,user.getId()).set(User::getAvatarUrl,returnUrl);
-        iUserService.update(queryWrapper);
+//        User user =(User) request.getSession().getAttribute(USER_LOGIN_STATE);
+//        LambdaUpdateWrapper<User> queryWrapper = new LambdaUpdateWrapper<>();
+//        queryWrapper.eq(User::getId,user.getId()).set(User::getAvatarUrl,returnUrl);
+//        iUserService.update(queryWrapper);
         return ResultUtils.success(returnUrl);
     }
     @PostMapping("/test")

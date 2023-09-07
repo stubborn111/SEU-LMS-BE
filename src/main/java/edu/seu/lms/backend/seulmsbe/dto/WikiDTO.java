@@ -10,6 +10,5 @@ public class WikiDTO {
     private String wikiID;
     private String question;
     private String time;
-    private Boolean isSolved;
     private String answer;
 }

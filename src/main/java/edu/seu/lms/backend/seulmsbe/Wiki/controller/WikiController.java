@@ -6,10 +6,7 @@ import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.discussion.service.IDiscussionService;
 import edu.seu.lms.backend.seulmsbe.dto.WikiAdminListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.WikiListDTO;
-import edu.seu.lms.backend.seulmsbe.request.CoursePageRequest;
-import edu.seu.lms.backend.seulmsbe.request.PostAnswerRequest;
-import edu.seu.lms.backend.seulmsbe.request.WikiListRequest;
-import edu.seu.lms.backend.seulmsbe.request.WikiMarkRequest;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +35,7 @@ public class WikiController {
         return iWikiService.listWiki(wikiListRequest,request);
     }
 
-    @PostMapping("/postAnswer")
+    @PostMapping("/answer")
     public BaseResponse<String> postAnswer(@RequestBody PostAnswerRequest postAnswerRequest,HttpServletRequest request){
         return iWikiService.postAnswer(postAnswerRequest,request);
     }
@@ -51,5 +48,10 @@ public class WikiController {
     @PostMapping("/admin-list")
     public BaseResponse<WikiAdminListDTO> adminlist(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request){
         return iWikiService.adminlist(coursePageRequest,request);
+    }
+
+    @PostMapping("/question")
+    public BaseResponse<String> wikiQuestion(@RequestBody WikiQuestionRequest wikiQuestionRequest,HttpServletRequest request){
+        return iWikiService.question(wikiQuestionRequest,request);
     }
 }
