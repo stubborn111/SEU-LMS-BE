@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.syllabus.service;
 
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
+import edu.seu.lms.backend.seulmsbe.dto.HomeWorkIntroDTO;
 import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusHomeworkListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
@@ -37,4 +38,5 @@ public interface ISyllabusService extends IService<Syllabus> {
 
     BaseResponse<String> modifySyllabus(SyllabusModifyRequest syllabusModifyRequest, HttpServletRequest request);
     BaseResponse<String> postText(SyllabusPostTextRequest syllabusPostTextRequest,HttpServletRequest request);
+    BaseResponse<HomeWorkIntroDTO> homeworkIntro(SyllabusIDRequest syllabusIDRequest,HttpServletRequest request);
 }

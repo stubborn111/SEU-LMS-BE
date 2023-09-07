@@ -89,4 +89,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
 
     @Update("update assignment set score=#{rate},feedback=#{feedback},status='2' where ID=#{homeworkID}")
     void syllabusFeedback(String homeworkID,int rate,String feedback);
+
+    @Select("select * from assignment where syllabusID=#{syllabusID} and studentID=#{studentID}")
+    Assignment selectAssignment(String syllabusID,String studentID);
 }

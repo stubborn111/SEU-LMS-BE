@@ -5,6 +5,7 @@ import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.dto.HomeWorkIntroDTO;
 import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusHomeworkListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
@@ -140,5 +141,10 @@ public class SyllabusController {
         assignmentMapper.syllabusFeedback(feedbackRequest.getHomeworkID(),feedbackRequest.getRate()*5,feedbackRequest.getFeedback());
         return ResultUtils.success(null);
     }
+    @PostMapping("homework/intro")
+    public BaseResponse<HomeWorkIntroDTO> homeworkIntro(@RequestBody SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
+        return syllabusService.homeworkIntro(syllabusIDRequest,request);
+    }
+
 
 }
