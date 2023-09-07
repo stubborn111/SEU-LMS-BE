@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.syllabus.controller;
 
 
+import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
@@ -9,6 +10,7 @@ import edu.seu.lms.backend.seulmsbe.dto.SyllabusHomeworkListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
+import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+
+import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * <p>
@@ -31,6 +35,8 @@ import java.util.UUID;
 public class SyllabusController {
     @Autowired
     private ISyllabusService syllabusService;
+    @Autowired
+    private AssignmentMapper assignmentMapper;
 
     @PostMapping("/list")
     public BaseResponse<SyllabusListDTO> listSyllabus(@RequestBody SyllabusListRequest syllabusListRequest, HttpServletRequest request){
@@ -107,4 +113,32 @@ public class SyllabusController {
         }
         return ResultUtils.error(ErrorCode.FILE_EMPTY);
     }
+    @PostMapping("homework/post-text")
+    BaseResponse<String> postText(@RequestBody SyllabusPostTextRequest syllabusPostTextRequest,HttpServletRequest request){
+        return syllabusService.postText(syllabusPostTextRequest,request);
+    }
+    @PostMapping("homework/post-file")
+    BaseResponse<String> postfile(@RequestBody SyllabusPostFileRequest postFileRequest,HttpServletRequest request)
+    {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String userID=currentUser.getId();
+        String Url=postFileRequest.getHomeworkUrl();
+        int index=Url.lastIndexOf(".");
+        String type;
+        if(index!=-1&&index<Url.length()-1)
+        {
+            type=Url.substring(index+1);
+        }else {
+            type=" ";
+        }
+        assignmentMapper.syllabusPostFile(userID,postFileRequest.getSyllabusID(),postFileRequest.getHomeworkTitle(),Url,type);
+        return ResultUtils.success(null);
+    }
+    @PostMapping("homework/feedback")
+    BaseResponse<String> feedback(@RequestBody SyllabusFeedbackRequest feedbackRequest,HttpServletRequest request)
+    {
+        assignmentMapper.syllabusFeedback(feedbackRequest.getHomeworkID(),feedbackRequest.getRate()*5,feedbackRequest.getFeedback());
+        return ResultUtils.success(null);
+    }
+
 }

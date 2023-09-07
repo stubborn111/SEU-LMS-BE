@@ -2,6 +2,7 @@ package edu.seu.lms.backend.seulmsbe.discussion.mapper;
 
 import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -32,4 +33,7 @@ public interface DiscussionMapper extends BaseMapper<Discussion> {
             "end"+
             ") FROM discussion ")
     Integer getReplyNum();
+    @Insert("insert into discussion(id,curriculumID,fromUserID,content,title,time)" +
+            " value (#{id},#{curriculumID},#{fromUserID},#{content},#{title},#{time})")
+    void insertDiscussion(Discussion discussion);
 }

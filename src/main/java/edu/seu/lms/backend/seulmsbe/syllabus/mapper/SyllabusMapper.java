@@ -1,9 +1,11 @@
 package edu.seu.lms.backend.seulmsbe.syllabus.mapper;
 
+import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -25,4 +27,6 @@ public interface SyllabusMapper extends BaseMapper<Syllabus> {
     int CheckinNum();
     @Select("select * from syllabus where curriculumID=#{curriculumID} and isCheckedIn=1")
     List<Syllabus> getSyllabusByCourseID(String curriculumID);
+    @Update("update Assignment set file=#{body},name=#{homeworkTitle},type='multi-text' where syllabusID=#{syllabusID} and studentID=#{userID}")
+    void updateAssignPostText(String syllabusID, String userID, String homeworkTitle, String body);
 }

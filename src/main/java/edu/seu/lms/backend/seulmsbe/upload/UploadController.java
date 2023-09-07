@@ -68,7 +68,7 @@ public class UploadController {
         String fileType = originalFilename.substring(originalFilename.lastIndexOf("."));
 //        最终保存文件名称
         String newFileName= UUID.randomUUID().toString().substring(0,7)+ fileType;
-        //构建日期路径  ps ：oss目标文件夹/yyyy/MM/dd文件名称
+        //构建日期路径  ps ：oss目标文件夹/yyyy/MM/dd/文件名称
         String filePath=new SimpleDateFormat("yyyy/MM/dd").format(new Date());
 //        文件上传文件的路径
         String uploadUrl=fileHost+"/"+filePath+"/"+newFileName;

@@ -13,6 +13,7 @@ import edu.seu.lms.backend.seulmsbe.dto.Discussion.DiscussionDTO;
 import edu.seu.lms.backend.seulmsbe.dto.Discussion.DiscussionListAllDTO;
 import edu.seu.lms.backend.seulmsbe.dto.Discussion.DiscussionListDTO;
 import edu.seu.lms.backend.seulmsbe.request.DiscussionListRequest;
+import edu.seu.lms.backend.seulmsbe.request.DiscussionPublishRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplyListRequest;
 import edu.seu.lms.backend.seulmsbe.request.ReplySendRequest;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
@@ -131,5 +132,19 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         temp.setTime(LocalDateTime.now());
         discussionMapper.insert(temp);
         return ResultUtils.success(1);
+    }
+
+    @Override
+    public BaseResponse<Discussion> publish(DiscussionPublishRequest discussionPublishRequest, HttpServletRequest request) {
+        Discussion discussion=new Discussion();
+        discussion.setId(UUID.randomUUID().toString().substring(0,7));
+        discussion.setContent(discussionPublishRequest.getDiscussionContent());
+        discussion.setTitle(discussionPublishRequest.getDiscussionName());
+        discussion.setCurriculumID(discussionPublishRequest.getCourseID());
+        discussion.setFromUserID(discussionPublishRequest.getUserID());
+        discussion.setTime(LocalDateTime.now());
+        System.out.println(discussion);
+        discussionMapper.insertDiscussion(discussion);
+        return ResultUtils.success(null);
     }
 }
