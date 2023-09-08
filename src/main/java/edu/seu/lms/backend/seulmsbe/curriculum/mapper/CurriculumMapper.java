@@ -53,6 +53,9 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
     //分页模糊查询登录学生的课程
     List<Curriculum> studentSearch(String keyword,String userID,int begin,int size);
 
+    @Select("select * from curriculum where teacherID=#{teacherID}")
+    Curriculum selectByteacherID(String teacherID);
+
     @Select("SELECT * FROM user,student_curriculum "+
             "WHERE student_curriculum.curriculumID = #{courseID}"+
             " AND user.nickname Like CONCAT('%',#{keyword},'%') "+

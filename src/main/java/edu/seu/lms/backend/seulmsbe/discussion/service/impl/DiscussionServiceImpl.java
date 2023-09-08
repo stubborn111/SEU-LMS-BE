@@ -92,10 +92,10 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
         int curPage = replyListRequest.getCurrentPage();
 
         LambdaUpdateWrapper<Discussion> queryMapper = new LambdaUpdateWrapper<>();
-        queryMapper.eq(Discussion::getFromUserID,currentUser.getId());
+        //queryMapper.eq(Discussion::getFromUserID,currentUser.getId());
         queryMapper.eq(Discussion::getReplyID,discussionid);
         //queryMapper.isNull(Discussion::getReplyID);
-
+        queryMapper.orderByAsc(Discussion::getTime);
         Page<Discussion> discussionPage = discussionMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
         //DiscussionListDTO dto = new DiscussionListDTO(discussionPage,discussionPage.getTotal());
         DiscussionListDTO dto = new DiscussionListDTO();

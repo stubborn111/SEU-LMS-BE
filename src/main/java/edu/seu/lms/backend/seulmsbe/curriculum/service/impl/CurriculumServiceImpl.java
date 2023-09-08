@@ -106,15 +106,18 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             String stuId=studentCurriculum.getCurriculumID();
             temp.setCourseID(studentCurriculum.getCurriculumID());
             Curriculum curriculum=curriculumMapper.selectById(stuId);
-            temp.setDescription(curriculum.getDescription());
-            temp.setImgUrl(curriculum.getImgUrl());
-            temp.setSemester(curriculum.getSemester());
-            temp.setCourseName(curriculum.getName());
+            System.out.println(curriculum);
+            if(curriculum!=null) {
+                temp.setDescription(curriculum.getDescription());
+                temp.setImgUrl(curriculum.getImgUrl());
+                temp.setSemester(curriculum.getSemester());
+                temp.setCourseName(curriculum.getName());
 
-            User teacher = userService.getuser(curriculum.getTeacherID());
-            temp.setTeacherName(teacher.getNickname());
-            temp.setTeacherAvatar(teacher.getAvatarUrl());
-            DTO.add(temp);
+                User teacher = userService.getuser(curriculum.getTeacherID());
+                temp.setTeacherName(teacher.getNickname());
+                temp.setTeacherAvatar(teacher.getAvatarUrl());
+                DTO.add(temp);
+            }
         }
         dto.setList(DTO);
         return ResultUtils.success(dto);

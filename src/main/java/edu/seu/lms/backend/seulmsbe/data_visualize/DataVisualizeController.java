@@ -114,7 +114,10 @@ public class DataVisualizeController {
 
         //第三个元素（上次作业平均分）
         if(latest==null) chartDatatmp.setGaugeChartData(0);
-        else chartDatatmp.setGaugeChartData(assignmentMapper.getAvgScore(latest.getId()));
+        else {
+            if(assignmentMapper.getAvgScore(latest.getId())==null) chartDatatmp.setGaugeChartData(0);
+            else chartDatatmp.setGaugeChartData(assignmentMapper.getAvgScore(latest.getId()));
+        }
 
         //第四个元素（历史到课率）
         LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();

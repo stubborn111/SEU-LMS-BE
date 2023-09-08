@@ -89,7 +89,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
 
         LambdaUpdateWrapper<Syllabus> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.eq(Syllabus::getCurriculumID,courseid);
-
+        queryMapper.orderByAsc(Syllabus::getTime);
         Page<Syllabus> Page = syllabusMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
         SyllabusListDTO dto = new SyllabusListDTO();
         dto.setTotalNum((int)Page.getTotal());
