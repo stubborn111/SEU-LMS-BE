@@ -149,7 +149,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         curriculum.setImgUrl(courseaddRequest.getImgUrl());
         String teacherName=courseaddRequest.getTeacherName();
         LambdaUpdateWrapper<User> queryMapper = new LambdaUpdateWrapper<>();
-        queryMapper.eq(User::getNickname,teacherName);
+        queryMapper.eq(User::getId,teacherName);
         User teacher=userMapper.selectOne(queryMapper);
         curriculum.setTeacherID(teacher.getId());
         curriculumMapper.insertCurriculum(curriculum);
@@ -270,11 +270,11 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     @Override
     public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest, HttpServletRequest request) {
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
-        LambdaUpdateWrapper<User> queryMapper1 = new LambdaUpdateWrapper<>();
-        queryMapper1.eq(User::getNickname,courseModifyRequest.getTeacherName());
-        User teacher=userMapper.selectOne(queryMapper1);
-        queryMapper.eq(Curriculum::getId,courseModifyRequest.getCourseID())
-                .set(Curriculum::getName,courseModifyRequest.getCourseName())
+        User teacher=userMapper.selectUserByName(courseModifyRequest.getTeacherName());
+        System.out.println(teacher);
+        System.out.println(courseModifyRequest);
+        queryMapper.eq(Curriculum::getId,courseModifyRequest.getCourseID());
+        queryMapper.set(Curriculum::getName,courseModifyRequest.getCourseName())
                 .set(Curriculum::getSemester,courseModifyRequest.getSemester())
                 .set(Curriculum::getImgUrl,courseModifyRequest.getImgUrl())
                 .set(Curriculum::getTeacherID,teacher.getId());
@@ -338,27 +338,31 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
 
     @Override
     public BaseResponse<CourseAdminDTO> adminList(CourseAdminRequest courseAdminRequest, HttpServletRequest request) {
-        String keyword=courseAdminRequest.getKeyword();
+        String keyword=courseAdminRequest.getCourseName();
         String teachername=courseAdminRequest.getTeacherName();
         int pagesize =courseAdminRequest.getPageSize();
         int curPage = courseAdminRequest.getCurrentPage();
-        System.out.println(keyword);
         CourseAdminDTO DTO=new CourseAdminDTO();
+        System.out.println(keyword);
+        System.out.println(teachername);
         List<Curriculum> curriculumList;
         if(keyword==null&&teachername==null) {
-            curriculumList = curriculumMapper.SearchByNameAndTeacher("","",pagesize*(curPage-1),pagesize);
-            DTO.setTotalNum(curriculumMapper.getnumAdmin("",""));
-        } else if (keyword==null && teachername!=null) {
-            curriculumList = curriculumMapper.SearchByNameAndTeacher("",teachername,pagesize*(curPage-1),pagesize);
-            DTO.setTotalNum(curriculumMapper.getnumAdmin("",teachername));
-        }
-        else if(keyword != null && teachername==null){
-            curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,"",pagesize*(curPage-1),pagesize);
-            DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,""));
-        }
-        else {
-            curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,teachername,pagesize*(curPage-1),pagesize);
-            DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,teachername));
+            System.out.println(2222);
+            curriculumList = curriculumMapper.SearchCourse("","",pagesize*(curPage-1),pagesize);
+            DTO.setTotalNum(curriculumMapper.getNumAdmin0());
+        }else {
+            System.out.println(111);
+            if (keyword==null&&teachername!=null)
+            {
+                curriculumList = curriculumMapper.SearchByNameAndTeacher("",teachername,pagesize*(curPage-1),pagesize);
+                DTO.setTotalNum(curriculumMapper.getnumAdmin("",teachername));
+            }else if(keyword!=null&&teachername==null){
+                curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,"",pagesize*(curPage-1),pagesize);
+                DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,""));
+            }else {
+                curriculumList = curriculumMapper.SearchByNameAndTeacher(keyword,teachername,pagesize*(curPage-1),pagesize);
+                DTO.setTotalNum(curriculumMapper.getnumAdmin(keyword,teachername));
+            }
         }
 
         List<CourseAdminDataDTO> dto1=new ArrayList<>();
@@ -370,22 +374,13 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             dto.setDescription(tt.getDescription());
             dto.setSemester(tt.getSemester());
             dto.setCourseName(tt.getName());
-            dto.setTeacherAvatar(teacher.getAvatarUrl());
+            if(teacher.getAvatarUrl()!=null) dto.setTeacherAvatar(teacher.getAvatarUrl());
             dto.setCourseID(tt.getId());
             dto.setTeacherName(teacher.getNickname());
             dto.setImgUrl(tt.getImgUrl());
             dto1.add(dto);
         }
         DTO.setList(dto1);
-//        LambdaUpdateWrapper<User> updateWrapper1=new LambdaUpdateWrapper<>();
-//        updateWrapper1.eq(User::getAccess,2);
-//        List<User> teachers=userMapper.selectList(updateWrapper1);
-//        List<String> list=new ArrayList<>();
-//        for(User tt:teachers)
-//        {
-//            list.add(tt.getNickname());
-//        }
-        //DTO.setTeacherList(list);
         return ResultUtils.success(DTO);
     }
 

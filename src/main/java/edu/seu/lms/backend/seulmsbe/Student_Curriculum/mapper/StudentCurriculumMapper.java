@@ -19,7 +19,7 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
             "  SELECT curriculumID\n" +
             "  FROM student_curriculum\n" +
             "  GROUP BY curriculumID\n" +
-            "  HAVING COUNT(DISTINCT studentID) between 0 and 20\n" +
+            "  HAVING COUNT(DISTINCT studentID) between -1 and 20\n" +
             ")")
     Integer get0_20Num();
     @Select("SELECT COUNT(DISTINCT curriculumID)\n" +
@@ -41,9 +41,7 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
             ")")
     Integer getOver40Num();
 
-    @Select("select SUM(" +
-            " case " +
-            " when student_curriculum.curriculumID=#{curriculumID} then 1 else 0 end) from student_curriculum")
+    @Select("select count(*) from student_curriculum where curriculumID=#{curriculumID}")
     int getNumofCourse(String curriculumID);
 
     @Select("select count(*) from student_curriculum where curriculumID=#{curriculumID}")

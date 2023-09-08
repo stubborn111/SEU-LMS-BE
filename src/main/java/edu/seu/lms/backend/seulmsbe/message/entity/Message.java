@@ -44,4 +44,7 @@ public class Message implements Serializable {
     @TableField("time")
     private LocalDateTime time;
 
+    @TableField
+    private String source;
+
 }

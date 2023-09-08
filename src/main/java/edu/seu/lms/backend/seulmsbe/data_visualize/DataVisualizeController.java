@@ -64,32 +64,57 @@ public class DataVisualizeController {
         CommonData tmp5 = new CommonData();
         CommonData tmp6 = new CommonData();
         CommonData tmp4 = new CommonData();
-        tmp.setType("已签到");
-        if(checkinMapper.getCheckedNum((latest.getId()))!=null){
-            tmp.setValue(checkinMapper.getCheckedNum(latest.getId()));
-        }else tmp.setValue(0);
         List<CommonData> tmp2 = new ArrayList<>();
-        tmp2.add(tmp);
-        tmp4.setType("未签到");
-        tmp4.setValue(checkinMapper.getNotCheckedNum(latest.getId()));
-        tmp2.add(tmp4);
-        chartDatatmp.setDountChartData(tmp2);
+        if(latest==null)
+        {
+            CommonData bug=new CommonData();
+            bug.setType("未签到");
+            bug.setValue(0);
+            tmp2.add(bug);
+            CommonData bug0=new CommonData();
+            bug0.setType("已签到");
+            bug0.setValue(0);
+            tmp2.add(bug0);
+            chartDatatmp.setDountChartData(tmp2);
+        }else {
+            tmp.setType("已签到");
+            if(checkinMapper.getCheckedNum((latest.getId()))!=null){
+                tmp.setValue(checkinMapper.getCheckedNum(latest.getId()));
+            }else tmp.setValue(0);
+
+            tmp2.add(tmp);
+            tmp4.setType("未签到");
+            tmp4.setValue(checkinMapper.getNotCheckedNum(latest.getId()));
+            tmp2.add(tmp4);
+            chartDatatmp.setDountChartData(tmp2);
+        }
+
 
         //第二张统计图（上节课的作业情况）
         List<CommonData> tmp3 = new ArrayList<>();
-        tmp5.setType("已批改");
-        tmp5.setValue(assignmentMapper.getStatus2num(latest.getId()));
-        tmp3.add(tmp5);
-        tmp6.setType("待批改");
-        tmp6.setValue(assignmentMapper.getStatus1num(latest.getId()));
-        tmp3.add(tmp6);
-        tmp1.setType("未提交");
-        tmp1.setValue(assignmentMapper.getStatus0num(latest.getId()));
-        tmp3.add(tmp1);
-        chartDatatmp.setPieChartData(tmp3);
+        if(latest==null)
+        {
+            CommonData bug=new CommonData();
+            bug.setType("无作业");
+            tmp3.add(bug);
+            chartDatatmp.setPieChartData(tmp3);
+        }else {
+            tmp5.setType("已批改");
+            tmp5.setValue(assignmentMapper.getStatus2num(latest.getId()));
+            tmp3.add(tmp5);
+            tmp6.setType("待批改");
+            tmp6.setValue(assignmentMapper.getStatus1num(latest.getId()));
+            tmp3.add(tmp6);
+            tmp1.setType("未提交");
+            tmp1.setValue(assignmentMapper.getStatus0num(latest.getId()));
+            tmp3.add(tmp1);
+            chartDatatmp.setPieChartData(tmp3);
+        }
+
 
         //第三个元素（上次作业平均分）
-        chartDatatmp.setGaugeChartData(assignmentMapper.getAvgScore(latest.getId()));
+        if(latest==null) chartDatatmp.setGaugeChartData(0);
+        else chartDatatmp.setGaugeChartData(assignmentMapper.getAvgScore(latest.getId()));
 
         //第四个元素（历史到课率）
         LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
@@ -288,7 +313,8 @@ public class DataVisualizeController {
         {
             CommonData tem=new CommonData();
             tem.setType(tt.getName());
-            tem.setValue(studentCurriculumMapper.getNumofCourse(tt.getId()));
+            if(studentCurriculumMapper.getNumofCourse(tt.getId())==0) tem.setValue(0);
+            else tem.setValue(studentCurriculumMapper.getNumofCourse(tt.getId()));
             chartData1.add(tem);
         }
         dto.setDountChartData(chartData1);

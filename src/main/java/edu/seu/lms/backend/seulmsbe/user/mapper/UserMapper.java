@@ -19,6 +19,9 @@ public interface UserMapper extends BaseMapper<User> {
             "values (#{nickname},#{id},#{email},#{access},#{phone},#{avatarUrl},#{psw})")
     void insertUser(User user);
 
+    @Select("select * from user where nickname=#{username}")
+    User selectUserByName(String username);
+
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN user.access = 0 THEN "+
@@ -48,4 +51,7 @@ public interface UserMapper extends BaseMapper<User> {
             "end"+
             ") FROM user ")
     Integer getStatus2Num();
+
+    @Update("update user set nickname=#{nickname},email=#{email},access=#{access},phone=#{phone},avatarUrl=#{avatarUrl} where ID=#{id}")
+    void updateUser00(String nickname,String email,int access,String phone,String avatarUrl,String id);
 }

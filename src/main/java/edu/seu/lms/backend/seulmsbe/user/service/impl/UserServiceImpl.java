@@ -215,7 +215,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
             userDTO.setPhone(user.getPhone());
             userDTO.setId(user.getId());
             userDTO.setNickName(user.getNickname());
-            userDTO.setImgUrl(user.getAvatarUrl());
+            userDTO.setAvatarUrl(user.getAvatarUrl());
             userDTO.setEmail(user.getEmail());
             if(user.getAccess() == 0){
                 userDTO.setAccess("admin");

@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.user.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.Update;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.baomidou.mybatisplus.core.toolkit.Wrappers.update;
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
@@ -152,17 +154,14 @@ public class UserController {
     @PostMapping("modify-user")
     public BaseResponse<User> modifyUser(@RequestBody UserModifyRequset userModifyRequset,HttpServletRequest request)
     {
-        User user=new User();
-        user.setId(userModifyRequset.getID());
-        user.setNickname(userModifyRequset.getNickName());
-        user.setEmail(userModifyRequset.getEmail());
-        user.setAccess(userModifyRequset.getAccess());
-        user.setAvatarUrl(userModifyRequset.getAvatarUrl());
-        user.setPhone(userModifyRequset.getPhone());
-        user.setPsw("123456");
         LambdaUpdateWrapper<User> updateWrapper=new LambdaUpdateWrapper<>();
-        updateWrapper.eq(User::getId,userModifyRequset.getKey());
-        userMapper.update(user,updateWrapper);
+        int ass=1;
+        if(userModifyRequset.getAccess().equals("student")) ass=1;
+        if(userModifyRequset.getAccess().equals("teacher")) ass=2;
+        if(userModifyRequset.getAccess().equals("admin")) ass=0;
+        System.out.println(userModifyRequset);
+        userMapper.updateUser00(userModifyRequset.getNickName(),userModifyRequset.getEmail(),ass,userModifyRequset.getPhone(),userModifyRequset.getAvatarUrl(),userModifyRequset.getID());
+
         return ResultUtils.success(null);
     }
     @PostMapping("list-for-admin")
@@ -191,7 +190,7 @@ public class UserController {
         userDTO.setPhone(user.getPhone());
         userDTO.setId(user.getId());
         userDTO.setNickName(user.getNickname());
-        userDTO.setImgUrl(user.getAvatarUrl());
+        userDTO.setAvatarUrl(user.getAvatarUrl());
         userDTO.setEmail(user.getEmail());
         if(user.getAccess() == 0){
             userDTO.setAccess("admin");

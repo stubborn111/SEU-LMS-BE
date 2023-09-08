@@ -11,7 +11,7 @@ public class UserDTO {
     private String nickName;
     private String phone;
 
-    private String imgUrl;
+    private String avatarUrl;
 
     private String access;
     private String email;

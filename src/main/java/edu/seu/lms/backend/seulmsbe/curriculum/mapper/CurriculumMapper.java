@@ -80,6 +80,10 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             " limit #{begin},#{size}")
     List<Curriculum> SearchByNameAndTeacher(String keyword,String teacherName,int begin,int size);
 
+    @Select("select * from curriculum" +
+            " limit #{begin},#{size}")
+    List<Curriculum> SearchCourse(String keyword,String teacherName,int begin,int size);
+
     @Select("select SUM(" +
             "case " +
             " when curriculum.name like CONCAT('%',#{keyword},'%')" +
@@ -91,6 +95,8 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             " end" +
             ") from curriculum,user")
     Integer getnumAdmin(String keyword,String teacherName);
+    @Select("select count(*) from curriculum")
+    Integer getNumAdmin0();
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN student_curriculum.studentID = #{userID}"+
