@@ -3,10 +3,7 @@ package edu.seu.lms.backend.seulmsbe.syllabus.mapper;
 import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 
@@ -34,6 +31,11 @@ public interface SyllabusMapper extends BaseMapper<Syllabus> {
     void updateAssignPostText(String syllabusID, String userID, String homeworkTitle, String body);
     @Delete("delete from syllabus where curriculumID=#{curriculumID}")
     void deleteByCourseID(String curriculumID);
+
+    @Delete("delete from syllabus where ID=#{syllabusID}")
+    void deleteBySyllabusID(String syllabusID);
     @Select("select * from syllabus where curriculumID=#{curriculumID}")
     List<Syllabus> getSyllabusByCurriculumID(String curriculumID);
+    @Update("update Syllabus set materials=#{materials} where ID=#{syllabusID}")
+    void updateMaterials(String materials,String syllabusID);
 }

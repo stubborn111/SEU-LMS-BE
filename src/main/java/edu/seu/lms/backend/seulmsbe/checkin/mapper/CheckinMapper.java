@@ -59,4 +59,7 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
     int getCheckinBySylNum(int isCheckedIn,String syllabusID);
     @Delete("delete from checkin where syllabusID=#{syllabusID}")
     void deleteBySyllabusID(String syllabusID);
+
+    @Delete("delete from checkin where studentID=#{userID}")
+    void deleteByUserID(String userID);
 }

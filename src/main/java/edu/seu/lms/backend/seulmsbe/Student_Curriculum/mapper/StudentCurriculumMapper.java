@@ -51,4 +51,7 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
     @Delete("delete  from student_curriculum where curriculumID=#{curriculumID}")
     void deleteByCourseID(String curriculumID);
 
+    @Delete("delete from student_curriculum where studentID=#{userID}")
+    void deleteByUserID(String userID);
+
 }

@@ -12,6 +12,7 @@ import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
 import edu.seu.lms.backend.seulmsbe.discussion.mapper.DiscussionMapper;
 import edu.seu.lms.backend.seulmsbe.dto.Course.*;
+import edu.seu.lms.backend.seulmsbe.event.mapper.EventMapper;
 import edu.seu.lms.backend.seulmsbe.file.mapper.FileMapper;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
@@ -54,6 +55,8 @@ public class CurriculumController {
     private DiscussionMapper discussionMapper;
     @Autowired
     private FileMapper fileMapper;
+    @Autowired
+    private EventMapper eventMapper;
     @PostMapping("/student-list")
     //1
     public BaseResponse<CourseListDTO> findPage(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request)
@@ -99,17 +102,7 @@ public class CurriculumController {
     //1
     public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
-        List<Syllabus> syllabusList=syllabusMapper.getSyllabusByCurriculumID(courseGetIntoRequest.getCourseID());
-        for (Syllabus tt:syllabusList)
-        {
-            fileMapper.deleteBySyllabusID(tt.getId());
-            assignmentMapper.deleteBySyllabusID(tt.getId());
-            checkinMapper.deleteBySyllabusID(tt.getId());
-        }
-        curriculumMapper.deleteById(courseGetIntoRequest.getCourseID());
-        studentCurriculumMapper.deleteByCourseID(courseGetIntoRequest.getCourseID());
-        syllabusMapper.deleteByCourseID(courseGetIntoRequest.getCourseID());
-        discussionMapper.deleteByCurriculumID(courseGetIntoRequest.getCourseID());
+        iCurriculumService.deleteCourseByID(courseGetIntoRequest.getCourseID());
         return ResultUtils.success(null);
     }
     @PostMapping("/add")

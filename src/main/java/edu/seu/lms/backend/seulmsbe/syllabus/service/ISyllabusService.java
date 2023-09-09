@@ -5,6 +5,7 @@ import edu.seu.lms.backend.seulmsbe.dto.*;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,7 +36,9 @@ public interface ISyllabusService extends IService<Syllabus> {
 
     BaseResponse<String> modifySyllabus(SyllabusModifyRequest syllabusModifyRequest, HttpServletRequest request);
     BaseResponse<String> postText(SyllabusPostTextRequest syllabusPostTextRequest,HttpServletRequest request);
-    BaseResponse<HomeWorkIntroDTO> homeworkIntro(SyllabusIDRequest syllabusIDRequest,HttpServletRequest request);
+    BaseResponse<SyllabusHomeworkIntroDTO> homeworkIntro(SyllabusIDRequest syllabusIDRequest,HttpServletRequest request);
 
-    BaseResponse<FileListDTO> materialUpload(SyllabusIDRequest syllabusIDRequest,HttpServletRequest request);
+    BaseResponse<FileListDTO> materialUpload(MaterialUploadRequest uploadRequest,HttpServletRequest request);
+    BaseResponse<String> deleteSyllabus(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request);
+
 }

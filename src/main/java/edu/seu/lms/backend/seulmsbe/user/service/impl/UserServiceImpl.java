@@ -4,13 +4,22 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
+import edu.seu.lms.backend.seulmsbe.Wiki.mapper.WikiMapper;
+import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
+import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
+import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
+import edu.seu.lms.backend.seulmsbe.curriculum.service.impl.CurriculumServiceImpl;
+import edu.seu.lms.backend.seulmsbe.discussion.mapper.DiscussionMapper;
 import edu.seu.lms.backend.seulmsbe.dto.User.ListforAdminDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.TeacherDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.UserDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
+import edu.seu.lms.backend.seulmsbe.event.mapper.EventMapper;
 import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
 import edu.seu.lms.backend.seulmsbe.message.entity.Message;
 import edu.seu.lms.backend.seulmsbe.message.mapper.MessageMapper;
@@ -45,6 +54,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private UserMapper userMapper;
     @Autowired
     private MessageMapper messageMapper;
+    @Autowired
+    private AssignmentMapper assignmentMapper;
+    @Autowired
+    private CheckinMapper checkinMapper;
+    @Autowired
+    private CurriculumMapper curriculumMapper;
+    @Autowired
+    private DiscussionMapper discussionMapper;
+    @Autowired
+    private EventMapper eventMapper;
+    @Autowired
+    private StudentCurriculumMapper studentCurriculumMapper;
+    @Autowired
+    private WikiMapper wikiMapper;
+    @Autowired
+    private CurriculumServiceImpl curriculumService;
     @Override
     public int createuser(User user) {
         int count =userMapper.insert(user);
@@ -244,6 +269,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         message.setTime(LocalDateTime.now());
         messageMapper.insert(message);
         return ResultUtils.success(null);
+    }
+
+    @Override
+    public void deleteStudent(String userID) {
+        assignmentMapper.deleteByUserID(userID);
+        checkinMapper.deleteByUserID(userID);
+        eventMapper.deleteByUserID(userID);
+        studentCurriculumMapper.deleteByUserID(userID);
+        userMapper.deleteById(userID);
+        wikiMapper.updateWikiByUserID(userID);
+    }
+
+    @Override
+    public void deleteTeacher(String userID) {
+        List<Curriculum> list=curriculumMapper.selectCurriculumByteacher(userID);
+        for (Curriculum tt:list)
+        {
+            curriculumService.deleteCourseByID(tt.getId());
+        }
+        userMapper.deleteById(userID);
+    }
+
+    @Override
+    public void deleteAdmin(String userID) {
+        userMapper.deleteById(userID);
+    }
+
+    @Override
+    public void deleteUser(String userID) {
+        User user=userMapper.selectById(userID);
+        if(user.getAccess()==0) deleteAdmin(userID);
+        if (user.getAccess()==1) deleteStudent(userID);
+        if (user.getAccess()==2) deleteTeacher(userID);
     }
 
 }

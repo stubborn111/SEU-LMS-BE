@@ -37,4 +37,6 @@ public class Event implements Serializable {
 
     @TableField("type")
     private String type;
+    @TableField("syllabusID")
+    private String syllabusID;
 }

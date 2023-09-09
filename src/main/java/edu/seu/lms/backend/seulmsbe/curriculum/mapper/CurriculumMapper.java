@@ -112,4 +112,7 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             ") FROM curriculum,student_curriculum ")
     //返回登录学生所模糊搜索的课程总数
     Integer getnum(String keyword, String userID);
+
+    @Delete("delete from curriculum where teacherID=#{userID}")
+    void deleteByTeacherID(String userID);
 }

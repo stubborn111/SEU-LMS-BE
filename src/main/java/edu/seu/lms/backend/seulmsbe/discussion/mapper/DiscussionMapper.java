@@ -49,4 +49,7 @@ public interface DiscussionMapper extends BaseMapper<Discussion> {
 
     @Delete("delete from discussion where curriculumID=#{curriculumID}")
     void deleteByCurriculumID(String curriculumID);
+
+    @Delete("delete from discussion where fromUserID=#{userID}")
+    void deleteByUserID(String userID);
 }

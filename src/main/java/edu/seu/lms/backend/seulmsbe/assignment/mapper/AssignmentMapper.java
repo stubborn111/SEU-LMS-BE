@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 
 import java.util.List;
 
@@ -86,8 +87,8 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
     @Select("select SUM(score) from assignment where syllabusID=#{syllabusID} and status=2")
     Integer getAllScore(String syllabusID);
 
-    @Update("update assignment set file=#{homeworkUrl},status=1 ,type=#{type},name=#{homeworkTitle},time=#{time} where studentID=#{userID} and syllabusID=#{syllabusID}")
-    void syllabusPostFile(String userID, String syllabusID, String homeworkTitle, String homeworkUrl, String type, DateTime time);
+    @Update("update assignment set file=#{homeworkUrl},status=1 ,type=#{type},name=#{homeworkTitle},time=now() where studentID=#{userID} and syllabusID=#{syllabusID}")
+    void syllabusPostFile(String userID, String syllabusID, String homeworkTitle, String homeworkUrl, String type);
 
     @Update("update assignment set score=#{rate},feedback=#{feedback},status=2 where ID=#{homeworkID}")
     void syllabusFeedback(String homeworkID,int rate,String feedback);
@@ -99,4 +100,6 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
 
     @Delete("delete from assignment where syllabusID=#{syllabusID}")
     void deleteBySyllabusID(String syllabusID);
+    @Delete("delete from assignment where studentID=#{userID}")
+    void deleteByUserID(String userID);
 }

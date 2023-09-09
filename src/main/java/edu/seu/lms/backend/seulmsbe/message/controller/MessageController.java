@@ -47,4 +47,5 @@ public class MessageController {
     public BaseResponse<Integer> sendNotice(@RequestBody MessageNoticeRequest noticeRequest, HttpServletRequest request) {
         return iMessageService.sendNotice(noticeRequest,request);
     }
+
 }

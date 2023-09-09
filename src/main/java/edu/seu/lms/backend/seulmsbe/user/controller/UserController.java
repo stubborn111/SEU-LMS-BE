@@ -147,7 +147,7 @@ public class UserController {
     {
         for(String userid:userDeletes.getId())
         {
-            userMapper.deleteById(userid);
+            userService.deleteUser(userid);
         }
         return ResultUtils.success(null);
     }
@@ -178,7 +178,8 @@ public class UserController {
     @PostMapping("delete")
     public BaseResponse<User> deleteone(@RequestBody UserDeleteRequest userDeleteRequest,HttpServletRequest request)
     {
-        userMapper.deleteById(userDeleteRequest.getId());
+        userService.deleteUser(userDeleteRequest.getId());
+
         return ResultUtils.success(null);
     }
     @PostMapping("sendPM")

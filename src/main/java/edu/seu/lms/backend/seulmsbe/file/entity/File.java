@@ -22,7 +22,6 @@ import lombok.experimental.Accessors;
 public class File implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
     @TableId("ID")
     private String id;
 

@@ -77,8 +77,10 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
             temp.setContent(tt.getContent());
             User user = iUserService.getuser(tt.getFromUserID());
             temp.setFromUserAccess(user.getAccess()==0?"admin":"teacher");
+            temp.setFromUserID(tt.getFromUserID());
             temp.setFromUserName(user.getNickname());
             temp.setFromUserAvatar(user.getAvatarUrl());
+            temp.setSourceName(tt.getSource());
             //SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             //temp.setTime(formatter.format(tt.getTime()));
             if (tt.getTime()!=null) {

@@ -4,16 +4,23 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
+import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
+import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import edu.seu.lms.backend.seulmsbe.discussion.mapper.DiscussionMapper;
 import edu.seu.lms.backend.seulmsbe.dto.Course.*;
+import edu.seu.lms.backend.seulmsbe.event.mapper.EventMapper;
+import edu.seu.lms.backend.seulmsbe.file.mapper.FileMapper;
 import edu.seu.lms.backend.seulmsbe.message.entity.Message;
 import edu.seu.lms.backend.seulmsbe.message.mapper.MessageMapper;
 import edu.seu.lms.backend.seulmsbe.request.*;
+import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
+import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
@@ -48,6 +55,18 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     UserMapper userMapper;
     @Autowired
     MessageMapper messageMapper;
+    @Autowired
+    private SyllabusMapper syllabusMapper;
+    @Autowired
+    private AssignmentMapper assignmentMapper;
+    @Autowired
+    private CheckinMapper checkinMapper;
+    @Autowired
+    private DiscussionMapper discussionMapper;
+    @Autowired
+    private FileMapper fileMapper;
+    @Autowired
+    private EventMapper eventMapper;
     public BaseResponse<CourseSearchDTO> studentsearchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         //取出数据
@@ -449,6 +468,22 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         message.setToUserID(teacher.getId());
         messageMapper.insertMessage(message);
         return ResultUtils.success(null);
+    }
+
+    @Override
+    public void deleteCourseByID(String courseID) {
+        List<Syllabus> syllabusList=syllabusMapper.getSyllabusByCurriculumID(courseID);
+        for (Syllabus tt:syllabusList)
+        {
+            fileMapper.deleteBySyllabusID(tt.getId());
+            assignmentMapper.deleteBySyllabusID(tt.getId());
+            checkinMapper.deleteBySyllabusID(tt.getId());
+            eventMapper.deleteBySyllabusID(tt.getId());
+        }
+        curriculumMapper.deleteById(courseID);
+        studentCurriculumMapper.deleteByCourseID(courseID);
+        syllabusMapper.deleteByCourseID(courseID);
+        discussionMapper.deleteByCurriculumID(courseID);
     }
 
 }

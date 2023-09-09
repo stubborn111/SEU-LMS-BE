@@ -8,8 +8,10 @@ public class MessageDTO {
     private String fromUserName;
     private String fromUserAvatar;
     private String fromUserAccess;
+    private String fromUserID;
     private String messageID;
     private String content;
     private String time;
     private Boolean isRead;
+    private String sourceName;
 }

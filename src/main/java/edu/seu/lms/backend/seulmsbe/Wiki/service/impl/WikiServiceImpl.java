@@ -91,15 +91,24 @@ public class WikiServiceImpl extends ServiceImpl<WikiMapper, Wiki> implements IW
         List<WikiDTO> wikiDTOList = new ArrayList<>();
         for(Wiki tmp:wikiList){
             WikiDTO temp = new WikiDTO();
+            if(tmp.getFromUserID().equals("未知用户"))
+            {
+                temp.setFromUserAvatar("");
+                temp.setFromUserName("未知用户");
+                temp.setFromUserAccess("");
+            }
+            else {
+                User user = userMapper.selectById(tmp.getFromUserID());
+                temp.setFromUserAvatar(user.getAvatarUrl());
+                temp.setFromUserName(user.getNickname());
+                temp.setFromUserAccess(user.getAccess()==1?"student":"teacher");
+            }
             temp.setWikiID(tmp.getWikiID());
             temp.setTime(tmp.getTime().toString().replace("T"," "));
             temp.setAnswer(tmp.getAnswer());
             //temp.setIsSolved(tmp.getIsSolved());
             temp.setQuestion(tmp.getQuestion());
-            User user = userMapper.selectById(tmp.getFromUserID());
-            temp.setFromUserAvatar(user.getAvatarUrl());
-            temp.setFromUserName(user.getNickname());
-            temp.setFromUserAccess(user.getAccess()==1?"student":"teacher");
+
             wikiDTOList.add(temp);
         }
         dto.setList(wikiDTOList);

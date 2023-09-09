@@ -1,6 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.syllabus.controller;
 
 
+import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
@@ -128,9 +129,9 @@ public class SyllabusController {
         {
             type=Url.substring(index+1);
         }else {
-            type=" ";
+            type=null;
         }
-        assignmentMapper.syllabusPostFile(userID,postFileRequest.getSyllabusID(),postFileRequest.getHomeworkTitle(),Url,type, DateTime.now());
+        assignmentMapper.syllabusPostFile(userID,postFileRequest.getSyllabusID(),postFileRequest.getHomeworkTitle(),Url,type);
         return ResultUtils.success(null);
     }
     @PostMapping("homework/feedback")
@@ -140,12 +141,15 @@ public class SyllabusController {
         return ResultUtils.success(null);
     }
     @PostMapping("homework/intro")
-    public BaseResponse<HomeWorkIntroDTO> homeworkIntro(@RequestBody SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
+    public BaseResponse<SyllabusHomeworkIntroDTO> homeworkIntro(@RequestBody SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
         return syllabusService.homeworkIntro(syllabusIDRequest,request);
     }
     @PostMapping("material/upload")
-    public BaseResponse<FileListDTO> materialUpload(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
-        return syllabusService.materialUpload(syllabusIDRequest,request);
+    public BaseResponse<FileListDTO> materialUpload(@RequestBody MaterialUploadRequest uploadRequest, HttpServletRequest request) {
+        return syllabusService.materialUpload(uploadRequest,request);
     }
-
+    @PostMapping("delete")
+    public BaseResponse<String> deleteSyllabus(@RequestBody SyllabusIDRequest syllabusIDRequest,HttpServletRequest request){
+        return syllabusService.deleteSyllabus(syllabusIDRequest,request);
+    }
 }

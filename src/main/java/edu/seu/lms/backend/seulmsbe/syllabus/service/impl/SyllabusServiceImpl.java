@@ -20,6 +20,7 @@ import edu.seu.lms.backend.seulmsbe.event.entity.Event;
 import edu.seu.lms.backend.seulmsbe.event.mapper.EventMapper;
 import edu.seu.lms.backend.seulmsbe.file.entity.File;
 import edu.seu.lms.backend.seulmsbe.file.mapper.FileMapper;
+import edu.seu.lms.backend.seulmsbe.message.mapper.MessageMapper;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
@@ -30,7 +31,6 @@ import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.webSocket.WebSocketServer;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
@@ -43,8 +43,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -80,6 +82,8 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     private EventMapper eventMapper;
     @Autowired
     private CurriculumMapper curriculumMapper;
+    @Autowired
+    MessageMapper messageMapper;
     @Override
     public BaseResponse<SyllabusListDTO> listSyllabus(SyllabusListRequest syllabusListRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
@@ -395,41 +399,73 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     }
 
     @Override
-    public BaseResponse<HomeWorkIntroDTO> homeworkIntro(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
+    public BaseResponse<SyllabusHomeworkIntroDTO> homeworkIntro(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         String userID=currentUser.getId();
+        SyllabusHomeworkIntroDTO DTO0=new SyllabusHomeworkIntroDTO();
         Syllabus syllabus=syllabusMapper.selectById(syllabusIDRequest.getSyllabusID());
         Assignment assignment=assignmentMapper.selectAssignment(syllabus.getId(), userID);
         HomeWorkIntroDTO DTO=new HomeWorkIntroDTO();
-        DTO.setDeadline(assignment.getTime().toString());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // 使用格式化器将 LocalDateTime 转换为字符串
+        String formattedDateTime = syllabus.getTime().format(formatter);
+        DTO.setDeadline(formattedDateTime);
         DTO.setHomeworkName(syllabus.getAssiments());
         DTO.setHomeworkDescription(syllabus.getAssignmentContent());
-        return ResultUtils.success(DTO);
+        HomeWorkHistoryDTO dto=new HomeWorkHistoryDTO();
+        if(assignment.getStatus()!=0)
+        {
+            dto.setName(assignment.getName());
+            if(assignment.getType().equals("multi-text"))
+            {
+                dto.setText(true);
+                dto.setBody(assignment.getFile());
+            }else {
+                dto.setText(false);
+                dto.setBody(null);
+            }
+        }else {
+            dto=null;
+        }
+        DTO.setHomeworkHistory(dto);
+        DTO0.setHomeworkData(DTO);
+        return ResultUtils.success(DTO0);
     }
 
     @Override
-    public BaseResponse<FileListDTO> materialUpload(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
-        String syllabusID=syllabusIDRequest.getSyllabusID();
-        List<File> files=fileMapper.selectFileList(syllabusID);
-        FileListDTO DTO=new FileListDTO();
-        List<FileDTO> dto=new ArrayList<>();
-        for(File tt:files)
-        {
-            FileDTO tem=new FileDTO();
-            tem.setDescription(tt.getDescription());
-            tem.setUrl(tt.getUrl());
-            tem.setName(tt.getName());
-            tem.setType(tt.getType());
-            tem.setStatus(tt.getStatus());
-            ZonedDateTime zonedDateTime = tt.getTime().atZone(ZoneId.systemDefault());
-
-            // 将 ZonedDateTime 转换为 DateTime
-            DateTime dateTime = new DateTime(zonedDateTime.toInstant().toEpochMilli());
-
-            tem.setTime(dateTime);
-            dto.add(tem);
+    public BaseResponse<FileListDTO> materialUpload(MaterialUploadRequest uploadRequest, HttpServletRequest request) {
+        String syllabusID=uploadRequest.getSyllabusID();
+        String name=uploadRequest.getName();
+        String content=uploadRequest.getContent();
+        String fileUrl=uploadRequest.getFileUrl();
+        String materials=UUID.randomUUID().toString().substring(0,7);
+        syllabusMapper.updateMaterials(materials,syllabusID);
+        File file=new File();
+        file.setId(materials);
+        file.setDescription(content);
+        file.setSyllabusID(syllabusID);
+        file.setTime(LocalDateTime.now());
+        file.setUrl(fileUrl);
+        file.setName(name);
+        String type=null;
+        int lastIndex = fileUrl.lastIndexOf(".");
+        if (lastIndex != -1 && lastIndex < fileUrl.length() - 1) {
+            type = fileUrl.substring(lastIndex + 1);
         }
-        DTO.setFileList(dto);
-        return ResultUtils.success(DTO);
+        file.setType(type);
+        file.setStatus(1);
+        fileMapper.insertFile(file);
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<String> deleteSyllabus(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
+        String syllabusID=syllabusIDRequest.getSyllabusID();
+        syllabusMapper.deleteBySyllabusID(syllabusID);
+        checkinMapper.deleteBySyllabusID(syllabusID);
+        assignmentMapper.deleteBySyllabusID(syllabusID);
+        eventMapper.deleteBySyllabusID(syllabusID);
+        return ResultUtils.success(null);
     }
 }

@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.file.mapper;
 import edu.seu.lms.backend.seulmsbe.file.entity.File;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -21,4 +22,8 @@ public interface FileMapper extends BaseMapper<File> {
 
     @Select("select * from file where syllabusID=#{syllabusID}")
     List<File> selectFileList(String syllabusID);
+
+    @Insert("insert into file(ID, type, name, time, description, url, status, syllabusID)" +
+            " values (#{id},#{type},#{name},#{time},#{description},#{url},#{status},#{syllabusID})")
+    void insertFile(File file);
 }

@@ -31,4 +31,9 @@ public interface IUserService extends IService<User> {
     public BaseResponse<ListforAdminDTO> listforadmin(UserListforAdminRequest userListforAdminRequest, HttpServletRequest request);
 
     BaseResponse<String> sendPM(SendPMRequest sendPMRequest, HttpServletRequest request);
+    void deleteStudent(String userID);
+    void deleteTeacher(String userID);
+    void deleteAdmin(String userID);
+
+    void deleteUser(String userID);
 }

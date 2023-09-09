@@ -37,5 +37,5 @@ public interface ICurriculumService extends IService<Curriculum> {
 
     BaseResponse<CourseListStudentDTO> listStudent(CourseListStudent2Request courseListStudentRequest, HttpServletRequest request);
     BaseResponse<String> sendNotice(SendNoticeRequest sendNoticeRequest,HttpServletRequest request);
-
+    void deleteCourseByID(String courseID);
 }

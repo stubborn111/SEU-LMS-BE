@@ -7,4 +7,5 @@ public class HomeWorkIntroDTO {
     private String homeworkName;
     private String homeworkDescription;
     private String deadline;
+    private HomeWorkHistoryDTO homeworkHistory;
 }
