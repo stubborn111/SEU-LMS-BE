@@ -97,7 +97,9 @@ public class CurriculumController {
     @PostMapping("/get-name")
     public BaseResponse<CourseNameDTO> getCourseName(@RequestBody CourseGetIntoRequest courseGetIntoRequest,HttpServletRequest request)
     {
-        return iCurriculumService.getCourseName(courseGetIntoRequest,request);
+        CourseNameDTO DTO=new CourseNameDTO();
+        DTO.setCourseName(curriculumMapper.selectById(courseGetIntoRequest.getCourseID()).getName());
+        return ResultUtils.success(DTO);
     }
     @PostMapping("/modify")
     public BaseResponse<Curriculum> modifyCourse(@RequestBody CourseModifyRequest courseModifyRequest, HttpServletRequest request)

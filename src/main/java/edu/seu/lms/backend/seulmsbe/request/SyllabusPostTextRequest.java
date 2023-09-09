@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class SyllabusPostTextRequest {
     String syllabusID;
-    String homeworkTitle;
+    String title;
     String body;
 }

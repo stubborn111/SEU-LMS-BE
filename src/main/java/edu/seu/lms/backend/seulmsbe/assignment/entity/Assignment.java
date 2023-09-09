@@ -31,8 +31,6 @@ public class Assignment implements Serializable {
     private String studentID;
     @TableField("syllabusID")
     private String syllabusID;
-    @TableField("content")
-    private String content;
     @TableField("name")
     private String name;
     @TableField("score")

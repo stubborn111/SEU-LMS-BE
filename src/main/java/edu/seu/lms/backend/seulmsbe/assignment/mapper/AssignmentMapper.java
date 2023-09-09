@@ -4,6 +4,7 @@ import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.joda.time.DateTime;
 
 import java.util.List;
 
@@ -84,12 +85,14 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
     @Select("select SUM(score) from assignment where syllabusID=#{syllabusID} and status=2")
     Integer getAllScore(String syllabusID);
 
-    @Update("update assignment set file=#{homeworkUrl},status='1',type=#{type},name=#{homeworkTitle} where studentID=#{userID} and syllabusID=#{syllabusID}")
-    void syllabusPostFile(String userID,String syllabusID,String homeworkTitle,String homeworkUrl,String type);
+    @Update("update assignment set file=#{homeworkUrl},status=1 ,type=#{type},name=#{homeworkTitle},time=#{time} where studentID=#{userID} and syllabusID=#{syllabusID}")
+    void syllabusPostFile(String userID, String syllabusID, String homeworkTitle, String homeworkUrl, String type, DateTime time);
 
-    @Update("update assignment set score=#{rate},feedback=#{feedback},status='2' where ID=#{homeworkID}")
+    @Update("update assignment set score=#{rate},feedback=#{feedback},status=2 where ID=#{homeworkID}")
     void syllabusFeedback(String homeworkID,int rate,String feedback);
 
     @Select("select * from assignment where syllabusID=#{syllabusID} and studentID=#{studentID}")
     Assignment selectAssignment(String syllabusID,String studentID);
+    @Select("select * from assignment where name=#{name} and syllabusID=#{syllabusID}")
+    Assignment selectAssignmentBySyllabus(String name,String syllabusID);
 }

@@ -150,7 +150,11 @@ public class DataVisualizeController {
 //            LambdaUpdateWrapper<Assignment> lambdaUpdateWrapper1 = new LambdaUpdateWrapper<>();
 //            lambdaUpdateWrapper1.eq(Assignment::getSyllabusID,tt.getId());
             List<Assignment> assignment = assignmentMapper.getlist(tt.getId());
-            if (!assignment.isEmpty()) homework.setTask(assignment.get(0).getContent());
+            if (!assignment.isEmpty())
+            {
+                Syllabus s=syllabusMapper.selectById(assignment.get(0).getSyllabusID());
+                homework.setTask(s.getAssignmentContent());
+            }
             if(assignmentMapper.getAvgScore(tt.getId())!=null) homework.setScore(assignmentMapper.getAvgScore(tt.getId()));
             else homework.setScore(0);
             homeworkList.add(homework);

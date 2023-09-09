@@ -12,6 +12,7 @@ import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -132,7 +133,7 @@ public class SyllabusController {
         }else {
             type=" ";
         }
-        assignmentMapper.syllabusPostFile(userID,postFileRequest.getSyllabusID(),postFileRequest.getHomeworkTitle(),Url,type);
+        assignmentMapper.syllabusPostFile(userID,postFileRequest.getSyllabusID(),postFileRequest.getHomeworkTitle(),Url,type, DateTime.now());
         return ResultUtils.success(null);
     }
     @PostMapping("homework/feedback")

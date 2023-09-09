@@ -207,8 +207,10 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         String syllabusID = syllabusListHomeworkRequest.getSyllabusID();
         int curPage = syllabusListHomeworkRequest.getCurrentPage();
         int pageSize = syllabusListHomeworkRequest.getPageSize();
+        //System.out.println(syllabusListHomeworkRequest);
         LambdaUpdateWrapper<Assignment> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.eq(Assignment::getSyllabusID,syllabusID);
+        queryMapper.apply("status=1 or status=2");
         Page<Assignment> Page = assignmentMapper.selectPage(new Page<>(curPage,pageSize),queryMapper);
         List<Assignment> assignmentList = Page.getRecords();
         List<SyllabusHomeworkDTO> syllabusHomeworkDTOList = new ArrayList<>();
@@ -218,6 +220,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             temp.setFileType(tmp.getType());
             temp.setStatus(tmp.getStatus());
             temp.setFileUrl(tmp.getFile());
+
             User user = userMapper.selectById(tmp.getStudentID());
             temp.setStudentAvatar(user.getAvatarUrl());
             temp.setStudentNickName(user.getNickname());
@@ -229,10 +232,8 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         dto.setList(syllabusHomeworkDTOList);
         SyllabusHomeworkInfoDTO infoDTO = new SyllabusHomeworkInfoDTO();
         Syllabus syllabustmp = syllabusMapper.selectById(syllabusID);
-        if(syllabustmp.getAssiments()==null || syllabustmp.getAssiments().isEmpty()) infoDTO.setHomeworkName(syllabustmp.getAssiments());
-        if(!assignmentList.isEmpty()){
-            infoDTO.setHomeworkDescription(assignmentList.get(0).getContent());
-        }
+        if(syllabustmp.getAssiments()!=null || !syllabustmp.getAssiments().isEmpty()) infoDTO.setHomeworkName(syllabustmp.getAssiments());
+        infoDTO.setHomeworkDescription(syllabustmp.getAssignmentContent());
         infoDTO.setUncommittedNum(assignmentMapper.getStatus0num(syllabusID));
         infoDTO.setToBeCorrectedNum(assignmentMapper.getStatus1num(syllabusID));
         dto.setInfo(infoDTO);
@@ -289,14 +290,16 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         } catch (ParseException e) {
 
         }
+        ZoneId zoneId = ZoneId.systemDefault();
         Syllabus syllabus= syllabusMapper.selectById(syllabusID);
         LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(Syllabus::getId,syllabusID).set(Syllabus::getAssiments,homeworkPublishRequest.getHomeworkName());
+        lambdaUpdateWrapper.eq(Syllabus::getId,syllabusID).set(Syllabus::getAssiments,homeworkPublishRequest.getHomeworkName()).set(Syllabus::getAssignmentContent,homeworkPublishRequest.getHomeworkDescription())
+                        .set(Syllabus::getAssignmentTime,datetime.toInstant().atZone(zoneId).toLocalDateTime());
         update(lambdaUpdateWrapper);
         LambdaUpdateWrapper<StudentCurriculum> lambdaUpdateWrapper1 = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper1.eq(StudentCurriculum::getCurriculumID,syllabus.getCurriculumID());
         List<StudentCurriculum> studentCurriculumList = studentCurriculumMapper.selectList(lambdaUpdateWrapper1);
-        ZoneId zoneId = ZoneId.systemDefault();
+
         for(StudentCurriculum sc:studentCurriculumList){
             User user = userMapper.selectById(sc.getStudentID());
             Assignment assignment = new Assignment();
@@ -304,8 +307,8 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             assignment.setID(UUID.randomUUID().toString().substring(0,7));
             assignment.setStudentID(user.getId());
             assignment.setStatus(0);
-            assignment.setContent(homeworkPublishRequest.getHomeworkDescription());
-            assignment.setTime(datetime.toInstant().atZone(zoneId).toLocalDateTime());
+            assignment.setName(homeworkPublishRequest.getHomeworkName());
+            //assignment.setContent(homeworkPublishRequest.getHomeworkDescription());
             assignmentMapper.insert(assignment);
             Event event = new Event();
             event.setId(UUID.randomUUID().toString().substring(0,7));
@@ -385,7 +388,8 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
     public BaseResponse<String> postText(SyllabusPostTextRequest syllabusPostTextRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         String userID=currentUser.getId();
-        syllabusMapper.updateAssignPostText(syllabusPostTextRequest.getSyllabusID(),userID,syllabusPostTextRequest.getHomeworkTitle(),syllabusPostTextRequest.getBody());
+        syllabusMapper.updateAssignPostText(syllabusPostTextRequest.getSyllabusID(),
+                userID,syllabusPostTextRequest.getTitle(),syllabusPostTextRequest.getBody());
         return ResultUtils.success(null);
     }
 
@@ -398,7 +402,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         HomeWorkIntroDTO DTO=new HomeWorkIntroDTO();
         DTO.setDeadline(assignment.getTime().toString());
         DTO.setHomeworkName(syllabus.getAssiments());
-        DTO.setHomeworkDescription(assignment.getContent());
+        DTO.setHomeworkDescription(syllabus.getAssignmentContent());
         return ResultUtils.success(DTO);
     }
 }
