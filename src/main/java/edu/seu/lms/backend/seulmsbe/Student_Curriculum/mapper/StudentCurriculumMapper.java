@@ -2,6 +2,7 @@ package edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper;
 
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -46,5 +47,8 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
 
     @Select("select count(*) from student_curriculum where curriculumID=#{curriculumID}")
     Integer getCourseNum(String curriculumID);
+
+    @Delete("delete  from student_curriculum where curriculumID=#{curriculumID}")
+    void deleteByCourseID(String curriculumID);
 
 }

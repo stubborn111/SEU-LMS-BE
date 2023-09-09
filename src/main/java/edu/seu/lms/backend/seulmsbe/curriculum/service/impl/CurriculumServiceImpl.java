@@ -11,6 +11,8 @@ import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.seu.lms.backend.seulmsbe.dto.Course.*;
+import edu.seu.lms.backend.seulmsbe.message.entity.Message;
+import edu.seu.lms.backend.seulmsbe.message.mapper.MessageMapper;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
@@ -44,6 +46,8 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     StudentCurriculumMapper studentCurriculumMapper;
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    MessageMapper messageMapper;
     public BaseResponse<CourseSearchDTO> studentsearchCourse(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         //取出数据
@@ -417,6 +421,34 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         }
         dto.setList(courseStudentDTOList);
         return ResultUtils.success(dto);
+    }
+
+    @Override
+    public BaseResponse<String> sendNotice(SendNoticeRequest sendNoticeRequest, HttpServletRequest request) {
+        String courseID=sendNoticeRequest.getData().getCourseID();
+        String content=sendNoticeRequest.getData().getAnswer();
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String fromUserID=currentUser.getId();
+        LambdaUpdateWrapper<StudentCurriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(StudentCurriculum::getCurriculumID,courseID);
+        List<StudentCurriculum> list=studentCurriculumMapper.selectList(queryMapper);
+        for (StudentCurriculum tt:list)
+        {
+            Message message=new Message();
+            message.setId(UUID.randomUUID().toString().substring(0,7));
+            message.setContent(content);
+            message.setFromUserID(fromUserID);
+            message.setToUserID(tt.getStudentID());
+            messageMapper.insertMessage(message);
+        }
+        User teacher=userMapper.selectById(curriculumMapper.selectById(courseID).getTeacherID());
+        Message message=new Message();
+        message.setId(UUID.randomUUID().toString().substring(0,7));
+        message.setContent(content);
+        message.setFromUserID(fromUserID);
+        message.setToUserID(teacher.getId());
+        messageMapper.insertMessage(message);
+        return ResultUtils.success(null);
     }
 
 }

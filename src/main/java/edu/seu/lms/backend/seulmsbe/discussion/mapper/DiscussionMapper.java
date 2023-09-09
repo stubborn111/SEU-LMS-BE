@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.discussion.mapper;
 import edu.seu.lms.backend.seulmsbe.discussion.entity.Discussion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import edu.seu.lms.backend.seulmsbe.message.entity.Message;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
@@ -45,4 +46,7 @@ public interface DiscussionMapper extends BaseMapper<Discussion> {
             "order by discussion.time desc "+
             "LIMIT #{begin},#{size}")
     List<Discussion> getlist(String courseID, int begin, int size);
+
+    @Delete("delete from discussion where curriculumID=#{curriculumID}")
+    void deleteByCurriculumID(String curriculumID);
 }

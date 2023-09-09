@@ -1,10 +1,7 @@
 package edu.seu.lms.backend.seulmsbe.syllabus.service;
 
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
-import edu.seu.lms.backend.seulmsbe.dto.HomeWorkIntroDTO;
-import edu.seu.lms.backend.seulmsbe.dto.MaterialListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.SyllabusHomeworkListDTO;
-import edu.seu.lms.backend.seulmsbe.dto.SyllabusListDTO;
+import edu.seu.lms.backend.seulmsbe.dto.*;
 import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -39,4 +36,6 @@ public interface ISyllabusService extends IService<Syllabus> {
     BaseResponse<String> modifySyllabus(SyllabusModifyRequest syllabusModifyRequest, HttpServletRequest request);
     BaseResponse<String> postText(SyllabusPostTextRequest syllabusPostTextRequest,HttpServletRequest request);
     BaseResponse<HomeWorkIntroDTO> homeworkIntro(SyllabusIDRequest syllabusIDRequest,HttpServletRequest request);
+
+    BaseResponse<FileListDTO> materialUpload(SyllabusIDRequest syllabusIDRequest,HttpServletRequest request);
 }

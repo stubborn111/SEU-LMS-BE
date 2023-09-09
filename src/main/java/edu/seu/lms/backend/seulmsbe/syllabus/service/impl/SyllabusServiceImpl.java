@@ -44,6 +44,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -403,6 +404,32 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         DTO.setDeadline(assignment.getTime().toString());
         DTO.setHomeworkName(syllabus.getAssiments());
         DTO.setHomeworkDescription(syllabus.getAssignmentContent());
+        return ResultUtils.success(DTO);
+    }
+
+    @Override
+    public BaseResponse<FileListDTO> materialUpload(SyllabusIDRequest syllabusIDRequest, HttpServletRequest request) {
+        String syllabusID=syllabusIDRequest.getSyllabusID();
+        List<File> files=fileMapper.selectFileList(syllabusID);
+        FileListDTO DTO=new FileListDTO();
+        List<FileDTO> dto=new ArrayList<>();
+        for(File tt:files)
+        {
+            FileDTO tem=new FileDTO();
+            tem.setDescription(tt.getDescription());
+            tem.setUrl(tt.getUrl());
+            tem.setName(tt.getName());
+            tem.setType(tt.getType());
+            tem.setStatus(tt.getStatus());
+            ZonedDateTime zonedDateTime = tt.getTime().atZone(ZoneId.systemDefault());
+
+            // 将 ZonedDateTime 转换为 DateTime
+            DateTime dateTime = new DateTime(zonedDateTime.toInstant().toEpochMilli());
+
+            tem.setTime(dateTime);
+            dto.add(tem);
+        }
+        DTO.setFileList(dto);
         return ResultUtils.success(DTO);
     }
 }

@@ -13,9 +13,7 @@ import edu.seu.lms.backend.seulmsbe.message.entity.Message;
 import edu.seu.lms.backend.seulmsbe.message.mapper.MessageMapper;
 import edu.seu.lms.backend.seulmsbe.message.service.IMessageService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import edu.seu.lms.backend.seulmsbe.request.MarkMessageRequest;
-import edu.seu.lms.backend.seulmsbe.request.MessageListRequest;
-import edu.seu.lms.backend.seulmsbe.request.SendToClassRequest;
+import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
@@ -120,4 +118,50 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message> impl
         update(queryWrapper);
         return ResultUtils.success(null);
     }
+
+    @Override
+    public BaseResponse<String> sendPM(SendPM1Request sendPMRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String fromUserID=currentUser.getId();
+        String toUserID=sendPMRequest.getUserID();
+        String content=sendPMRequest.getContent();
+        String source=sendPMRequest.getSource();
+        String id=UUID.randomUUID().toString().substring(0,7);
+        Message message=new Message();
+        message.setToUserID(toUserID);
+        message.setContent(content);
+        message.setId(id);
+        message.setFromUserID(fromUserID);
+        message.setSource(source);
+        message.setTime(LocalDateTime.now());
+        message.setIsRead(0);
+        messageMapper.insert(message);
+        return ResultUtils.success(null);
+    }
+
+    @Override
+    public BaseResponse<Integer> sendNotice(MessageNoticeRequest noticeRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
+        String fromUserID=currentUser.getId();
+        String courseID=noticeRequest.getCourseID();
+        String content=noticeRequest.getContent();
+        String source=noticeRequest.getSource();
+        LambdaUpdateWrapper<StudentCurriculum> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.eq(StudentCurriculum::getCurriculumID,courseID);
+        List<StudentCurriculum> list=studentCurriculumMapper.selectList(queryMapper);
+        for (StudentCurriculum tt:list)
+        {
+            Message tmp=new Message();
+            tmp.setIsRead(0);
+            tmp.setSource(source);
+            tmp.setId(UUID.randomUUID().toString().substring(0,7));
+            tmp.setContent(content);
+            tmp.setFromUserID(fromUserID);
+            tmp.setTime(LocalDateTime.now());
+            tmp.setToUserID(tt.getStudentID());
+            messageMapper.insert(tmp);
+        }
+        return ResultUtils.success(1);
+    }
+
 }

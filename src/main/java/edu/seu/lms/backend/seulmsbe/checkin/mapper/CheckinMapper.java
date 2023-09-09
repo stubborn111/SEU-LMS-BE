@@ -2,6 +2,8 @@ package edu.seu.lms.backend.seulmsbe.checkin.mapper;
 
 import edu.seu.lms.backend.seulmsbe.checkin.entity.Checkin;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -55,4 +57,6 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
     int getCheckinNum(int isCheckedIn);
     @Select("select count(*) from checkin where isCheckedIn=#{isCheckedIn} and syllabusID=#{syllabusID}")//找到对应大纲的签到人数和未签到人数
     int getCheckinBySylNum(int isCheckedIn,String syllabusID);
+    @Delete("delete from checkin where syllabusID=#{syllabusID}")
+    void deleteBySyllabusID(String syllabusID);
 }

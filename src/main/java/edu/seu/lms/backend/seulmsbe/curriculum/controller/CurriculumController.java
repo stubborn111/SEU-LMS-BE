@@ -2,18 +2,27 @@ package edu.seu.lms.backend.seulmsbe.curriculum.controller;
 
 
 import com.baomidou.mybatisplus.extension.api.R;
+import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
+import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
+import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
 import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.curriculum.service.ICurriculumService;
+import edu.seu.lms.backend.seulmsbe.discussion.mapper.DiscussionMapper;
 import edu.seu.lms.backend.seulmsbe.dto.Course.*;
+import edu.seu.lms.backend.seulmsbe.file.mapper.FileMapper;
 import edu.seu.lms.backend.seulmsbe.request.*;
+import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
+import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+
+import java.util.List;
 
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -33,7 +42,18 @@ public class CurriculumController {
 
     @Autowired
     private CurriculumMapper curriculumMapper;
-
+    @Autowired
+    private StudentCurriculumMapper studentCurriculumMapper;
+    @Autowired
+    private SyllabusMapper syllabusMapper;
+    @Autowired
+    private AssignmentMapper assignmentMapper;
+    @Autowired
+    private CheckinMapper checkinMapper;
+    @Autowired
+    private DiscussionMapper discussionMapper;
+    @Autowired
+    private FileMapper fileMapper;
     @PostMapping("/student-list")
     //1
     public BaseResponse<CourseListDTO> findPage(@RequestBody CoursePageRequest coursePageRequest, HttpServletRequest request)
@@ -79,7 +99,17 @@ public class CurriculumController {
     //1
     public  BaseResponse<CourseData3DTO> delete(@RequestBody CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request)
     {
+        List<Syllabus> syllabusList=syllabusMapper.getSyllabusByCurriculumID(courseGetIntoRequest.getCourseID());
+        for (Syllabus tt:syllabusList)
+        {
+            fileMapper.deleteBySyllabusID(tt.getId());
+            assignmentMapper.deleteBySyllabusID(tt.getId());
+            checkinMapper.deleteBySyllabusID(tt.getId());
+        }
         curriculumMapper.deleteById(courseGetIntoRequest.getCourseID());
+        studentCurriculumMapper.deleteByCourseID(courseGetIntoRequest.getCourseID());
+        syllabusMapper.deleteByCourseID(courseGetIntoRequest.getCourseID());
+        discussionMapper.deleteByCurriculumID(courseGetIntoRequest.getCourseID());
         return ResultUtils.success(null);
     }
     @PostMapping("/add")
@@ -121,6 +151,10 @@ public class CurriculumController {
     public BaseResponse<CourseAdminDTO> adminList(@RequestBody CourseAdminRequest courseAdminRequest, HttpServletRequest request)
     {
         return iCurriculumService.adminList(courseAdminRequest,request);
+    }
+    @PostMapping("/sendNotice")
+    public BaseResponse<String> sendNotice(@RequestBody SendNoticeRequest sendNoticeRequest,HttpServletRequest request){
+        return iCurriculumService.sendNotice(sendNoticeRequest,request);
     }
 
 }

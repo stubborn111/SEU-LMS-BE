@@ -2,6 +2,7 @@ package edu.seu.lms.backend.seulmsbe.message.mapper;
 
 import edu.seu.lms.backend.seulmsbe.message.entity.Message;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface MessageMapper extends BaseMapper<Message> {
             "order by message.time desc "+
             "LIMIT #{begin},#{size}")
     List<Message> getlist(String useID,int begin,int size);
+
+    @Insert("insert into message(ID, fromUserID, toUserID, content, isRead, time) " +
+            "VALUES(#{id},#{fromUserID},#{toUserID},#{content},0,NOW())")
+    void insertMessage(Message message);
 }

@@ -2,6 +2,7 @@ package edu.seu.lms.backend.seulmsbe.assignment.mapper;
 
 import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.joda.time.DateTime;
@@ -95,4 +96,7 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
     Assignment selectAssignment(String syllabusID,String studentID);
     @Select("select * from assignment where name=#{name} and syllabusID=#{syllabusID}")
     Assignment selectAssignmentBySyllabus(String name,String syllabusID);
+
+    @Delete("delete from assignment where syllabusID=#{syllabusID}")
+    void deleteBySyllabusID(String syllabusID);
 }

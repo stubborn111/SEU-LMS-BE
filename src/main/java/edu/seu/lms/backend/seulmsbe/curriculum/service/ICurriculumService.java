@@ -36,4 +36,6 @@ public interface ICurriculumService extends IService<Curriculum> {
     public BaseResponse<CourseAdminDTO> adminList(CourseAdminRequest courseAdminRequest,HttpServletRequest request);
 
     BaseResponse<CourseListStudentDTO> listStudent(CourseListStudent2Request courseListStudentRequest, HttpServletRequest request);
+    BaseResponse<String> sendNotice(SendNoticeRequest sendNoticeRequest,HttpServletRequest request);
+
 }

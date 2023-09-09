@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.syllabus.mapper;
 import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -31,4 +32,8 @@ public interface SyllabusMapper extends BaseMapper<Syllabus> {
     List<Syllabus> getSyllabusByCourseID(String curriculumID);
     @Update("update Assignment set file=#{body},name=#{homeworkTitle},type='multi-text',status=1,time=NOW() where syllabusID=#{syllabusID} and studentID=#{userID}")
     void updateAssignPostText(String syllabusID, String userID, String homeworkTitle, String body);
+    @Delete("delete from syllabus where curriculumID=#{curriculumID}")
+    void deleteByCourseID(String curriculumID);
+    @Select("select * from syllabus where curriculumID=#{curriculumID}")
+    List<Syllabus> getSyllabusByCurriculumID(String curriculumID);
 }
