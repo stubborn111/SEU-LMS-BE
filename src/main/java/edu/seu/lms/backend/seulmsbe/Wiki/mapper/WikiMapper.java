@@ -21,6 +21,6 @@ public interface WikiMapper extends BaseMapper<Wiki> {
             "LIMIT #{begin},#{size}")
     List<Wiki> getList(int begin,int size);
 
-    @Update("update wiki set fromUserID='未知用户' where fromUserID=#{userID}")
+    @Update("update wiki set fromUserID='000000000' where fromUserID=#{userID}")
     void updateWikiByUserID(String userID);
 }

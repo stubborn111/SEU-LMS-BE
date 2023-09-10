@@ -6,6 +6,7 @@ import edu.seu.lms.backend.seulmsbe.message.entity.Message;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -50,6 +51,6 @@ public interface DiscussionMapper extends BaseMapper<Discussion> {
     @Delete("delete from discussion where curriculumID=#{curriculumID}")
     void deleteByCurriculumID(String curriculumID);
 
-    @Delete("delete from discussion where fromUserID=#{userID}")
-    void deleteByUserID(String userID);
+    @Update("update discussion set fromUserID='000000000' where fromUserID=#{userID}")
+    void updateFromUserID(String userID);
 }

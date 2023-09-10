@@ -51,7 +51,7 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
     public BaseResponse<?> listall(DiscussionListRequest discussionListRequest, HttpServletRequest request) {
 
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
-
+        String userID=currentUser.getId();
         int pagesize = discussionListRequest.getPageSize();
         String courseid = discussionListRequest.getCourseID();
         int curPage = discussionListRequest.getCurrentPage();
@@ -136,12 +136,13 @@ public class DiscussionServiceImpl extends ServiceImpl<DiscussionMapper, Discuss
 
     @Override
     public BaseResponse<Discussion> publish(DiscussionPublishRequest discussionPublishRequest, HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         Discussion discussion=new Discussion();
         discussion.setId(UUID.randomUUID().toString().substring(0,7));
         discussion.setContent(discussionPublishRequest.getDiscussionContent());
         discussion.setTitle(discussionPublishRequest.getDiscussionName());
         discussion.setCurriculumID(discussionPublishRequest.getCourseID());
-        discussion.setFromUserID(discussionPublishRequest.getUserID());
+        discussion.setFromUserID(currentUser.getId());
         discussion.setTime(LocalDateTime.now());
         System.out.println(discussion);
         discussionMapper.insertDiscussion(discussion);

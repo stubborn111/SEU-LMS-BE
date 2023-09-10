@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
@@ -149,5 +150,22 @@ public class CurriculumController {
     public BaseResponse<String> sendNotice(@RequestBody SendNoticeRequest sendNoticeRequest,HttpServletRequest request){
         return iCurriculumService.sendNotice(sendNoticeRequest,request);
     }
+    @GetMapping("/all-course")
+    public BaseResponse<CourseAllListDTO> allCourse(HttpServletRequest request)
+    {
+        List<Curriculum> curriculumList=curriculumMapper.findAll();
+        CourseAllListDTO DTO=new CourseAllListDTO();
+        List<CourseData3DTO> dto=new ArrayList<>();
+        for (Curriculum tt:curriculumList)
+        {
+            CourseData3DTO tmp=new CourseData3DTO();
+            tmp.setCourseID(tt.getId());
+            tmp.setCourseName(tt.getName());
+            dto.add(tmp);
+        }
+        DTO.setList(dto);
+        return ResultUtils.success(DTO);
+    }
+
 
 }

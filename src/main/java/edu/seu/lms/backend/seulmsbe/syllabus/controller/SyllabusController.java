@@ -137,7 +137,7 @@ public class SyllabusController {
     @PostMapping("homework/feedback")
     BaseResponse<String> feedback(@RequestBody SyllabusFeedbackRequest feedbackRequest,HttpServletRequest request)
     {
-        assignmentMapper.syllabusFeedback(feedbackRequest.getHomeworkID(),feedbackRequest.getRate()*5,feedbackRequest.getFeedback());
+        assignmentMapper.syllabusFeedback(feedbackRequest.getHomeworkID(),feedbackRequest.getRate()*20,feedbackRequest.getFeedback());
         return ResultUtils.success(null);
     }
     @PostMapping("homework/intro")

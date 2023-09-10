@@ -99,7 +99,7 @@ public class WikiServiceImpl extends ServiceImpl<WikiMapper, Wiki> implements IW
             }
             else {
                 User user = userMapper.selectById(tmp.getFromUserID());
-                temp.setFromUserAvatar(user.getAvatarUrl());
+                if(user.getAvatarUrl()!=null) temp.setFromUserAvatar(user.getAvatarUrl());
                 temp.setFromUserName(user.getNickname());
                 temp.setFromUserAccess(user.getAccess()==1?"student":"teacher");
             }

@@ -127,9 +127,10 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
                 LambdaUpdateWrapper<Checkin> queryWrapper = new LambdaUpdateWrapper<>();
                 queryWrapper.eq(Checkin::getSyllabusID,tt.getId());
                 queryWrapper.eq(Checkin::getStudentID,currentUser.getId());
-                Checkin checkintmp = checkinMapper.selectOne(queryWrapper);
+
                 if(tt.getIsCheckedIn()==0) temp.setIsCheckedIn(0);
                 else {
+                    Checkin checkintmp = checkinMapper.selectOne(queryWrapper);
                     if((tt.getIsCheckedIn()==1 || tt.getIsCheckedIn() == 2)&& checkintmp.getIsCheckedIn()==1) temp.setIsCheckedIn(1);
                     else if(tt.getIsCheckedIn()==1 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(2);
                     else if(tt.getIsCheckedIn()==2 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(3);
@@ -322,6 +323,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             event.setType("assignment");
             event.setUserID(user.getId());
             event.setContent(homeworkPublishRequest.getHomeworkName());
+            event.setSyllabusID(syllabusID);
             eventMapper.insert(event);
         }
         return ResultUtils.success(null);
@@ -363,6 +365,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             //event.setContent();
             event.setType("syllabus");
             event.setUserID(user.getId());
+            event.setSyllabusID(syllabus.getId());
             Curriculum curriculum = curriculumMapper.getCurriculumById(syllabusAddRequest.getCourseID());
             event.setContent(curriculum.getName()+" "+syllabusAddRequest.getSyllabusTitle());
             eventMapper.insert(event);

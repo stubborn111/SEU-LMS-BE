@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.entity.StudentCurriculum;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 
 /**
@@ -53,5 +54,8 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
 
     @Delete("delete from student_curriculum where studentID=#{userID}")
     void deleteByUserID(String userID);
+
+    @Insert("insert into student_curriculum(studentID, curriculumID, id) VALUES(#{courseID},#{userID},#{id}) ")
+    void insertStudentCourse(String courseID,String userID,String id);
 
 }

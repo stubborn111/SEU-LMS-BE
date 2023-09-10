@@ -2,8 +2,11 @@ package edu.seu.lms.backend.seulmsbe.message.mapper;
 
 import edu.seu.lms.backend.seulmsbe.message.entity.Message;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import lombok.Data;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -25,4 +28,13 @@ public interface MessageMapper extends BaseMapper<Message> {
     @Insert("insert into message(ID, fromUserID, toUserID, content, isRead, time) " +
             "VALUES(#{id},#{fromUserID},#{toUserID},#{content},0,NOW())")
     void insertMessage(Message message);
+
+    @Update("update message set fromUserID='000000000' where fromUserID=#{userID}")
+    void updateFromUserID(String userID);
+
+    @Update("update message set toUserID='000000000' where toUserID=#{userID}")
+    void updateToUserID(String toUsrID);
+
+    @Delete("delete from message where toUserID='000000000' and fromUserID='000000000'")
+    void deleteMessage();
 }

@@ -237,19 +237,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         for(User user:users)
         {
             UserDTO userDTO = new UserDTO();
-            userDTO.setPhone(user.getPhone());
-            userDTO.setId(user.getId());
-            userDTO.setNickName(user.getNickname());
-            userDTO.setAvatarUrl(user.getAvatarUrl());
-            userDTO.setEmail(user.getEmail());
-            if(user.getAccess() == 0){
-                userDTO.setAccess("admin");
+            if(!user.getId().equals("000000000"))
+            {
+                userDTO.setPhone(user.getPhone());
+                userDTO.setId(user.getId());
+                userDTO.setNickName(user.getNickname());
+                userDTO.setAvatarUrl(user.getAvatarUrl());
+                userDTO.setEmail(user.getEmail());
+                if(user.getAccess() == 0){
+                    userDTO.setAccess("admin");
+                }
+                else if(user.getAccess() == 1){
+                    userDTO.setAccess("student");
+                }
+                else userDTO.setAccess("teacher");
+                dto.add(userDTO);
             }
-            else if(user.getAccess() == 1){
-                userDTO.setAccess("student");
-            }
-            else userDTO.setAccess("teacher");
-            dto.add(userDTO);
         }
         DTO.setList(dto);
         return ResultUtils.success(DTO);
@@ -278,7 +281,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         eventMapper.deleteByUserID(userID);
         studentCurriculumMapper.deleteByUserID(userID);
         userMapper.deleteById(userID);
-        wikiMapper.updateWikiByUserID(userID);
+
     }
 
     @Override
@@ -302,6 +305,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if(user.getAccess()==0) deleteAdmin(userID);
         if (user.getAccess()==1) deleteStudent(userID);
         if (user.getAccess()==2) deleteTeacher(userID);
+        wikiMapper.updateWikiByUserID(userID);
+        discussionMapper.updateFromUserID(userID);
+        messageMapper.updateFromUserID(userID);
+        messageMapper.updateToUserID(userID);
+        messageMapper.deleteMessage();
     }
 
 }

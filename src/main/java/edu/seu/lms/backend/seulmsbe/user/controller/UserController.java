@@ -4,6 +4,7 @@ package edu.seu.lms.backend.seulmsbe.user.controller;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.Update;
+import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.baomidou.mybatisplus.core.toolkit.Wrappers.update;
 import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STATE;
@@ -40,6 +42,8 @@ public class UserController {
     private IUserService userService;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private StudentCurriculumMapper studentCurriculumMapper;
     /**
      * 测试
      * 实际不需要创建
@@ -75,7 +79,17 @@ public class UserController {
     public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         return userService.userLogin(userLoginRequest, request);
     }
-
+    @PostMapping("/importToCourse")
+    public BaseResponse<String> importToCourse(@RequestBody ImportUserRequest userRequest,HttpServletRequest request)
+    {
+        String[] userID=userRequest.getId();
+        String courseID=userRequest.getCourseID();
+        for (String id:userID)
+        {
+            if(userMapper.selectById(id).getAccess()==1) studentCurriculumMapper.insertStudentCourse(id,courseID, UUID.randomUUID().toString().substring(0,7));
+        }
+        return ResultUtils.success(null);
+    }
     /**
      * 登出
      * @param request
