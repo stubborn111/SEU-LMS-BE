@@ -19,6 +19,12 @@ import java.util.List;
  * @since 2023-08-25
  */
 public interface DiscussionMapper extends BaseMapper<Discussion> {
+    /**
+     *Integer getDiscussionNum()：获取讨论数量
+     * getlist：分页获取所有讨论
+     * deleteByCurriculumID：通过课程ID删除所有该课程的讨论
+     * 其余如名称所示
+     */
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN discussion.replyID is null THEN "+

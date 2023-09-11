@@ -19,6 +19,14 @@ import java.util.List;
  * @since 2023-08-25
  */
 public interface MessageMapper extends BaseMapper<Message> {
+
+    /**
+     * getlist：分页获取某人的消息列表
+     * insertMessage：发送消息
+     * deleteMessage：删除信息
+     * updateFrom/ToUserID：处理被删除人遗留的消息
+     * @return
+     */
     @Select("SELECT * FROM message "+
             "WHERE message.toUserID = #{useID} "+
             "order by message.time desc "+

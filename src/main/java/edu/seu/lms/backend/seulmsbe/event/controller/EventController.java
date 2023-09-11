@@ -37,6 +37,13 @@ import java.util.List;
 public class EventController {
     @Autowired
     EventMapper eventMapper;
+
+    /**
+     * 列出一位学生的所有ID
+     * @param userIDRequest
+     * @param request
+     * @return
+     */
     @PostMapping("list-events")
     BaseResponse<EventDataListDTO> listEvents(@RequestBody UserIDRequest userIDRequest, HttpServletRequest request)
     {
