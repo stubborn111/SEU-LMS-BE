@@ -23,6 +23,22 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class Syllabus implements Serializable {
 
+    /*
+    id:大纲的ID
+    curriculumID:大纲所属的课程ID
+    title:大纲标题
+    materials:大纲里的课件
+    assignments:大纲里教师布置的作业
+    isCheckedIn:是否发起签到
+    time:建立大纲的时间
+    checkInPsw:签到密码
+    assignmentContent:作业内容
+    assignmentTime: 作业截至时间
+
+ */
+
+
+
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "ID",type = IdType.INPUT)

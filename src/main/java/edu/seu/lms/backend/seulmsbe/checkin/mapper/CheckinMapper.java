@@ -18,6 +18,11 @@ import java.util.List;
  */
 public interface CheckinMapper extends BaseMapper<Checkin> {
 
+/*    getCheckedNum:得到某条大纲已经签到的人数
+      getNotCheckedNum：得到某条大纲未签到的人数
+      deleteBySyllabusID：通过大纲id删除签到条目
+      deleteByUserID：删除某个用户的所有签到记录
+    */
     @Select("SELECT SUM(" +
             "CASE "+
             "WHEN checkin.syllabusID = #{syllabusID}"+

@@ -18,6 +18,14 @@ import java.util.List;
  * @since 2023-08-25
  */
 public interface SyllabusMapper extends BaseMapper<Syllabus> {
+
+    /*
+    getSyllabusByCourseID：通过课程id得到大纲
+    updateAssignPostText：更新作业
+    deleteByCourseID：通过课程id删除大纲
+    deleteBySyllabusID：通过大纲id删除大纲
+    updateMaterials：更新课件
+    */
     @Select("SELECT * FROM syllabus where syllabus.curriculumID = #{courseID} order by syllabus.time desc limit 0,1")
     Syllabus getlatest(@Param("courseID") String courseID);
 

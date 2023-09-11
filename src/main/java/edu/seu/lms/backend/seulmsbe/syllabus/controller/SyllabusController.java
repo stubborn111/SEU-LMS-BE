@@ -30,6 +30,21 @@ import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STAT
  * @author szh
  * @since 2023-08-25
  */
+
+/*
+listSyllabus：返回所有大纲信息
+当access==teacher时，isCheckedIn返回Syllabus.isCheckedIn（代表是否发起签到：0未发起，1已发起，2已停止）的内容
+当access==student时，isCheckedIn需要综合Syllabus.isCheckedIn和CheckIn.isCheckedIn（代表学生是否签到）的信息：
+0代表未发起签到，1代表学生已签到，2代表已发起签到但是学生未签到，3代表签到已停止但学生未签到。
+checkin：学生签到
+haveCheckin：教师发起签到
+checkinStop：教师停止签到
+homeworkPublish：教师发布作业
+modifySyllabus：修改大纲信息
+postText：通过作业文本编辑器提交作业 type: multi-text
+postfile：提交作业文件
+feedback：教师批改作业并且给予反馈
+*/
 @RestController
 @RequestMapping("/syllabus")
 public class SyllabusController {
