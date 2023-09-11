@@ -1,8 +1,10 @@
 package edu.seu.lms.backend.seulmsbe.Wiki.controller;
 
 
+import edu.seu.lms.backend.seulmsbe.Wiki.mapper.WikiMapper;
 import edu.seu.lms.backend.seulmsbe.Wiki.service.IWikiService;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
+import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
 import edu.seu.lms.backend.seulmsbe.discussion.service.IDiscussionService;
 import edu.seu.lms.backend.seulmsbe.dto.Wiki.WikiAdminListDTO;
 import edu.seu.lms.backend.seulmsbe.dto.Wiki.WikiListDTO;
@@ -35,7 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 public class WikiController {
     @Autowired
     private IWikiService iWikiService;
-
+    @Autowired
+    private WikiMapper wikiMapper;
     @PostMapping("/list")
     public BaseResponse<WikiListDTO> listWiki(@RequestBody WikiListRequest wikiListRequest, HttpServletRequest request){
         return iWikiService.listWiki(wikiListRequest,request);
@@ -59,5 +62,11 @@ public class WikiController {
     @PostMapping("/question")
     public BaseResponse<String> wikiQuestion(@RequestBody WikiQuestionRequest wikiQuestionRequest,HttpServletRequest request){
         return iWikiService.question(wikiQuestionRequest,request);
+    }
+    @PostMapping("/delete")
+    public BaseResponse<String> wikiDelete(@RequestBody WikiIDRequest wikiIDRequest)
+    {
+        wikiMapper.deleteById(wikiIDRequest.getWikiID());
+        return ResultUtils.success(null);
     }
 }

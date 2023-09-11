@@ -2,7 +2,6 @@ package edu.seu.lms.backend.seulmsbe.webSocket;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.exceptions.ApiException;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
@@ -24,9 +23,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 @Slf4j
-@ServerEndpoint("/ws/realTimeCheckIn")
+@ServerEndpoint("/ws/refreshCheckIn/{userid}")
 @Component
-public class WebSocketServer {
+public class WebSocket2Server {
 //    @Autowired
 //    private CheckinMapper checkinMapper;
 //
@@ -52,22 +51,23 @@ public class WebSocketServer {
      * 静态变量，用来记录当前在线连接数。应该把它设计成线程安全的
      */
     private static int onlineCount = 0;
-    public static WebSocketServer test;
+    //public static WebSocket2Server test2;
     /**
      * concurrent 包的线程安全Set，用来存放每个客户端对应的 myWebSocket对象
      * 根据userId来获取对应的 WebSocket
      */
-    private static ConcurrentHashMap<String, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
-
+    public static ConcurrentHashMap<String, WebSocket2Server> webSocketMap = new ConcurrentHashMap<String, WebSocket2Server>();
+    //public static List<WebSocket2Server> list=new ArrayList<>();
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     public Session session;
+
     //public Integer num;
     /**
      * 接收 sid
      */
-    //private String userId = "";
+    private String userid = "";
 
 
     /**
@@ -76,19 +76,21 @@ public class WebSocketServer {
      * @param session
      */
     @OnOpen
-    public void onOpen(Session session,@PathParam("syllabusID") String syllabusID) {
+    public void onOpen(Session session,@PathParam("userid") String userid) {
         this.session = session;
-        test = this;
-       // num++;
+        //test2 = this;
+
+        // num++;
 //        this.session = session;
-//        this.userId = userId;
+        this.userid = userid;
+        //list.add(this);
 //
-//        webSocketMap.put(userId, this);
+        webSocketMap.put(userid, this);
 //        log.info("webSocketMap -> " + JSON.toJSONString(webSocketMap));
 //
-//        addOnlineCount(); // 在线数 +1
+        addOnlineCount(); // 在线数 +1
 //        log.info("有新窗口开始监听:" + userId + ",当前在线人数为" + getOnlineCount());
-        System.out.println("success");
+        System.out.println("successssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
         try {
 
             sendMessage(JSON.toJSONString("连接成功"));
@@ -98,57 +100,58 @@ public class WebSocketServer {
         }
 
     }
-    @OnMessage
-    public void onMessage(String syllabusID){
-        Syllabus syllabus = syllabusMapper.selectById(syllabusID);
-        if(syllabus.getIsCheckedIn()==0){
-            WebSocketDTO webSocketDTO = new WebSocketDTO();
-            //Syllabus syllabus = syllabusMapper.selectById(syllabusID);
-            webSocketDTO.setPassword(syllabus.getCheckInPsw()==null?"":syllabus.getCheckInPsw());
-            checkInData checkInData = new checkInData();
-            checkInData.setIsCheckedIn(0);
-            checkInData.setNotCheckedIn(studentCurriculumMapper.getNumofCourse(syllabus.getCurriculumID()));
-            webSocketDTO.setCheckInData(checkInData);
-            try {
-                sendMessage(JSONObject.toJSONString(webSocketDTO));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }else{
-            WebSocketDTO webSocketDTO = new WebSocketDTO();
-            //Syllabus syllabus = syllabusMapper.selectById(syllabusID);
-            webSocketDTO.setPassword(syllabus.getCheckInPsw()==null?"":syllabus.getCheckInPsw());
-            checkInData checkInData = new checkInData();
-            checkInData.setIsCheckedIn(checkinMapper.getCheckedNum(syllabusID));
-            checkInData.setNotCheckedIn(checkinMapper.getNotCheckedNum(syllabusID));
-            webSocketDTO.setCheckInData(checkInData);
-            try {
-                sendMessage(JSONObject.toJSONString(webSocketDTO));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+//    @OnMessage
+//    public void onMessage(String syllabusID){
+//        Syllabus syllabus = syllabusMapper.selectById(syllabusID);
+//        if(syllabus.getIsCheckedIn()==0){
+//            WebSocketDTO webSocketDTO = new WebSocketDTO();
+//            //Syllabus syllabus = syllabusMapper.selectById(syllabusID);
+//            webSocketDTO.setPassword(syllabus.getCheckInPsw()==null?"":syllabus.getCheckInPsw());
+//            checkInData checkInData = new checkInData();
+//            checkInData.setIsCheckedIn(0);
+//            checkInData.setNotCheckedIn(studentCurriculumMapper.getNumofCourse(syllabus.getCurriculumID()));
+//            webSocketDTO.setCheckInData(checkInData);
+//            try {
+//                sendMessage(JSONObject.toJSONString(webSocketDTO));
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }else{
+//            WebSocketDTO webSocketDTO = new WebSocketDTO();
+//            //Syllabus syllabus = syllabusMapper.selectById(syllabusID);
+//            webSocketDTO.setPassword(syllabus.getCheckInPsw()==null?"":syllabus.getCheckInPsw());
+//            checkInData checkInData = new checkInData();
+//            checkInData.setIsCheckedIn(checkinMapper.getCheckedNum(syllabusID));
+//            checkInData.setNotCheckedIn(checkinMapper.getNotCheckedNum(syllabusID));
+//            webSocketDTO.setCheckInData(checkInData);
+//            try {
+//                sendMessage(JSONObject.toJSONString(webSocketDTO));
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//
+//    }
 
     /**
      * 关闭连接
      */
 
-//    @OnClose
-//    public void onClose() {
-////        if (webSocketMap.get(this.userId) != null) {
-////            webSocketMap.remove(this.userId);
-////            subOnlineCount(); // 人数 -1
-////            log.info("有一连接关闭，当前在线人数为：" + getOnlineCount());
-////        }
-//        try {
-//            sendMessage(JSON.toJSONString("连接断开"));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            throw new ApiException("websocket IO异常！！！！");
-//        }
-//
-//    }
+    @OnClose
+    public void onClose() {
+        if (webSocketMap.get(this.userid) != null) {
+            webSocketMap.remove(this.userid);
+            subOnlineCount(); // 人数 -1
+            log.info("有一连接关闭，当前在线人数为：" + getOnlineCount());
+        }
+        try {
+            sendMessage(JSON.toJSONString("连接断开"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ApiException("websocket IO异常！！！！");
+        }
+
+    }
 
     /**
      * 收到客户端消息后调用的方法
@@ -204,23 +207,21 @@ public class WebSocketServer {
      * 群发自定义消息
      *
      * @param message
-     * @param userId
      * @throws IOException
      */
-    public static void sendInfo(String message, @PathParam("userId") String userId) throws IOException {
+    public static void sendInfo(String message) throws IOException {
 
         // 遍历集合，可设置为推送给指定sid，为 null 时发送给所有人
         Iterator entrys = webSocketMap.entrySet().iterator();
         while (entrys.hasNext()) {
             Map.Entry entry = (Map.Entry) entrys.next();
-
-            if (userId == null) {
-                webSocketMap.get(entry.getKey()).sendMessage(message);
-                log.info("发送消息到：" + entry.getKey() + "，消息：" + message);
-            } else if (entry.getKey().equals(userId)) {
-                webSocketMap.get(entry.getKey()).sendMessage(message);
-                log.info("发送消息到：" + entry.getKey() + "，消息：" + message);
-            }
+           // if (userId == null) {
+            webSocketMap.get(entry.getKey()).sendMessage(message);
+                //log.info("发送消息到：" + entry.getKey() + "，消息：" + message);
+          //  } else if (entry.getKey().equals(userId)) {
+            //    webSocketMap.get(entry.getKey()).sendMessage(message);
+                //log.info("发送消息到：" + entry.getKey() + "，消息：" + message);
+           // }
 
         }
     }
@@ -233,11 +234,11 @@ public class WebSocketServer {
     }
 
     private static synchronized void addOnlineCount() {
-        WebSocketServer.onlineCount++;
+        WebSocket2Server.onlineCount++;
     }
 
     private static synchronized void subOnlineCount() {
-        WebSocketServer.onlineCount--;
+        WebSocket2Server.onlineCount--;
     }
 }
 

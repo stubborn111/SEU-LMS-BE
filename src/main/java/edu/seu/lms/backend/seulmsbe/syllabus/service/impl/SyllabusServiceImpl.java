@@ -28,6 +28,7 @@ import edu.seu.lms.backend.seulmsbe.syllabus.service.ISyllabusService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
+import edu.seu.lms.backend.seulmsbe.webSocket.WebSocket2Server;
 import edu.seu.lms.backend.seulmsbe.webSocket.WebSocketServer;
 import net.sf.jsqlparser.expression.DateTimeLiteralExpression;
 import org.joda.time.DateTime;
@@ -124,13 +125,9 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             temp.setHaveMaterial(tt.getMaterials()!=null);
             //temp.setMeterials(material);
             if(currentUser.getAccess()==1){
-                LambdaUpdateWrapper<Checkin> queryWrapper = new LambdaUpdateWrapper<>();
-                queryWrapper.eq(Checkin::getSyllabusID,tt.getId());
-                queryWrapper.eq(Checkin::getStudentID,currentUser.getId());
-
                 if(tt.getIsCheckedIn()==0) temp.setIsCheckedIn(0);
                 else {
-                    Checkin checkintmp = checkinMapper.selectOne(queryWrapper);
+                    Checkin checkintmp = checkinMapper.selectOnCheckin(tt.getId(),currentUser.getId());
                     if((tt.getIsCheckedIn()==1 || tt.getIsCheckedIn() == 2)&& checkintmp.getIsCheckedIn()==1) temp.setIsCheckedIn(1);
                     else if(tt.getIsCheckedIn()==1 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(2);
                     else if(tt.getIsCheckedIn()==2 && checkintmp.getIsCheckedIn()==0) temp.setIsCheckedIn(3);
@@ -161,7 +158,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
             lambdaUpdateWrapper.eq(Checkin::getSyllabusID,syllabusID).eq(Checkin::getStudentID,currentUser.getId())
                     .set(Checkin::getIsCheckedIn,1);
             iCheckinService.update(lambdaUpdateWrapper);
-            if(WebSocketServer.test.session !=null){
+            if(WebSocketServer.test !=null){
                 WebSocketDTO webSocketDTO = new WebSocketDTO();
                 webSocketDTO.setPassword(temp.getCheckInPsw());
                 checkInData checkInData = new checkInData();
@@ -251,21 +248,34 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         String syllabusID = haveCheckInRequest.getSyllabusID();
         String psw = haveCheckInRequest.getPassword();
         Syllabus syllabus = syllabusMapper.selectById(syllabusID);
+        if(syllabus.getIsCheckedIn()==0)
+        {
+            LambdaUpdateWrapper<StudentCurriculum> lambdaUpdateWrapper1 = new LambdaUpdateWrapper<>();
+            lambdaUpdateWrapper1.eq(StudentCurriculum::getCurriculumID,syllabus.getCurriculumID());
+            List<StudentCurriculum> studentCurriculumList =  studentCurriculumMapper.selectList(lambdaUpdateWrapper1);
+            for(StudentCurriculum tmp:studentCurriculumList){
+                User user = userMapper.selectById(tmp.getStudentID());
+                Checkin checkin = new Checkin();
+                checkin.setSyllabusID(syllabusID);
+                checkin.setIsCheckedIn(0);
+                checkin.setTime(LocalDate.now());
+                checkin.setID(UUID.randomUUID().toString().substring(0,7));
+                checkin.setStudentID(user.getId());
+                checkinMapper.insert(checkin);
+            }
+        }
         LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(Syllabus::getId,syllabusID).set(Syllabus::getCheckInPsw,psw).set(Syllabus::getIsCheckedIn,1);
         update(lambdaUpdateWrapper);
-        LambdaUpdateWrapper<StudentCurriculum> lambdaUpdateWrapper1 = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper1.eq(StudentCurriculum::getCurriculumID,syllabus.getCurriculumID());
-        List<StudentCurriculum> studentCurriculumList =  studentCurriculumMapper.selectList(lambdaUpdateWrapper1);
-        for(StudentCurriculum tmp:studentCurriculumList){
-            User user = userMapper.selectById(tmp.getStudentID());
-            Checkin checkin = new Checkin();
-            checkin.setSyllabusID(syllabusID);
-            checkin.setIsCheckedIn(0);
-            checkin.setTime(LocalDate.now());
-            checkin.setID(UUID.randomUUID().toString().substring(0,7));
-            checkin.setStudentID(user.getId());
-            checkinMapper.insert(checkin);
+        if(WebSocket2Server.webSocketMap!=null)
+        {
+//            CheckInRefreshDTO checkInRefreshDTO=new CheckInRefreshDTO();
+//            checkInRefreshDTO.setData("1");
+            try {
+                WebSocket2Server.sendInfo(String.valueOf(1));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
         return ResultUtils.success(null);
     }
@@ -275,6 +285,16 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         LambdaUpdateWrapper<Syllabus> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
         lambdaUpdateWrapper.eq(Syllabus::getId,syllabusCommonRequest.getSyllabusID()).set(Syllabus::getIsCheckedIn,2);
         update(lambdaUpdateWrapper);
+        if(WebSocket2Server.webSocketMap!=null)
+        {
+//            CheckInRefreshDTO checkInRefreshDTO=new CheckInRefreshDTO();
+//            checkInRefreshDTO.setData("1");
+            try {
+                WebSocket2Server.sendInfo(String.valueOf(1));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return ResultUtils.success(null);
     }
 
@@ -412,7 +432,7 @@ public class SyllabusServiceImpl extends ServiceImpl<SyllabusMapper, Syllabus> i
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         // 使用格式化器将 LocalDateTime 转换为字符串
-        String formattedDateTime = syllabus.getTime().format(formatter);
+        String formattedDateTime = syllabus.getAssignmentTime().format(formatter);
         DTO.setDeadline(formattedDateTime);
         DTO.setHomeworkName(syllabus.getAssiments());
         DTO.setHomeworkDescription(syllabus.getAssignmentContent());

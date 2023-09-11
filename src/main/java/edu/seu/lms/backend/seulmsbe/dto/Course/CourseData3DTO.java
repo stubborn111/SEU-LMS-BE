@@ -6,4 +6,5 @@ import lombok.Data;
 public class CourseData3DTO {
     private String courseID;
     private String courseName;
+    private String teacherName;
 }

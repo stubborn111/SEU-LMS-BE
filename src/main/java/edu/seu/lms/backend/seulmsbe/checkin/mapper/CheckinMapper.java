@@ -62,4 +62,10 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
 
     @Delete("delete from checkin where studentID=#{userID}")
     void deleteByUserID(String userID);
+
+    @Select("SELECT * FROM checkin "+
+            "WHERE syllabusID = #{syllabusID} and studentID=#{studentID} "+
+            "order by time desc "+
+            "LIMIT 1")
+    Checkin selectOnCheckin(String syllabusID,String studentID);
 }

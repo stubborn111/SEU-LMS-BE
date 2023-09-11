@@ -18,6 +18,7 @@ import edu.seu.lms.backend.seulmsbe.request.*;
 import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
 import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
+import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +42,8 @@ import static edu.seu.lms.backend.seulmsbe.constant.UserConstant.USER_LOGIN_STAT
 public class CurriculumController {
     @Autowired
     private ICurriculumService iCurriculumService;
-
+    @Autowired
+    private UserMapper userMapper;
     @Autowired
     private CurriculumMapper curriculumMapper;
     @Autowired
@@ -161,6 +163,7 @@ public class CurriculumController {
             CourseData3DTO tmp=new CourseData3DTO();
             tmp.setCourseID(tt.getId());
             tmp.setCourseName(tt.getName());
+            tmp.setTeacherName(userMapper.selectById(tt.getTeacherID()).getNickname());
             dto.add(tmp);
         }
         DTO.setList(dto);

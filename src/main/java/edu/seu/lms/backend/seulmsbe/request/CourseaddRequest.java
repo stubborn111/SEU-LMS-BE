@@ -8,4 +8,10 @@ public class CourseaddRequest {
     String teacherName;
     String semester;
     String imgUrl;
+    String unit;
+    String credit;
+    String teachingTime;
+    String teachingLocation;
+    String teachingMethod;
+    String introduction;
 }

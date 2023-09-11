@@ -173,6 +173,10 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         curriculum.setName(courseaddRequest.getCourseName());
         curriculum.setSemester(courseaddRequest.getSemester());
         curriculum.setImgUrl(courseaddRequest.getImgUrl());
+        String description=courseaddRequest.getUnit()+"##"+courseaddRequest.getCredit()+"##"+
+                courseaddRequest.getTeachingTime()+"##"+courseaddRequest.getTeachingLocation()+"##"+
+                courseaddRequest.getTeachingMethod()+"##"+courseaddRequest.getIntroduction();
+        curriculum.setDescription(description);
         String teacherName=courseaddRequest.getTeacherName();
         LambdaUpdateWrapper<User> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.eq(User::getId,teacherName);
@@ -337,26 +341,29 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         if(curriculum.getDescription()==null)
         {
             tem=null;
+        }else {
+            tem=curriculum.getDescription().split("##");
+            if(tem.length == 6){
+                dto.setUnit(tem[0]);
+                dto.setCredit(tem[1]);
+                dto.setTeachingTime(tem[2]);
+                dto.setTeachingLocation(tem[3]);
+                dto.setTeachingMethod(tem[4]);
+                dto.setIntroduction(tem[5]);
+                DTO.setDescription(dto);
+            }
+            else {
+                dto.setUnit("暂无");
+                dto.setCredit("暂无");
+                dto.setTeachingTime("暂无");
+                dto.setTeachingLocation("暂无");
+                dto.setTeachingMethod("暂无");
+                dto.setIntroduction("暂无");
+                DTO.setDescription(dto);
+            }
         }
-        tem=curriculum.getDescription().split("##");
-        if(tem.length == 6){
-            dto.setUnit(tem[0]);
-            dto.setCredit(tem[1]);
-            dto.setTeachingTime(tem[2]);
-            dto.setTeachingLocation(tem[3]);
-            dto.setTeachingMethod(tem[4]);
-            dto.setIntroduction(tem[5]);
-            DTO.setDescription(dto);
-        }
-        else {
-            dto.setUnit("暂无");
-            dto.setCredit("暂无");
-            dto.setTeachingTime("暂无");
-            dto.setTeachingLocation("暂无");
-            dto.setTeachingMethod("暂无");
-            dto.setIntroduction("暂无");
-            DTO.setDescription(dto);
-        }
+
+
         CourseInfoDTO courseInfoDTO = new CourseInfoDTO();
         courseInfoDTO.setCourseData(DTO);
         return ResultUtils.success(courseInfoDTO);
@@ -373,7 +380,6 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         System.out.println(teachername);
         List<Curriculum> curriculumList;
         if(keyword==null&&teachername==null) {
-            System.out.println(2222);
             curriculumList = curriculumMapper.SearchCourse("","",pagesize*(curPage-1),pagesize);
             DTO.setTotalNum(curriculumMapper.getNumAdmin0());
         }else {
@@ -391,13 +397,26 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             }
         }
 
+
         List<CourseAdminDataDTO> dto1=new ArrayList<>();
         for(Curriculum tt:curriculumList)
         {
             CourseAdminDataDTO dto=new CourseAdminDataDTO();
             User teacher=userService.getuser(tt.getTeacherID());
             dto.setKey(tt.getId());
-            dto.setDescription(tt.getDescription());
+            String[] tem=new String[6];
+            if(tt.getDescription()==null)
+            {
+                tem=null;
+                dto.setDescription(null);
+            }else {
+                tem=tt.getDescription().split("##");
+                if(tem.length == 6){
+                    dto.setDescription(tem[3]);
+                }
+
+            }
+
             dto.setSemester(tt.getSemester());
             dto.setCourseName(tt.getName());
             if(teacher.getAvatarUrl()!=null) dto.setTeacherAvatar(teacher.getAvatarUrl());

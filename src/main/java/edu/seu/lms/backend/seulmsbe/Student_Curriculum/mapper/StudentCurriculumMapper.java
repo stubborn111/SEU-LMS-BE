@@ -49,6 +49,8 @@ public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
     @Select("select count(*) from student_curriculum where curriculumID=#{curriculumID}")
     Integer getCourseNum(String curriculumID);
 
+    @Select("select count(*) from student_curriculum where studentID=#{userID} and curriculumID=#{courseID};")
+    Integer getStudentCourseNum(String userID,String courseID);
     @Delete("delete  from student_curriculum where curriculumID=#{curriculumID}")
     void deleteByCourseID(String curriculumID);
 

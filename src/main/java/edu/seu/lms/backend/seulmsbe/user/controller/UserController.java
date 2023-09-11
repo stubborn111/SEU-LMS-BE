@@ -86,7 +86,11 @@ public class UserController {
         String courseID=userRequest.getCourseID();
         for (String id:userID)
         {
-            if(userMapper.selectById(id).getAccess()==1) studentCurriculumMapper.insertStudentCourse(id,courseID, UUID.randomUUID().toString().substring(0,7));
+            if(userMapper.selectById(id).getAccess()==1&&studentCurriculumMapper.getStudentCourseNum(id,courseID)==0)
+            {
+                studentCurriculumMapper.insertStudentCourse(id,courseID, UUID.randomUUID().toString().substring(0,7));
+            }
+
         }
         return ResultUtils.success(null);
     }
