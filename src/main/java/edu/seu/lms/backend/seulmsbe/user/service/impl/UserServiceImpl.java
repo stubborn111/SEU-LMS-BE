@@ -218,6 +218,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String id=userListforAdminRequest.getId();
         String nickName= userListforAdminRequest.getNickName();
         LambdaUpdateWrapper<User> queryMapper = new LambdaUpdateWrapper<>();
+        queryMapper.ne(User::getId,"000000000");
         if(id==null&&nickName!=null)
         {
             queryMapper.like(User::getNickname,nickName);
