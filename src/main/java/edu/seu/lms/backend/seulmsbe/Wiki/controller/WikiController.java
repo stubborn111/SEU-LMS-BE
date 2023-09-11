@@ -39,6 +39,16 @@ public class WikiController {
     private IWikiService iWikiService;
     @Autowired
     private WikiMapper wikiMapper;
+
+    /**
+     * listWiki：获得所有的wiki条目
+     * postAnswer：为指定问题提交答案
+     * wikiQuestion：创建问题
+     * mark：标记已解决
+     * adminlist：管理员查看列表
+     * wikiDelete：删除一个wiki
+     */
+
     @PostMapping("/list")
     public BaseResponse<WikiListDTO> listWiki(@RequestBody WikiListRequest wikiListRequest, HttpServletRequest request){
         return iWikiService.listWiki(wikiListRequest,request);

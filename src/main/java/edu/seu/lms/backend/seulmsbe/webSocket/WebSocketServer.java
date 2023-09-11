@@ -48,26 +48,16 @@ public class WebSocketServer {
     public void setStudentCurriculumMapper(StudentCurriculumMapper studentCurriculumMappertmp) {
         studentCurriculumMapper = studentCurriculumMappertmp;
     }
-    /**
-     * 静态变量，用来记录当前在线连接数。应该把它设计成线程安全的
-     */
-    private static int onlineCount = 0;
-    public static WebSocketServer test;
-    /**
-     * concurrent 包的线程安全Set，用来存放每个客户端对应的 myWebSocket对象
-     * 根据userId来获取对应的 WebSocket
-     */
-    private static ConcurrentHashMap<String, WebSocketServer> webSocketMap = new ConcurrentHashMap<>();
+
+    public static WebSocketServer test;//记录静态量向该端发送消息
+
 
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
     public Session session;
     //public Integer num;
-    /**
-     * 接收 sid
-     */
-    //private String userId = "";
+
 
 
     /**
@@ -99,7 +89,7 @@ public class WebSocketServer {
 
     }
     @OnMessage
-    public void onMessage(String syllabusID){
+    public void onMessage(String syllabusID){ //收到消息自动返回所需数据
         Syllabus syllabus = syllabusMapper.selectById(syllabusID);
         if(syllabus.getIsCheckedIn()==0){
             WebSocketDTO webSocketDTO = new WebSocketDTO();
@@ -200,44 +190,9 @@ public class WebSocketServer {
         this.session.getBasicRemote().sendText(message);
     }
 
-    /**
-     * 群发自定义消息
-     *
-     * @param message
-     * @param userId
-     * @throws IOException
-     */
-    public static void sendInfo(String message, @PathParam("userId") String userId) throws IOException {
-
-        // 遍历集合，可设置为推送给指定sid，为 null 时发送给所有人
-        Iterator entrys = webSocketMap.entrySet().iterator();
-        while (entrys.hasNext()) {
-            Map.Entry entry = (Map.Entry) entrys.next();
-
-            if (userId == null) {
-                webSocketMap.get(entry.getKey()).sendMessage(message);
-                log.info("发送消息到：" + entry.getKey() + "，消息：" + message);
-            } else if (entry.getKey().equals(userId)) {
-                webSocketMap.get(entry.getKey()).sendMessage(message);
-                log.info("发送消息到：" + entry.getKey() + "，消息：" + message);
-            }
-
-        }
-    }
     public void sendCheckIn(WebSocketDTO webSocketDTO) throws IOException, EncodeException {
         this.session.getBasicRemote().sendObject(webSocketDTO);
     }
 
-    private static synchronized int getOnlineCount() {
-        return onlineCount;
-    }
-
-    private static synchronized void addOnlineCount() {
-        WebSocketServer.onlineCount++;
-    }
-
-    private static synchronized void subOnlineCount() {
-        WebSocketServer.onlineCount--;
-    }
 }
 

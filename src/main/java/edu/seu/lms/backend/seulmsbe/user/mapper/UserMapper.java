@@ -15,6 +15,15 @@ import org.apache.ibatis.annotations.Update;
  * @since 2023-08-25
  */
 public interface UserMapper extends BaseMapper<User> {
+    /**
+     * void insertUser(User user)：插入一个用户
+     * User selectUserByName(String username)：从学生姓名选取一个用户
+     * Integer getStatus0Num()：获得管理员数量
+     * Integer getStatus1Num()：获得学生数量
+     * Integer getStatus2Num()：获得老师数量
+     * void updateUser00：设置删除用户状态
+     */
+
     @Insert("insert into user(nickname,id,email,access,phone,avatarUrl,psw)" +
             "values (#{nickname},#{id},#{email},#{access},#{phone},#{avatarUrl},#{psw})")
     void insertUser(User user);

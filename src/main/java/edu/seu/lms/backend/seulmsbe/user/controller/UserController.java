@@ -79,6 +79,13 @@ public class UserController {
     public BaseResponse<String> userLogin(@RequestBody UserLoginRequest userLoginRequest, HttpServletRequest request) {
         return userService.userLogin(userLoginRequest, request);
     }
+
+    /**
+     * 批量将学生导入某一课程
+     * @param userRequest
+     * @param request
+     * @return
+     */
     @PostMapping("/importToCourse")
     public BaseResponse<String> importToCourse(@RequestBody ImportUserRequest userRequest,HttpServletRequest request)
     {
@@ -137,6 +144,12 @@ public class UserController {
         return ResultUtils.success(toUserDTO(user));
     }
 
+    /**
+     * 为教师展示学生名单
+     * @param teacherListRequest
+     * @param request
+     * @return
+     */
     @PostMapping("list-teacher")
     public BaseResponse<UserListTeacherDTO> listTeacher(@RequestBody TeacherListRequest teacherListRequest, HttpServletRequest request)
     {
@@ -200,6 +213,13 @@ public class UserController {
 
         return ResultUtils.success(null);
     }
+
+    /**
+     * 给某人发信息
+     * @param sendPMRequest
+     * @param request
+     * @return
+     */
     @PostMapping("sendPM")
     public BaseResponse<String> sendPM(@RequestBody SendPMRequest sendPMRequest,HttpServletRequest request){
         return userService.sendPM(sendPMRequest,request);
