@@ -15,6 +15,14 @@ import org.apache.ibatis.annotations.Select;
  * @since 2023-08-31
  */
 public interface StudentCurriculumMapper extends BaseMapper<StudentCurriculum> {
+    /**
+     * Integer get0_20Num()：获取数量在0-20的班级的数量
+     * Integer get20_40Num()：获取数量在20-40的班级的数量
+     * Integer getOver40Num()：获取数量在40以上的班级的数量
+     * int getNumofCourse(String curriculumID)：获取某一课程的人数
+     * 其余如名称所示
+     */
+
     @Select("SELECT COUNT(DISTINCT curriculumID)\n" +
             "FROM student_curriculum\n" +
             "WHERE curriculumID IN (\n" +

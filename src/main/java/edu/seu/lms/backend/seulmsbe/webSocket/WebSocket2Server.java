@@ -26,11 +26,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint("/ws/refreshCheckIn/{userid}")
 @Component
 public class WebSocket2Server {
-//    @Autowired
-//    private CheckinMapper checkinMapper;
-//
-//    @Autowired
-//    private SyllabusMapper syllabusMapper;
 
     private static SyllabusMapper syllabusMapper;
     @Autowired
@@ -72,18 +67,14 @@ public class WebSocket2Server {
 
     /**
      * 连接建立成功调用的方法
-     *
+     * 创建连接后自动将当前连接加入静态Map中
      * @param session
      */
     @OnOpen
     public void onOpen(Session session,@PathParam("userid") String userid) {
         this.session = session;
-        //test2 = this;
 
-        // num++;
-//        this.session = session;
         this.userid = userid;
-        //list.add(this);
 //
         webSocketMap.put(userid, this);
 //        log.info("webSocketMap -> " + JSON.toJSONString(webSocketMap));
@@ -135,8 +126,8 @@ public class WebSocket2Server {
 
     /**
      * 关闭连接
+     * 关闭连接自动将Map中记录的连接清除
      */
-
     @OnClose
     public void onClose() {
         if (webSocketMap.get(this.userid) != null) {
