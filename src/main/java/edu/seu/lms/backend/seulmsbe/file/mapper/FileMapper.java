@@ -17,6 +17,10 @@ import java.util.List;
  * @since 2023-09-04
  */
 public interface FileMapper extends BaseMapper<File> {
+    /**
+     * deleteBySyllabusID：根据大纲ID删除对应文件
+     * insertFile：插入文件
+     */
     @Delete("delete from file where syllabusID=#{syllabusID}")
     void deleteBySyllabusID(String syllabusID);
 

@@ -27,6 +27,13 @@ import javax.servlet.http.HttpServletRequest;
 public class DiscussionController {
     @Autowired
     private IDiscussionService discussionService;
+
+    /**
+     * publish：发起讨论
+     * replysend：发送回复
+     * listreply：列出某一评论下所有回复
+     * listdiscussion：列出所有讨论
+     */
     @PostMapping("/list")
     public BaseResponse<?> listdiscussion(@RequestBody DiscussionListRequest discussionListRequest, HttpServletRequest request){
         return discussionService.listall(discussionListRequest,request);
