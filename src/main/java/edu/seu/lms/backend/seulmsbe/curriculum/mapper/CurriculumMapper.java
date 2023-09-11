@@ -37,14 +37,11 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
 //    List<Curriculum> selectPage(int currentPage,int pageSize);
 
 
-    @Select("select * from user where id=#{id}")
-    User selectUserById(String id);
-
     @Select("select * from curriculum where teacherID=#{teacherID}")
-    List<Curriculum> selectCurriculumByteacher(String teacherID);
+    List<Curriculum> selectCurriculumByteacher(String teacherID);//通过老师id查找课程
 
     @Select("select * from curriculum where name=#{name}")
-    List<Curriculum> selectCurriculumByName(String name);
+    List<Curriculum> selectCurriculumByName(String name);//通过课程名称查找课程
     @Select("SELECT * FROM curriculum,student_curriculum "+
             "WHERE student_curriculum.studentID = #{userID}"+
             " AND curriculum.name Like CONCAT('%',#{keyword},'%') "+
@@ -53,8 +50,6 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
     //分页模糊查询登录学生的课程
     List<Curriculum> studentSearch(String keyword,String userID,int begin,int size);
 
-    @Select("select * from curriculum where teacherID=#{teacherID}")
-    Curriculum selectByteacherID(String teacherID);
 
     @Select("SELECT * FROM user,student_curriculum "+
             "WHERE student_curriculum.curriculumID = #{courseID}"+
@@ -62,7 +57,7 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             "AND student_curriculum.studentID = user.ID "+
             "AND user.access = 1 "+
             "LIMIT #{begin},#{size}")
-        //分页模糊查询登录学生的课程
+        //分页通过课程id模糊查询课程
     List<User> listStudent(String keyword,String courseID,int begin,int size);
     @Select("select SUM(" +
             "case " +
@@ -76,15 +71,18 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             " end" +
             ") from user,student_curriculum")
     Integer getListStudentNum(String keyword,String courseID);
+    //通过课程id准确查询，用户名称模糊查询，找到符合条件的所有用户的数量
     @Select("select * from curriculum,user" +
             " where curriculum.name like CONCAT('%',#{keyword},'%')" +
             " AND user.nickname like CONCAT('%',#{teacherName},'%')" +
             " AND curriculum.teacherID=user.ID" +
             " limit #{begin},#{size}")
+    //分页，通过课程名称和老师名称模糊查询所有符合条件的课程
     List<Curriculum> SearchByNameAndTeacher(String keyword,String teacherName,int begin,int size);
 
     @Select("select * from curriculum" +
             " limit #{begin},#{size}")
+    //分页显示所有课程
     List<Curriculum> SearchCourse(String keyword,String teacherName,int begin,int size);
 
     @Select("select SUM(" +
@@ -97,8 +95,10 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
             " 0" +
             " end" +
             ") from curriculum,user")
+    //找到符合条件的课程数量，模糊搜索课程名称和老师名称
     Integer getnumAdmin(String keyword,String teacherName);
     @Select("select count(*) from curriculum")
+        //找到所有课程的数量
     Integer getNumAdmin0();
     @Select("SELECT SUM(" +
             "CASE "+
@@ -113,6 +113,4 @@ public interface CurriculumMapper extends BaseMapper<Curriculum> {
     //返回登录学生所模糊搜索的课程总数
     Integer getnum(String keyword, String userID);
 
-    @Delete("delete from curriculum where teacherID=#{userID}")
-    void deleteByTeacherID(String userID);
 }
