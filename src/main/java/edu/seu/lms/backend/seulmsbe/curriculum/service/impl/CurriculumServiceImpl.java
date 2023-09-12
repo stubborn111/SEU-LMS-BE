@@ -505,4 +505,32 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         discussionMapper.deleteByCurriculumID(courseID);
     }
 
+    @Override
+    public BaseResponse<CourseListDTO> adminSearch(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
+        int curPage = courseSearchRequest.getCurrentPage();
+        int pagesize = courseSearchRequest.getPageSize();
+        String keyword = courseSearchRequest.getKeyword();
+        LambdaUpdateWrapper<Curriculum> updateWrapper=new LambdaUpdateWrapper<>();
+        updateWrapper.like(Curriculum::getName,keyword);
+        CourseListDTO DTO=new CourseListDTO();
+        Page<Curriculum> Page=curriculumMapper.selectPage(new Page<>(curPage,pagesize),updateWrapper);
+        List<Curriculum> curriculumList=Page.getRecords();
+        DTO.setTotalNum((int) Page.getTotal());
+        List<CourseData2DTO> dto=new ArrayList<>();
+        for (Curriculum tt:curriculumList)
+        {
+            CourseData2DTO tem=new CourseData2DTO();
+            tem.setCourseID(tt.getId());
+            tem.setSemester(tt.getSemester());
+            tem.setDescription(tt.getDescription());
+            tem.setImgUrl(tt.getImgUrl());
+            User teacher=userService.getuser(tt.getTeacherID());
+            tem.setTeacherAvatar(teacher.getAvatarUrl());
+            tem.setTeacherName(teacher.getNickname());
+            dto.add(tem);
+        }
+        DTO.setList(dto);
+        return ResultUtils.success(DTO);
+    }
+
 }

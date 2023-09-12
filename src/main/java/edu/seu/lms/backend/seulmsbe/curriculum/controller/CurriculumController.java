@@ -163,6 +163,10 @@ public class CurriculumController {
         DTO.setList(dto);
         return ResultUtils.success(DTO);
     }
-
+    @PostMapping("admin-search")
+    public BaseResponse<CourseListDTO> adminSearch(@RequestBody CourseSearchRequest courseSearchRequest,HttpServletRequest request)
+    {
+        return iCurriculumService.adminSearch(courseSearchRequest,request);
+    }
 
 }
