@@ -35,6 +35,9 @@ public interface SyllabusMapper extends BaseMapper<Syllabus> {
     int CheckinNum();
     @Select("select * from syllabus where curriculumID=#{curriculumID} and isCheckedIn=1")
     List<Syllabus> getSyllabusByCourseID(String curriculumID);
+
+    @Select("select * from syllabus where curriculumID=#{curriculumID}")
+    List<Syllabus> getSyllabusByCourseID2(String curriculumID);
     @Update("update Assignment set file=#{body},name=#{homeworkTitle},type='multi-text',status=1,time=NOW() where syllabusID=#{syllabusID} and studentID=#{userID}")
     void updateAssignPostText(String syllabusID, String userID, String homeworkTitle, String body);
     @Delete("delete from syllabus where curriculumID=#{curriculumID}")

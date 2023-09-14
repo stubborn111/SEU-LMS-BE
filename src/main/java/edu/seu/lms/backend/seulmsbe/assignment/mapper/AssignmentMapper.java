@@ -3,6 +3,7 @@ package edu.seu.lms.backend.seulmsbe.assignment.mapper;
 import edu.seu.lms.backend.seulmsbe.assignment.entity.Assignment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.joda.time.DateTime;
@@ -113,4 +114,6 @@ public interface AssignmentMapper extends BaseMapper<Assignment> {
     void deleteBySyllabusID(String syllabusID);
     @Delete("delete from assignment where studentID=#{userID}")
     void deleteByUserID(String userID);
+    @Insert("insert into assignment(studentID,status, ID,name, syllabusID) values (#{studentID},0,#{ID},#{name},#{syllabusID})")
+    void insertAssignment(String studentID,String ID,String name,String syllabusID);
 }

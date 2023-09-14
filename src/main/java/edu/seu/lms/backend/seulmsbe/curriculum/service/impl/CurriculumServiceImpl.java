@@ -83,7 +83,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
 
         //List<Curriculum> tmp = Page.getRecords();
         List<CourseData2DTO> DTO = new ArrayList<>();
-
+        //遍历课程
         for(Curriculum tt : tmp){
             CourseData2DTO temp = new CourseData2DTO();
             temp.setCourseID(tt.getId());
@@ -97,6 +97,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
             DTO.add(temp);
         }
         dto.setList(DTO);
+        //错误处理
         if (curriculumMapper.getnum(keyword,currentUser.getId())!=null) dto.setTotalNum(curriculumMapper.getnum(keyword,currentUser.getId()));
         else dto.setTotalNum(0);
         return ResultUtils.success(dto);
@@ -123,6 +124,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
 
         List<StudentCurriculum> tmp = Page.getRecords();
         List<CourseData2DTO> DTO = new ArrayList<>();
+        //遍历StudentCurriculum表
         for(StudentCurriculum studentCurriculum:tmp)
         {
             CourseData2DTO temp=new CourseData2DTO();
@@ -151,10 +153,12 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     public BaseResponse<CourseListforTeacherDTO> listforteacher(CouseListforTeacherRequest couseListforTeacherRequest, HttpServletRequest request) {
         String teacherId=couseListforTeacherRequest.getTeacherID();
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        //筛选与老师id相同的课程
         queryMapper.eq(Curriculum::getTeacherID,teacherId);
         List<Curriculum> curriculumList=curriculumMapper.selectList(queryMapper);
         List<CourseData3DTO> courseData3DTOList=new ArrayList<>();
         CourseListforTeacherDTO courseListforTeacherDTO=new CourseListforTeacherDTO();
+        //遍历所有符合要求的课程
         for(Curriculum curriculum:curriculumList)
         {
             CourseData3DTO courseData3DTO=new CourseData3DTO();
@@ -167,8 +171,10 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     }
 
     @Override
+    //添加课程
     public BaseResponse<CourseaddRequest> addCourse(CourseaddRequest courseaddRequest, HttpServletRequest request) {
         Curriculum curriculum=new Curriculum();
+        //设置新建课程信息
         curriculum.setId(UUID.randomUUID().toString().substring(0,7));
         curriculum.setName(courseaddRequest.getCourseName());
         curriculum.setSemester(courseaddRequest.getSemester());
@@ -182,6 +188,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         queryMapper.eq(User::getId,teacherName);
         User teacher=userMapper.selectOne(queryMapper);
         curriculum.setTeacherID(teacher.getId());
+        //插入课程
         curriculumMapper.insertCurriculum(curriculum);
         return ResultUtils.success(null);
     }
@@ -194,6 +201,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         int curPage = courseListRequest.getCurrentPage();
         //构建查询体
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
+        //查询符合条件的课程
         queryMapper.eq(Curriculum::getTeacherID,currentUser.getId());
 
         Page<Curriculum> Page = curriculumMapper.selectPage(new Page<>(curPage,pagesize),queryMapper);
@@ -220,6 +228,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
 
     @Override
     public BaseResponse<CourseListDescriptionDTO> listDescription(HttpServletRequest request) {
+        //找到登录用户
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         int access=currentUser.getAccess();
         CourseListDescriptionDTO DTO=new CourseListDescriptionDTO();
@@ -248,11 +257,13 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
 
     @Override
     public BaseResponse<CourseListDTO> teacherSearch(CourseSearchRequest courseSearchRequest, HttpServletRequest request) {
+        //找到登录用户
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         String userId=currentUser.getId();
         String keword=courseSearchRequest.getKeyword();
         int pagesize =courseSearchRequest.getPageSize();
         int curPage = courseSearchRequest.getCurrentPage();
+        //构建查询体
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
         queryMapper.eq(Curriculum::getTeacherID,userId);
         queryMapper.like(Curriculum::getName,keword);
@@ -261,6 +272,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
         DTO.setTotalNum((int)Page.getTotal());
         List<Curriculum> curriculumList=Page.getRecords();
         List<CourseData2DTO> dto=new ArrayList<>();
+        //遍历所有符合条件的课程
         for(Curriculum tt:curriculumList)
         {
             CourseData2DTO courseData2DTO=new CourseData2DTO();
@@ -280,6 +292,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
 
     @Override
     public BaseResponse<CourseNameDTO> getCourseName(CourseGetIntoRequest courseGetIntoRequest, HttpServletRequest request) {
+        //获取当前用户
         User currentUser = (User) request.getSession().getAttribute(USER_LOGIN_STATE);
         String userId=currentUser.getId();
         LambdaUpdateWrapper<StudentCurriculum> queryMapper = new LambdaUpdateWrapper<>();
@@ -298,6 +311,7 @@ public class CurriculumServiceImpl extends ServiceImpl<CurriculumMapper, Curricu
     }
 
     @Override
+    //修改课程
     public BaseResponse<Curriculum> modifyCourse(CourseModifyRequest courseModifyRequest, HttpServletRequest request) {
         LambdaUpdateWrapper<Curriculum> queryMapper = new LambdaUpdateWrapper<>();
         User teacher=userMapper.selectUserByName(courseModifyRequest.getTeacherName());

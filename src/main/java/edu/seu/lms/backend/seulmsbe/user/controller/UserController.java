@@ -5,14 +5,23 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.Update;
 import edu.seu.lms.backend.seulmsbe.Student_Curriculum.mapper.StudentCurriculumMapper;
+import edu.seu.lms.backend.seulmsbe.assignment.mapper.AssignmentMapper;
+import edu.seu.lms.backend.seulmsbe.checkin.entity.Checkin;
+import edu.seu.lms.backend.seulmsbe.checkin.mapper.CheckinMapper;
 import edu.seu.lms.backend.seulmsbe.common.BaseResponse;
 import edu.seu.lms.backend.seulmsbe.common.ErrorCode;
 import edu.seu.lms.backend.seulmsbe.common.ResultUtils;
+import edu.seu.lms.backend.seulmsbe.curriculum.entity.Curriculum;
+import edu.seu.lms.backend.seulmsbe.curriculum.mapper.CurriculumMapper;
 import edu.seu.lms.backend.seulmsbe.dto.User.ListforAdminDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.UserDTO;
 import edu.seu.lms.backend.seulmsbe.dto.User.UserListTeacherDTO;
+import edu.seu.lms.backend.seulmsbe.event.entity.Event;
+import edu.seu.lms.backend.seulmsbe.event.mapper.EventMapper;
 import edu.seu.lms.backend.seulmsbe.exception.BusinessException;
 import edu.seu.lms.backend.seulmsbe.request.*;
+import edu.seu.lms.backend.seulmsbe.syllabus.entity.Syllabus;
+import edu.seu.lms.backend.seulmsbe.syllabus.mapper.SyllabusMapper;
 import edu.seu.lms.backend.seulmsbe.user.entity.User;
 import edu.seu.lms.backend.seulmsbe.user.mapper.UserMapper;
 import edu.seu.lms.backend.seulmsbe.user.service.IUserService;
@@ -20,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -44,6 +54,16 @@ public class UserController {
     private UserMapper userMapper;
     @Autowired
     private StudentCurriculumMapper studentCurriculumMapper;
+    @Autowired
+    private AssignmentMapper assignmentMapper;
+    @Autowired
+    private CheckinMapper checkinMapper;
+    @Autowired
+    private EventMapper eventMapper;
+    @Autowired
+    private CurriculumMapper curriculumMapper;
+    @Autowired
+    private SyllabusMapper syllabusMapper;
     /**
      * 测试
      * 实际不需要创建
@@ -96,6 +116,42 @@ public class UserController {
             if(userMapper.selectById(id).getAccess()==1&&studentCurriculumMapper.getStudentCourseNum(id,courseID)==0)
             {
                 studentCurriculumMapper.insertStudentCourse(id,courseID, UUID.randomUUID().toString().substring(0,7));
+                Curriculum curriculum=curriculumMapper.getCurriculumById(courseID);
+                for (Syllabus tt:syllabusMapper.getSyllabusByCourseID2(courseID))
+                {
+                    if(tt.getIsCheckedIn()!=0)
+                    {
+                        Checkin checkin=new Checkin();
+                        checkin.setID(UUID.randomUUID().toString().substring(0,7));
+                        checkin.setTime(LocalDate.now());
+                        checkin.setIsCheckedIn(0);
+                        checkin.setSyllabusID(tt.getId());
+                        checkin.setStudentID(id);
+                        checkinMapper.insert(checkin);
+                    }
+                    if(tt.getAssiments()!=null)
+                    {
+                        assignmentMapper.insertAssignment(id,UUID.randomUUID().toString().substring(0,7),tt.getAssiments(), tt.getId());
+                        Event event1 = new Event();
+                        event1.setType("assignment");
+                        event1.setUserID(id);
+                        event1.setSyllabusID(tt.getId());
+                        event1.setDate(tt.getAssignmentTime().toLocalDate());
+                        event1.setId(UUID.randomUUID().toString().substring(0,7));
+                        event1.setContent(tt.getAssiments());
+                        eventMapper.insert(event1);
+                    }
+                    Event event=new Event();
+                    event.setId(UUID.randomUUID().toString().substring(0,7));
+                    event.setSyllabusID(tt.getId());
+                    event.setUserID(id);
+                    event.setType("syllabus");
+                    event.setDate(tt.getTime().toLocalDate());
+                    event.setContent(curriculum.getName()+" "+tt.getTitle());
+                    eventMapper.insert(event);
+
+
+                }
             }
 
         }
